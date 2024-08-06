@@ -1,10 +1,14 @@
 import React, { useState,useEffect } from 'react';
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { HomeIcon } from "@heroicons/react/24/solid";
-import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar } from "@mui/material";
+import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar ,Grid} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from 'axios';
-
+import UserIcon from '@mui/icons-material/Person';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+import InfoIcon from '@mui/icons-material/Info';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 const useStyles = makeStyles(() => ({
   input: {
     width: '100%',
@@ -77,6 +81,7 @@ export function Profile() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
+  const [dob, setDob] = useState(''); 
   const [alert, setAlert] = useState({ message: '', type: '' });
   const [emailError, setEmailError] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState('');
@@ -85,6 +90,7 @@ export function Profile() {
 
   const isValidPhoneNumber = (number) => /^[0-9]{10}$/.test(number);
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidDate = (date) => !isNaN(new Date(date).getTime());
 
   const handleSave = async () => {
     let hasError = false;
@@ -93,6 +99,7 @@ export function Profile() {
       setAlert({ message: 'Username is required', type: 'error' });
       hasError = true;
     }
+    if (hasError) return;
     if (!isValidPhoneNumber(phoneNumber)) {
       setPhoneNumberError('Please enter a valid phone number (10 digits)');
       hasError = true;
@@ -105,8 +112,11 @@ export function Profile() {
     } else {
       setEmailError('');
     }
-
-    if (hasError) return;
+ if (!isValidDate(dob)) {
+      setAlert({ message: 'Please enter a valid date of birth', type: 'error' });
+      hasError = true;
+    }
+  
 
     try {
       const userData = {
@@ -158,6 +168,7 @@ export function Profile() {
     setEmail('');
     setUsername('');
     setBio('');
+    setDob(''); 
     setAlert({ message: '', type: '' });
     setEmailError('');
     setPhoneNumberError('');
@@ -205,84 +216,119 @@ export function Profile() {
             </Typography>
           </div>
         )}
-        <Box className="mb-4">
+            <Box className="mb-4">
           <Typography variant="h6" className="mb-2">Personal Information</Typography>
-          <Box className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextField
-              fullWidth
-              label="Username"
-              variant="outlined"
-              className="my-2"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              InputProps={{
-                classes: {
-                  input: classes.input,
-                },
-              }}
-            />
-            <TextField
-              fullWidth
-              label="Full Name"
-              variant="outlined"
-              className="my-2"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              InputProps={{
-                classes: {
-                  input: classes.input,
-                },
-              }}
-            />
-            <TextField
-              fullWidth
-              label="Phone Number"
-              variant="outlined"
-              className="my-2"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              InputProps={{
-                classes: {
-                  input: classes.input,
-                },
-              }}
-              error={!!phoneNumberError}
-              helperText={phoneNumberError}
-            />
-            <TextField
-              fullWidth
-              label="Email"
-              variant="outlined"
-              className="my-2"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              InputProps={{
-                classes: {
-                  input: classes.input,
-                },
-              }}
-              error={!!emailError}
-              helperText={emailError}
-            />
-          </Box>
-        </Box>
-        <Box className="mb-4">
-          <Typography variant="h6" className="mb-2">About Me</Typography>
-          <TextField
-            fullWidth
-            label="Bio"
-            multiline
-            rows={4}
-            variant="outlined"
-            className="my-2"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            InputProps={{
-              classes: {
-                input: classes.input,
-              },
-            }}
-          />
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Username"
+                variant="outlined"
+                className="my-2"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <Box sx={{ mr: 1 }}>
+                      <UserIcon />
+                    </Box>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Full Name"
+                variant="outlined"
+                className="my-2"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <Box sx={{ mr: 1 }}>
+                      <UserIcon />
+                    </Box>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Email"
+                variant="outlined"
+                className="my-2"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={Boolean(emailError)}
+                helperText={emailError}
+                InputProps={{
+                  startAdornment: (
+                    <Box sx={{ mr: 1 }}>
+                      <EmailIcon />
+                    </Box>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Phone Number"
+                variant="outlined"
+                className="my-2"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                error={Boolean(phoneNumberError)}
+                helperText={phoneNumberError}
+                InputProps={{
+                  startAdornment: (
+                    <Box sx={{ mr: 1 }}>
+                      <PhoneIcon />
+                    </Box>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Date of Birth"
+                type="date"
+                variant="outlined"
+                className="my-2"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <Box sx={{ mr: 1 }}>
+                      <CalendarTodayIcon />
+                    </Box>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Bio"
+                variant="outlined"
+                className="my-2"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <Box sx={{ mr: 1 }}>
+                      <InfoIcon />
+                    </Box>
+                  ),
+                }}
+                multiline
+                rows={4}
+              />
+            </Grid>
+          </Grid>
         </Box>
         <Box className="flex justify-end space-x-4">
           <MUIButton variant="outlined" color="primary" onClick={handleCancel}>Cancel</MUIButton>
