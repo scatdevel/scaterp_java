@@ -1,6 +1,7 @@
 package com.scat.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.*;
 
@@ -24,8 +25,18 @@ public class UserEntity implements Serializable {
 	    @Column(name = "profile_picture_url")
 	    private String profilePictureUrl;
 
-   
-    public long getId() {
+	    @Column(name = "dob")
+		@Temporal(TemporalType.DATE)
+		private Date dob;
+    public Date getDob() {
+			return dob;
+		}
+
+		public void setDob(Date dob) {
+			this.dob = dob;
+		}
+
+	public long getId() {
 		return id;
 	}
 
