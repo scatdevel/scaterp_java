@@ -8,6 +8,8 @@ import Auth from './layouts/auth';
 import SettingsPage from './pages/dashboard/SettingsPage'; // Import the SettingsPage component
 import Profile from './pages/dashboard/Profile'; // Import the Profile component
 import { Tables } from './pages/dashboard';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
       <Routes>
         <Route path="/auth/sign-in" element={<SignIn />} />
         <Route path="/auth/sign-up" element={<SignUp />} />
+        <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+        <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard/*" element={<Dashboard />} />
         <Route path="/auth/*" element={<Auth />} />
         <Route path="/user-list" element={<UserList />} />

@@ -110,24 +110,20 @@ export function SignIn() {
   
 
   return (
-    <section className="m-8 flex gap-4">
-      <div className="w-full lg:w-3/5 mt-24">
-        <div className="flex justify-center items-center">
-          <img src="/img/logo_scat.png" className="width-[30%]" alt="Logo" />
+    <section className="relative flex flex-col lg:flex-row items-center justify-center min-h-screen bg-gray-100">
+      <div className="lg:w-1/2 p-8 lg:p-16 bg-white bg-opacity-90 rounded-lg shadow-lg z-10">
+        <div className="flex justify-center mb-8">
+          <img src="/img/logo_scat.png" className="w-24" alt="Logo" />
         </div>
-
-        <div className="text-center">
-          <Typography variant="h4" className="font-bold mb-4">Sign In</Typography>
-          <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">
+        <div className="text-center mb-8">
+          <Typography variant="h4" className="font-bold mb-2">Sign In</Typography>
+          <Typography variant="paragraph" color="blue-gray" className="text-lg">
             Enter your Email and password to Sign In.
           </Typography>
         </div>
-
-        <form onSubmit={handleSubmit} className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
-          <div className="mb-1 flex flex-col gap-4">
-            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-              Email
-            </Typography>
+        <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md">
+          <div>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Email</Typography>
             <Input
               size="lg"
               placeholder="name@mail.com"
@@ -139,16 +135,15 @@ export function SignIn() {
               value={formData.email}
               onChange={handleChange}
               required
-              type="email"
             />
-            {emailError && <Typography variant="small" color="red">{emailError}</Typography>}
-            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-              Password
-            </Typography>
+            {emailError && <Typography variant="small" color="red" className="mt-1 text-sm">{emailError}</Typography>}
+          </div>
+          <div>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Password</Typography>
             <Input
               type="password"
               size="lg"
-              placeholder="****"
+              placeholder="********"
               className="!border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
                 className: "before:content-none after:content-none",
@@ -166,7 +161,7 @@ export function SignIn() {
               <Typography
                 variant="small"
                 color="gray"
-                className="flex items-center justify-start font-medium"
+                className="flex items-center font-medium"
               >
                 I agree to the&nbsp;
                 <a
@@ -177,32 +172,48 @@ export function SignIn() {
                 </a>
               </Typography>
             }
-            containerProps={{ className: "-ml-2.5" }}
           />
-
-          {error && <Typography variant="small" color="red" className="mb-4">{error}</Typography>}
-
-          <Button type="submit" disabled={!isValid} className="mt-6" fullWidth>
+          <Button type="submit" className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" disabled={!isValid}>
             Sign In
           </Button>
-
+          
           {showAlert && (
             <div className={`alert shadow-blue-500/40 hover:shadow-indigo-500/40 mt-6 content-center text-black text-center rounded-lg ${error ? 'bg-red-300' : 'bg-green-300'}`}>
               {error || alertMessage}
             </div>
           )}
 
-          <Typography variant="paragraph" className="text-center text-blue-gray-500 font-medium mt-4">
-            Not registered?
-            <Link to="/auth/sign-up" className="text-gray-900 ml-1">Create account</Link>
-          </Typography>
+          <div className="mt-6 text-center">
+            <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
+              Forgot your password?
+              <Link to="/auth/forgot-password" className="text-gray-900 ml-1 underline">
+                Reset it here
+              </Link>
+            </Typography>
+          </div>
+
+          <div className="text-center mt-2">
+            <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
+              Not registered?
+              <Link to="/auth/sign-up" className="text-gray-900 ml-1 underline">
+                Create an account
+              </Link>
+            </Typography>
+          </div>
         </form>
       </div>
-      <div className="w-2/5 h-full hidden lg:block">
+      <div className="absolute inset-0 lg:hidden">
         <img
-          src="/img/Farmer3.jpeg"
-          className="h-full w-full object-cover rounded-3xl"
-          alt="Pattern"
+          src="/img/farmers1.jpg"
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="absolute inset-0 hidden lg:block">
+        <img
+          src="/img/farmers1.jpg"
+          alt="Background"
+          className="w-full h-full object-cover"
         />
       </div>
     </section>
