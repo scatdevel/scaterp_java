@@ -81,25 +81,20 @@ export function SignUp() {
   };
 
   return (
-    <section className="m-8 flex gap-4">
-      <div className="w-full lg:w-3/5 mt-24">
-        <div className="flex justify-center items-center">
-          <img src="/img/logo_scat.png" className="width-[30%]" alt="Logo" />
+    <section className="relative flex flex-col lg:flex-row items-center justify-center h-screen bg-gray-100">
+      <div className="lg:w-1/2 p-8 lg:p-16 bg-white bg-opacity-90 rounded-lg shadow-lg z-10">
+        <div className="flex justify-center mb-8">
+          <img src="/img/logo_scat.png" className="w-24" alt="Logo" />
         </div>
-
-        <div className="text-center">
-          <Typography variant="h4" className="font-bold mb-4">Sign Up</Typography>
-          <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">
+        <div className="text-center mb-8">
+          <Typography variant="h4" className="font-bold mb-2">Sign Up</Typography>
+          <Typography variant="paragraph" color="blue-gray" className="text-lg">
             Enter your details to create your account.
           </Typography>
         </div>
-
-        <form onSubmit={handleSubmit} className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
-          
-          <div className="mb-1 flex flex-col gap-6">
-            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-              Username
-            </Typography>
+        <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md">
+          <div>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Username</Typography>
             <Input
               size="lg"
               placeholder="Enter your username"
@@ -112,9 +107,9 @@ export function SignUp() {
               onChange={handleChange}
               required
             />
-            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-              Your email
-            </Typography>
+          </div>
+          <div>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Your email</Typography>
             <Input
               size="lg"
               placeholder="name@mail.com"
@@ -127,10 +122,10 @@ export function SignUp() {
               onChange={handleChange}
               required
             />
-            {emailError && <Typography variant="small" color="red">{emailError}</Typography>}
-            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
-              Password
-            </Typography>
+            {emailError && <Typography variant="small" color="red" className="mt-1 text-sm">{emailError}</Typography>}
+          </div>
+          <div>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Password</Typography>
             <Input
               type="password"
               size="lg"
@@ -152,20 +147,19 @@ export function SignUp() {
               <Typography
                 variant="small"
                 color="gray"
-                className="flex items-center justify-start font-medium"
+                className="flex items-center font-medium"
               >
                 I agree to the&nbsp;
                 <a
                   href="#"
-                  className="font-normal text-black transition-colors hover:text-gray-900 underline"
+                  className="font-normal text-blue-600 transition-colors hover:text-blue-800 underline"
                 >
                   Terms and Conditions
                 </a>
               </Typography>
             }
-            containerProps={{ className: "-ml-2.5" }}
           />
-          <Button type="submit" className="mt-6" fullWidth disabled={!isValid}>
+          <Button type="submit" className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" disabled={!isValid}>
             Sign Up
           </Button>
 
@@ -174,9 +168,8 @@ export function SignUp() {
               {error || alertMessage}
             </div>
           )}
-
-          <div className="space-y-4 mt-8">
-            <Button size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>
+          <div className="mt-6 text-center">
+            <Button size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md w-full border border-gray-300">
               <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_1156_824)">
                   <path d="M16.3442 8.18429C16.3442 7.64047 16.3001 7.09371 16.206 6.55872H8.66016V9.63937H12.9813C12.802 10.6329 12.2258 11.5119 11.3822 12.0704V14.0693H13.9602C15.4741 12.6759 16.3442 10.6182 16.3442 8.18429Z" fill="#4285F4" />
@@ -204,11 +197,18 @@ export function SignUp() {
           </Typography>
         </form>
       </div>
-      <div className="relative hidden lg:block w-full lg:w-2/5">
+      <div className="absolute inset-0 lg:hidden">
         <img
-          src="/img/Farmer3.jpeg"
+          src="/img/farmers1.jpg"
           alt="Background"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="absolute inset-0 hidden lg:block">
+        <img
+          src="/img/farmers1.jpg"
+          alt="Background"
+          className="w-full h-full object-cover"
         />
       </div>
     </section>
@@ -216,4 +216,3 @@ export function SignUp() {
 }
 
 export default SignUp;
-
