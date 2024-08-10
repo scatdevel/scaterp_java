@@ -8,5 +8,4 @@ public interface LandDetailsService {
     List<LandDetails> getAllLandDetails();
     void deleteLandDetails(Long id);
     List<LandDetails> getLandDetailsByUsername(String username);
-    void uploadLandDetials();
 }
