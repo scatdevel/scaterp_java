@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setPhoneNumber(userDTO.getPhoneNumber());
         userEntity.setEmail(userDTO.getEmail());
         userEntity.setBio(userDTO.getBio());
+        userEntity.setDob(userDTO.getDob());
         if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
             userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         }

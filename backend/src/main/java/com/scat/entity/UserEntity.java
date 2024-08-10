@@ -27,8 +27,8 @@ public class UserEntity implements Serializable {
 
 	    @Column(name = "dob")
 		@Temporal(TemporalType.DATE)
-		private Date dob;
-	    
+		private Date dob:
+  
 
 	    @Column(name = "reset_token")
 	    private String resetToken;
@@ -55,8 +55,7 @@ public class UserEntity implements Serializable {
 		public static long getSerialversionuid() {
 			return serialVersionUID;
 		}
-
-	public Date getDob() {
+    public Date getDob() {
 			return dob;
 		}
 
@@ -129,8 +128,5 @@ public class UserEntity implements Serializable {
 	}
 
 	private static final long serialVersionUID = 1L;
-
-
-
    
 }

@@ -44,7 +44,7 @@ public class UserController {
         userDto.setPassword(userDetails.getPassword());
         userDto.setFullName(userDetails.getFullName());
         userDto.setPhoneNumber(userDetails.getPhoneNumber());
-
+        userDto.setDob(userDetails.getDob());
         UserDTO createdUser = userService.createUser(userDto);
 
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
@@ -122,4 +122,5 @@ public class UserController {
         }
     }
 
+    
 }
