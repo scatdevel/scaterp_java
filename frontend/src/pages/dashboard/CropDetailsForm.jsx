@@ -180,7 +180,7 @@ const CropDetailsForm = () => {
                         name="landValueUnit"
                         value={crop.landValueUnit}
                         onChange={(e) => handleChange(e, crop.id)}
-                        className="p-2 text-base border border-gray-300 rounded-md focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+                        className="p-1 text-xs h-8 border border-gray-300 rounded-md focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
                         required
                       >
                         <option value="">Select Unit</option>
@@ -222,18 +222,7 @@ const CropDetailsForm = () => {
                   <div className="flex flex-col space-y-2">
                     <label className="text-sm font-medium text-gray-700">Projection Timeline</label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <select
-                        name="projectionTimelineType"
-                        value={crop.projectionTimelineType}
-                        onChange={(e) => handleChange(e, crop.id)}
-                        className="p-2 text-base border border-gray-300 rounded-md focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-                        required
-                      >
-                        <option value="">Select Type</option>
-                        <option value="month">Month</option>
-                        <option value="year">Days</option>
-                      </select>
-                      <input
+                    <input
                         type="number"
                         name="projectionTimelineValue"
                         value={crop.projectionTimelineValue}
@@ -242,6 +231,18 @@ const CropDetailsForm = () => {
                         className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
                         required
                       />
+                      
+<select
+  name="projectionTimelineType"
+  value={crop.projectionTimelineType}
+  onChange={(e) => handleChange(e, crop.id)}
+  className="p-1 text-xs h-8 border border-gray-300 rounded-md focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+  required
+>
+  <option value="">Select Type</option>
+  <option value="month">Months</option>
+  <option value="year">Days</option>
+</select>
                     </div>
                   </div>
                 </div>
