@@ -1,7 +1,6 @@
 package com.scat.dto;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class UserDTO implements Serializable {
 
@@ -15,13 +14,6 @@ public class UserDTO implements Serializable {
    private Long phoneNumber;
     private String bio;
     private String profilePictureUrl;
-    private Date dob;
-	public Date getDob() {
-		return dob;
-	}
-	public void setDob(Date dob) {
-		this.dob = dob;
-	}
 	public String getUsername() {
 		return username;
 	}

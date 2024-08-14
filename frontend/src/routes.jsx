@@ -7,8 +7,6 @@ import {
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
 import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
-
-import CropDetailsForm from "@/pages/dashboard/CropDetailsForm";
 import { SignIn, SignUp } from "@/pages/auth";
 
 
@@ -38,13 +36,6 @@ export const routes = [
         name: "Land Details",
         path: "/tables",
         element: <Tables />,
-      },
-
-      {
-        icon: <TableCellsIcon {...icon} />,
-        name: "Crop Details",
-        path: "/crop-details",
-        element: <CropDetailsForm />, // Correct usage
       },
       // {
       //   icon: <InformationCircleIcon {...icon} />,
