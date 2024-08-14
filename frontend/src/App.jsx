@@ -12,7 +12,7 @@ import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import TemporaryPage from './pages/auth/TemporaryPage';
 import CropDetailsForm from './pages/dashboard/CropDetailsForm';
-import CropDetailsView from './pages/dashboard/CropDetailsView';
+import CropOverview from './pages/dashboard/CropOverView';
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/tables" element={<Tables />} />
         <Route path="/cropDetailsForm" element={<CropDetailsForm />} />
-         <Route path="/saved-crops" element={<CropDetailsView />} />
+        <Route path="/crop-overview" element={<CropOverview />} /> 
         <Route path="*" element={<Navigate to="/dashboard/home" replace />} />
       </Routes>
     

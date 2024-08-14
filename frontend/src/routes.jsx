@@ -9,6 +9,7 @@ import {
 import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 
 import CropDetailsForm from "@/pages/dashboard/CropDetailsForm";
+import CropOverview from "@/pages/dashboard/CropOverview";
 import { SignIn, SignUp } from "@/pages/auth";
 
 
@@ -45,6 +46,13 @@ export const routes = [
         name: "Crop Details",
         path: "/crop-details",
         element: <CropDetailsForm />, // Correct usage
+      },
+
+      {
+        icon: <TableCellsIcon {...icon} />,
+        name: "Crop Overview", // Updated route name
+        path: "/crop-overview", // Updated path
+        element: <CropOverview />, // Updated element
       },
       // {
       //   icon: <InformationCircleIcon {...icon} />,
