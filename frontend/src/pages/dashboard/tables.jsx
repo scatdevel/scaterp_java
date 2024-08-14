@@ -183,7 +183,7 @@ export function Tables() {
                   onBlur={handleBlur}
                   className="p-3 border-0 bg-white text-gray-800 placeholder-gray-500 flex-1 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter address"
-                  disabled={isFieldsDisabled}
+                 
                 />
                 {showDropdown && (
                   <div className="absolute top-full right-0 mt-2 w-auto bg-white border border-gray-300 rounded-lg shadow-lg z-10">
@@ -231,7 +231,7 @@ export function Tables() {
                 disabled={isFieldsDisabled}
               />
             </div>
-  m
+  
             <div className="flex flex-col gap-2">
               <label htmlFor="district" className="text-gray-700">District</label>
               <input

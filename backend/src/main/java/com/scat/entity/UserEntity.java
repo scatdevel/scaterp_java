@@ -1,6 +1,7 @@
 package com.scat.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.*;
 
@@ -24,8 +25,45 @@ public class UserEntity implements Serializable {
 	    @Column(name = "profile_picture_url")
 	    private String profilePictureUrl;
 
-   
-    public long getId() {
+	    @Column(name = "dob")
+		@Temporal(TemporalType.DATE)
+		private Date dob:
+  
+
+	    @Column(name = "reset_token")
+	    private String resetToken;
+
+	    @Column(name = "reset_token_expiration")
+	    private Long resetTokenExpiration; // Stored as Unix timestamp
+	    
+    public String getResetToken() {
+			return resetToken;
+		}
+
+		public void setResetToken(String resetToken) {
+			this.resetToken = resetToken;
+		}
+
+		public Long getResetTokenExpiration() {
+			return resetTokenExpiration;
+		}
+
+		public void setResetTokenExpiration(Long resetTokenExpiration) {
+			this.resetTokenExpiration = resetTokenExpiration;
+		}
+
+		public static long getSerialversionuid() {
+			return serialVersionUID;
+		}
+    public Date getDob() {
+			return dob;
+		}
+
+		public void setDob(Date dob) {
+			this.dob = dob;
+		}
+
+	public long getId() {
 		return id;
 	}
 
@@ -90,6 +128,5 @@ public class UserEntity implements Serializable {
 	}
 
 	private static final long serialVersionUID = 1L;
-
    
 }

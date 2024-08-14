@@ -1,5 +1,7 @@
 package com.scat.model.request;
 
+import java.util.Date;
+
 public class UserDetailsRequestModel {
 
     private String username;
@@ -8,8 +10,17 @@ public class UserDetailsRequestModel {
 	private String fullName;
     private Long phoneNumber;
     private String bio;
+    private Date dob;
     
-    public String getFullName() {
+    public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public String getFullName() {
 		return fullName;
 	}
 
