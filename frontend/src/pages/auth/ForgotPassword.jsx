@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { sendPasswordReset } from '../../components/api';
 import { Input, Button, Typography } from "@material-tailwind/react";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+// import qs from 'qs'; // Import qs to stringify the form data
 
 export function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -22,6 +24,27 @@ export function ForgotPassword() {
     }
   };
 
+  const sendPasswordReset = async (emailData) => {
+    try {
+      const response = await axios.post('http://localhost:8080/users/forgot-password',
+        new URLSearchParams(emailData).toString(), // Manually encode emailData
+        {
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded' 
+          }
+        }
+      );
+      const {token} = response.data; 
+      localStorage.setItem('token', token);
+    return response;
+      
+    } catch (error) {
+      console.error('Error sending password reset link:', error.response?.data || error.message);
+      throw error;
+    }
+  };
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -42,7 +65,7 @@ export function ForgotPassword() {
         setShowAlert(true);
 
         setTimeout(() => {
-          navigate(`/reset-password?token=${response.data.token}`);
+          navigate('/temporary'); // Navigate to the TemporaryPage
         }, 2000);
       }
     } catch (err) {

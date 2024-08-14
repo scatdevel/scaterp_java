@@ -10,6 +10,7 @@ import Profile from './pages/dashboard/Profile'; // Import the Profile component
 import { Tables } from './pages/dashboard';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
+import TemporaryPage from './pages/auth/TemporaryPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/auth/sign-up" element={<SignUp />} />
         <Route path="/auth/forgot-password" element={<ForgotPassword />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
+        <Route path="/temporary" element={<TemporaryPage />} /> 
         <Route path="/dashboard/*" element={<Dashboard />} />
         <Route path="/auth/*" element={<Auth />} />
         <Route path="/user-list" element={<UserList />} />
