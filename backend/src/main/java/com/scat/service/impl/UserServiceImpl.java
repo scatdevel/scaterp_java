@@ -152,8 +152,8 @@ public class UserServiceImpl implements UserService {
             user.setResetTokenExpiration(System.currentTimeMillis() + 3600000); // 1 hour validity
             userRepository.save(user);
 
-            String resetLink = "http://localhost:8080/users/reset-password?token=" + token;
-            emailService.sendEmail(user.getEmail(), "Password Reset", "Click the link to reset your password: " + resetLink);
+//            String resetLink = "http://localhost:8080/users/reset-password?token=" + token;
+//            emailService.sendEmail(user.getEmail(), "Password Reset", "Click the link to reset your password: " + resetLink);
         }
     }
 
