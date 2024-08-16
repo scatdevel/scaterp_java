@@ -27,7 +27,7 @@ public class UserEntity implements Serializable {
 
 	    @Column(name = "dob")
 		@Temporal(TemporalType.DATE)
-		private Date dob:
+		private Date dob;
   
 
 	    @Column(name = "reset_token")

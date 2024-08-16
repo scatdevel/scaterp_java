@@ -64,7 +64,7 @@ public class UserDTO implements Serializable {
 	public void setProfilePictureUrl(String profilePictureUrl) {
 		this.profilePictureUrl = profilePictureUrl;
 	}
-    
+	
     
 
 }

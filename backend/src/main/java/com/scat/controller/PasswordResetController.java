@@ -1,6 +1,8 @@
 package com.scat.controller;
 
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,31 +21,39 @@ public class PasswordResetController {
     }
 
     @PostMapping("/forgot-password")
-    public String forgotPassword(@RequestParam(value = "email", required = true) String email) {
+    public ResponseEntity<String> forgotPassword(@RequestParam(value = "email", required = true) String email) {
         if (email == null || email.isEmpty()) {
-            return "Email parameter is required.";
+            return  ResponseEntity.badRequest().body("Email parameter is required.");
         }
         try {
             userService.initiatePasswordReset(email);
-            return "Password reset link has been sent to your email if the email address exists in our system.";
+            return ResponseEntity.ok("Password reset link has been sent to your email if the email address exists in our system.") ;
         } catch (Exception e) {
-            return "An error occurred while processing your request.";
+        	e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request.");
         }
     }
 
+
     @PostMapping("/reset-password")
-    public String resetPassword(@RequestParam(value = "token", required = true) String token, 
-                                @RequestParam(value = "newPassword", required = true) String newPassword) {
+    public ResponseEntity<String> resetPassword(@RequestParam(value = "token") String token,
+                                                @RequestParam(value = "newPassword") String newPassword) {
         if (token == null || token.isEmpty() || newPassword == null || newPassword.isEmpty()) {
-            return "Token and newPassword parameters are required.";
+            return ResponseEntity.badRequest().body("Token and newPassword parameters are required.");
         }
         try {
             boolean success = userService.resetPassword(token, newPassword);
-            return success ? "Password reset successful" : "Invalid or expired token";
+            if (success) {
+                return ResponseEntity.ok("Password reset successful");
+            } else {
+                return ResponseEntity.badRequest().body("Invalid or expired token");
+            }
         } catch (Exception e) {
-            return "An error occurred while processing your request.";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("An error occurred while processing your request.");
         }
     }
+  
 }
 
 
