@@ -176,8 +176,7 @@ export function Tables() {
                 <input
                   type="text"
                   id="address"
-                  name="address"
-                  value={formData.address}
+                  name="address"   
                   onChange={handleInputChange}
                   onFocus={handleFocus}
                   onBlur={handleBlur}
@@ -186,8 +185,8 @@ export function Tables() {
                  
                 />
                 {showDropdown && (
-                  <div className="absolute top-full right-0 mt-2 w-auto bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-                    <div className="p-2 cursor-pointer flex items-center text-xs" onClick={getCurrentLocation}>
+                  <div className="absolute curser pointer top-full right-0 mt-2 w-auto bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                    <div className="p-2  flex items-center text-xs" onClick={getCurrentLocation}>
                       <i className="text-red-500 mr-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="#EF4F5F" width="12" height="12" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" className="kyPUnV">
                           <title>current-location</title>
