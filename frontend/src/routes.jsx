@@ -6,9 +6,10 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
+import { Home, Profile, Tables } from "@/pages/dashboard";
 
 import CropDetailsForm from "@/pages/dashboard/CropDetailsForm";
+import CropDetailsView from "./pages/dashboard/CropDetailsView";
 import { SignIn, SignUp } from "@/pages/auth";
 
 
@@ -46,12 +47,12 @@ export const routes = [
         path: "/crop-details",
         element: <CropDetailsForm />, // Correct usage
       },
-      // {
-      //   icon: <InformationCircleIcon {...icon} />,
-      //   name: "notifications",
-      //   path: "/notifications",
-      //   element: <Notifications />,
-      // },
+      {
+        icon: <InformationCircleIcon {...icon} />,
+        name: "CropDetailsView",
+        path: "/saved-crops",
+        element: <CropDetailsView />,
+      },
     ],
   },
   // {
