@@ -69,7 +69,11 @@ export function ForgotPassword() {
         }, 2000);
       }
     } catch (err) {
-      setError('Failed to send reset link. Please try again.');
+      if (err.response && err.response.status === 400 && err.response.data.includes('Email not found in the database')) {
+        setError('The email address is not registered in our system.');
+      } else {
+        setError('Email Not Found !');
+      }
       setShowAlert(true);
     }
   };

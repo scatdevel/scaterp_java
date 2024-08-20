@@ -150,12 +150,15 @@ public class UserServiceImpl implements UserService {
             String token = UUID.randomUUID().toString();
             user.setResetToken(token);
             user.setResetTokenExpiration(System.currentTimeMillis() + 3600000); // 1 hour validity
-            userRepository.save(user);
-
-//            String resetLink = "http://localhost:8080/users/reset-password?token=" + token;
-//            emailService.sendEmail(user.getEmail(), "Password Reset", "Click the link to reset your password: " + resetLink);
+            userRepository.save(user); // Save the updated user entity
+        } else {
+            throw new IllegalArgumentException("Email not found in the database");
         }
     }
+
+
+//  String resetLink = "http://localhost:8080/users/reset-password?token=" + token;
+//  emailService.sendEmail(user.getEmail(), "Password Reset", "Click the link to reset your password: " + resetLink);
 
 
     public boolean resetPassword(String token, String newPassword) {
