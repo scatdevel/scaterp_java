@@ -9,7 +9,7 @@ import {
 import { Home, Profile, Tables } from "@/pages/dashboard";
 
 import CropDetailsForm from "@/pages/dashboard/CropDetailsForm";
-import CropDetailsView from "./pages/dashboard/CropDetailsView";
+import CropOverview from "@/pages/dashboard/CropOverview";
 import { SignIn, SignUp } from "@/pages/auth";
 
 
@@ -47,12 +47,19 @@ export const routes = [
         path: "/crop-details",
         element: <CropDetailsForm />, // Correct usage
       },
+
       {
-        icon: <InformationCircleIcon {...icon} />,
-        name: "CropDetailsView",
-        path: "/saved-crops",
-        element: <CropDetailsView />,
+        icon: <TableCellsIcon {...icon} />,
+        name: "Crop Overview", // Updated route name
+        path: "/crop-overview", // Updated path
+        element: <CropOverview />, // Updated element
       },
+      // {
+      //   icon: <InformationCircleIcon {...icon} />,
+      //   name: "notifications",
+      //   path: "/notifications",
+      //   element: <Notifications />,
+      // },
     ],
   },
   // {
