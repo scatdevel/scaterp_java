@@ -4,7 +4,7 @@ import {
   TableContainer, TableHead, TableRow, Paper, CircularProgress, Dialog,
   DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton
 } from '@mui/material';
-import { Add as AddIcon, Delete as DeleteIcon, Block as BlockIcon, RemoveCircle as RemoveCircleIcon } from '@mui/icons-material';
+import { Add as AddIcon, RemoveCircle as RemoveCircleIcon, Block as BlockIcon } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
@@ -13,7 +13,7 @@ const CropCategory = () => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [picture, setPicture] = useState(null); // State for picture
   const [viewingCategoryId, setViewingCategoryId] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -23,7 +23,7 @@ const CropCategory = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('/api/categories'); // Replace with your API endpoint
+        const response = await axios.get('http://localhost:8080/crops/categories/get/all');
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching categories:', error);
@@ -33,7 +33,7 @@ const CropCategory = () => {
     };
 
     fetchCategories();
-  }, [editingCategoryId]);
+  }, [viewingCategoryId]);
 
   useEffect(() => {
     if (id) {
@@ -41,6 +41,7 @@ const CropCategory = () => {
       if (category) {
         setName(category.name);
         setDescription(category.description);
+        setPicture(category.picture ? `data:image/jpeg;base64,${category.picture}` : null); // Set picture state for details view
       }
     }
   }, [id, categories]);
@@ -49,14 +50,26 @@ const CropCategory = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const newCategory = { name, description };
-      await axios.post('/api/categories', newCategory); // Replace with your API endpoint
-      setCategories([...categories, { ...newCategory, id: categories.length + 1 }]);
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('description', description);
+      if (picture) {
+        formData.append('picture', picture); // Append file object
+      }
+
+      const response = await axios.post('http://localhost:8080/crops/categories/add', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      console.log('Category added:', response.data);
+      setCategories([...categories, response.data]);
       setName('');
       setDescription('');
+      setPicture(null);
       setOpenDialog(false);
     } catch (error) {
-      console.error('Error adding category:', error);
+      console.error('Error adding category:', error.response ? error.response.data : error.message);
     } finally {
       setLoading(false);
     }
@@ -65,6 +78,7 @@ const CropCategory = () => {
   const handleOpenDialog = () => {
     setName('');
     setDescription('');
+    setPicture(null);
     setOpenDialog(true);
   };
 
@@ -85,7 +99,7 @@ const CropCategory = () => {
   const handleRemoveCategory = async (categoryId) => {
     setLoading(true);
     try {
-      await axios.delete(`/api/categories/${categoryId}`); // Replace with your API endpoint
+      await axios.delete(`http://localhost:8080/crops/categories/${categoryId}`);
       setCategories(categories.filter(cat => cat.id !== categoryId));
     } catch (error) {
       console.error('Error removing category:', error);
@@ -97,12 +111,18 @@ const CropCategory = () => {
   const handleBlockUser = async (categoryId) => {
     setLoading(true);
     try {
-      await axios.post(`/api/categories/${categoryId}/block`); // Replace with your API endpoint
-      // Handle any additional state changes or user feedback here
+      await axios.post(`http://localhost:8080/crops/categories/${categoryId}/block`);
     } catch (error) {
       console.error('Error blocking user:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPicture(file); // Set the file object
     }
   };
 
@@ -113,10 +133,9 @@ const CropCategory = () => {
       {!viewingCategoryId ? (
         <>
           <Typography variant="h7" gutterBottom>
-            {/* Crop Categories */}
-
+            Crop Categories
           </Typography>
-          
+
           <Button
             variant="contained"
             color="primary"
@@ -142,11 +161,15 @@ const CropCategory = () => {
                   <TableRow key={category.id}>
                     <TableCell>{category.id}</TableCell>
                     <TableCell>
-                      <img
-                        src={category.pictureUrl} // Ensure your data includes pictureUrl
-                        alt={category.name}
-                        style={{ width: 50, height: 50, borderRadius: '50%' }}
-                      />
+                      {category.picture ? (
+                        <img
+                          src={`data:image/jpeg;base64,${category.picture}`}
+                          alt={category.name}
+                          style={{ width: 50, height: 50, borderRadius: '50%' }}
+                        />
+                      ) : (
+                        <Typography>No Picture</Typography>
+                      )}
                     </TableCell>
                     <TableCell>{category.name}</TableCell>
                     <TableCell>{category.description}</TableCell>
@@ -201,6 +224,19 @@ const CropCategory = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                style={{ marginTop: 16 }}
+              />
+              {picture && (
+                <img
+                  src={URL.createObjectURL(picture)} // Use URL.createObjectURL to preview the image
+                  alt="Preview"
+                  style={{ width: 100, height: 100, marginTop: 16, borderRadius: '10%' }}
+                />
+              )}
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseDialog} color="secondary">
@@ -219,6 +255,13 @@ const CropCategory = () => {
           </Typography>
           <Typography variant="h6">Name: {name}</Typography>
           <Typography variant="body1">Description: {description}</Typography>
+          {picture && (
+            <img
+              src={URL.createObjectURL(picture)} // Use URL.createObjectURL to preview the image
+              alt="Category"
+              style={{ width: 200, height: 200, marginTop: 16, borderRadius: '10%' }}
+            />
+          )}
           <Button
             variant="contained"
             color="primary"
