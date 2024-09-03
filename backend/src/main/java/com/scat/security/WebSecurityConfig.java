@@ -1,3 +1,4 @@
+
 package com.scat.security;
 
 import com.scat.service.UserService;

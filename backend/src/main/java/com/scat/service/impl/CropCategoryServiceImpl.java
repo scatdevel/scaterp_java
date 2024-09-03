@@ -28,8 +28,6 @@ public class CropCategoryServiceImpl {
 		return repository.save(category);
 	}
 	
-	
-
 
 	public void deleteCategory(Long id) {
 		repository.deleteById(id);

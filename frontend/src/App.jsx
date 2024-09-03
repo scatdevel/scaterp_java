@@ -18,6 +18,7 @@ import AdminDashboard from './pages/dashboard/AdminDashboard';
 import Home from './pages/dashboard/Home';
 import CropCategory from './pages/dashboard/CropCategory';
 import FarmersList from './pages/dashboard/FarmersList';
+import CategoryDetails from './pages/dashboard/AdminAssets/CategoryDetails';
 
 const App = () => {
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
@@ -58,6 +59,7 @@ const App = () => {
               <AdminDashboard>
                 <Route path="/admin-dashboard/home" element={<Home />} />
 <Route path="/admin-dashboard/crop-categories" element={<CropCategory />} />
+<Route path="/admin-dashboard/crop-categories/get/all" element={<CategoryDetails />} />
 <Route path="/admin-dashboard/farmers-list" element={<FarmersList />} />
 
               </AdminDashboard>
