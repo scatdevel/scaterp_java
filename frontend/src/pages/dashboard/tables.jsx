@@ -11,6 +11,11 @@ export function Tables() {
     state: "",
     street: "",
     locateonmap: "",
+    cultivationType: "",
+    landOwnership: "",
+    width: "",
+    breadth: "",
+    area: "",
   });
   const [isFieldsDisabled, setIsFieldsDisabled] = useState(false);
   const [error, setError] = useState(null);
@@ -18,14 +23,21 @@ export function Tables() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
-  
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
+
+    if (name === "width" || name === "breadth") {
+      const width = formData.width || 0;
+      const breadth = formData.breadth || 0;
+      setFormData((prevState) => ({
+        ...prevState,
+        area: (width * breadth).toFixed(2),
+      }));
+    }
   };
 
   const handleFocus = () => {
@@ -191,33 +203,17 @@ export function Tables() {
                       <i className="text-red-500 mr-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="#EF4F5F" width="12" height="12" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" className="kyPUnV">
                           <title>current-location</title>
-                          <path d="M13.58 10c0 1.977-1.603 3.58-3.58 3.58s-3.58-1.603-3.58-3.58c0-1.977 1.603-3.58 3.58-3.58v0c1.977 0 3.58 1.603 3.58 3.58zM20 9h-1.778c-0.433-4.328-3.894-7.789-8.222-8.222v0.777c0 0.11-0.045 0.216-0.125 0.295l-1.11 1.11c-0.159 0.159-0.416 0.159-0.575 0l-0.814-0.814c-0.159-0.159-0.159-0.416 0-0.575l1.11-1.11c0.079-0.079 0.184-0.125 0.295-0.125h0.777c4.328-0.433 7.789-3.894 8.222-8.222h-0.777c-0.11 0-0.216-0.045-0.295-0.125l-1.11-1.11c-0.159-0.159-0.159-0.416 0-0.575l0.814-0.814c0.159-0.159 0.416-0.159 0.575 0l1.11 1.11c0.079 0.079 0.125 0.184 0.125 0.295v0.777c0.433 4.328 3.894 7.789 8.222 8.222v1.778z"></path>
+                          <path d="M13.58 10c0 1.977-1.603 3.58-3.58 3.58s-3.58-1.603-3.58-3.58c0-1.977 1.603-3.58 3.58-3.58v0c1.977 0 3.58 1.603 3.58 3.58v0zM10 0.425c-5.286 0-9.575 4.289-9.575 9.575s4.289 9.575 9.575 9.575c5.286 0 9.575-4.289 9.575-9.575v0c0-5.286-4.289-9.575-9.575-9.575v0zM16.633 10.833c-0.375 3.044-2.856 5.524-5.9 5.899v2.018h-1.467v-2.018c-3.044-0.375-5.524-2.856-5.899-5.9h-2.018v-1.467h2.018c0.375-3.044 2.856-5.524 5.9-5.899v-2.018h1.467v2.018c3.044 0.375 5.524 2.856 5.899 5.9h2.018v1.467h-2.018z"></path>
                         </svg>
                       </i>
-                      <span className="text-blue-500 text-xs">
-                        {isFetchingLocation ? "Fetching..." : "Current Location"}
-                      </span>
+                      {isFetchingLocation ? 'Fetching...' : 'Locate on Map'}
                     </div>
                   </div>
                 )}
+              </div>
             </div>
-          </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="pincode" className="text-gray-700">Pincode</label>
-              <input
-                type="text"
-                id="pincode"
-                name="pincode"
-                value={formData.pincode}
-                onChange={handleInputChange}
-                className="p-3 border-0 bg-white text-gray-800 placeholder-gray-500 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter Pincode"
-              />
 
-              {error && formData.pincode && <span className="text-red-500">{error}</span>}
-              {error && !formData.pincode && <span className="text-red-500">{error}</span>}
-            </div>
-  
+            {/* Village field */}
             <div className="flex flex-col gap-2">
               <label htmlFor="village" className="text-gray-700">Village</label>
               <input
@@ -226,12 +222,13 @@ export function Tables() {
                 name="village"
                 value={formData.village}
                 onChange={handleInputChange}
-                className="p-3 border-0 bg-white text-gray-800 placeholder-gray-500 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-                placeholder="Village"
                 disabled={isFieldsDisabled}
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter village name"
               />
             </div>
-  
+
+            {/* District field */}
             <div className="flex flex-col gap-2">
               <label htmlFor="district" className="text-gray-700">District</label>
               <input
@@ -240,12 +237,27 @@ export function Tables() {
                 name="district"
                 value={formData.district}
                 onChange={handleInputChange}
-                className="p-3 border-0 bg-white text-gray-800 placeholder-gray-500 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-                placeholder="District"
                 disabled={isFieldsDisabled}
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter district"
               />
             </div>
-  
+
+            {/* Pincode field */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="pincode" className="text-gray-700">Pincode</label>
+              <input
+                type="text"
+                id="pincode"
+                name="pincode"
+                value={formData.pincode}
+                onChange={handleInputChange}
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter pincode"
+              />
+            </div>
+
+            {/* State field */}
             <div className="flex flex-col gap-2">
               <label htmlFor="state" className="text-gray-700">State</label>
               <input
@@ -254,12 +266,13 @@ export function Tables() {
                 name="state"
                 value={formData.state}
                 onChange={handleInputChange}
-                className="p-3 border-0 bg-white text-gray-800 placeholder-gray-500 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-                placeholder="State"
                 disabled={isFieldsDisabled}
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter state"
               />
             </div>
-  
+
+            {/* Street field */}
             <div className="flex flex-col gap-2">
               <label htmlFor="street" className="text-gray-700">Street</label>
               <input
@@ -268,28 +281,104 @@ export function Tables() {
                 name="street"
                 value={formData.street}
                 onChange={handleInputChange}
-                className="p-3 border-0 bg-white text-gray-800 placeholder-gray-500 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-                placeholder="Street"
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter street name"
               />
             </div>
-  
+
+            {/* Cultivation Type field */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="cultivationType" className="text-gray-700">Cultivation Type</label>
+              <select
+                id="cultivationType"
+                name="cultivationType"
+                value={formData.cultivationType}
+                onChange={handleInputChange}
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Cultivation Type</option>
+                <option value="Organic">Organic</option>
+                <option value="Conventional">Conventional</option>
+                <option value="Hydroponic">Hydroponic</option>
+              </select>
+            </div>
+
+            {/* Land Ownership field */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="landOwnership" className="text-gray-700">Land Ownership</label>
+              <select
+                id="landOwnership"
+                name="landOwnership"
+                value={formData.landOwnership}
+                onChange={handleInputChange}
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Land Ownership</option>
+                <option value="Owned">Owned</option>
+                <option value="Leased">Leased</option>
+                <option value="Rented">Rented</option>
+              </select>
+            </div>
+
+            {/* Width field */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="width" className="text-gray-700">Width (in meters)</label>
+              <input
+                type="number"
+                id="width"
+                name="width"
+                value={formData.width}
+                onChange={handleInputChange}
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter width"
+              />
+            </div>
+
+            {/* Breadth field */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="breadth" className="text-gray-700">Breadth (in meters)</label>
+              <input
+                type="number"
+                id="breadth"
+                name="breadth"
+                value={formData.breadth}
+                onChange={handleInputChange}
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter breadth"
+              />
+            </div>
+
+            {/* Area field (auto-generated) */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="area" className="text-gray-700">Area (in square meters)</label>
+              <input
+                type="text"
+                id="area"
+                name="area"
+                value={formData.area}
+                readOnly
+                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200"
+                placeholder="Auto-calculated area"
+              />
+            </div>
           </div>
-          <div className="flex flex-col gap-4">
-  <button
+
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+          {successMessage && <p className="text-green-500 text-sm mt-2">{successMessage}</p>}
+          
+          <button
     type="submit"
     className="bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 text-sm"
     style={{ width: '5rem', height: '2rem', padding: '0.10rem', aspectRatio: '5' }}
   >
     Submit
   </button>
-</div>
+
 
         </form>
-        {successMessage && <p className="text-green-500">{successMessage}</p>}
       </CardBody>
     </div>
   );
-  
 }
 
- export default Tables;
+export default Tables;

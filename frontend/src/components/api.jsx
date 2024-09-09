@@ -46,25 +46,44 @@ export const getAllUsers = async () => {
         withCredentials: true,
       });
   
-      // Check if the response contains the token
       if (response.data && response.data.token) {
-        const token = response.data.token;
-        localStorage.setItem('jwtToken', token);
-        return token;
+        return {
+          token: response.data.token,
+          role: response.data.role || 'user', // Assume role is provided or default to 'user'
+        };
       } else {
         throw new Error('Token not found in the response');
       }
     } catch (error) {
-      if (error.response) {
-        console.error(`Login error: ${error.response.status} - ${error.response.data.message}`);
-      } else if (error.request) {
-        console.error('Login error: No response from server');
-      } else {
-        console.error(`Login error: ${error.message}`);
-      }
+      console.error(`Login error: ${error.response?.status} - ${error.response?.data?.message || error.message}`);
       throw error;
     }
   };
+  
+  export const loginAdmin = async (credentials) => {
+    try {
+      const response = await axios.post(`${API_URL}/admin/login`, credentials, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      });
+  
+      if (response.data && response.data.token) {
+        return {
+          token: response.data.token,
+          role: response.data.role || 'admin',
+        };
+      } else {
+        throw new Error('Token not found in the response');
+      }
+    } catch (error) {
+      console.error('Login error:', error.response?.data || error.message);
+      throw error;
+    }
+  };
+  
+  
 
   export const sendPasswordReset = async (contactInfo) => {
     try {

@@ -4,7 +4,7 @@ import {
   TableContainer, TableHead, TableRow, Paper, CircularProgress, Dialog,
   DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton
 } from '@mui/material';
-import { Add as AddIcon, Delete as DeleteIcon, Block as BlockIcon, RemoveCircle as RemoveCircleIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Block as BlockIcon, RemoveCircle as RemoveCircleIcon } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
@@ -13,9 +13,12 @@ const CropCategory = () => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [picture, setPicture] = useState(null);
   const [editingCategoryId, setEditingCategoryId] = useState(null);
   const [viewingCategoryId, setViewingCategoryId] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteCategoryId, setDeleteCategoryId] = useState(null);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -41,6 +44,7 @@ const CropCategory = () => {
       if (category) {
         setName(category.name);
         setDescription(category.description);
+        setPicture(category.pictureUrl); // Handle existing picture URL if needed
       }
     }
   }, [id, categories]);
@@ -49,11 +53,23 @@ const CropCategory = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const newCategory = { name, description };
-      await axios.post('/api/categories', newCategory); // Replace with your API endpoint
-      setCategories([...categories, { ...newCategory, id: categories.length + 1 }]);
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('description', description);
+      if (picture) {
+        formData.append('picture', picture);
+      }
+
+      await axios.post('/api/categories', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setCategories([...categories, { ...formData, id: categories.length + 1 }]);
       setName('');
       setDescription('');
+      setPicture(null);
       setOpenDialog(false);
     } catch (error) {
       console.error('Error adding category:', error);
@@ -62,9 +78,55 @@ const CropCategory = () => {
     }
   };
 
-  const handleOpenDialog = () => {
-    setName('');
-    setDescription('');
+  const handleEditCategory = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('description', description);
+      if (picture) {
+        formData.append('picture', picture);
+      }
+
+      await axios.put(`/api/categories/${editingCategoryId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setCategories(categories.map(cat =>
+        cat.id === editingCategoryId
+          ? { ...cat, name, description, pictureUrl: picture ? URL.createObjectURL(picture) : cat.pictureUrl }
+          : cat
+      ));
+      setEditingCategoryId(null);
+      setName('');
+      setDescription('');
+      setPicture(null);
+      setOpenDialog(false);
+    } catch (error) {
+      console.error('Error updating category:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpenDialog = (categoryId = null) => {
+    if (categoryId) {
+      const category = categories.find(cat => cat.id === categoryId);
+      if (category) {
+        setName(category.name);
+        setDescription(category.description);
+        setPicture(null); // Reset picture on open
+        setEditingCategoryId(categoryId);
+      }
+    } else {
+      setName('');
+      setDescription('');
+      setPicture(null);
+      setEditingCategoryId(null);
+    }
     setOpenDialog(true);
   };
 
@@ -82,15 +144,22 @@ const CropCategory = () => {
     navigate('/admin-dashboard/crop-categories');
   };
 
-  const handleRemoveCategory = async (categoryId) => {
+  const handleRemoveCategory = (categoryId) => {
+    setDeleteCategoryId(categoryId);
+    setConfirmDelete(true);
+  };
+
+  const confirmRemoveCategory = async () => {
     setLoading(true);
     try {
-      await axios.delete(`/api/categories/${categoryId}`); // Replace with your API endpoint
-      setCategories(categories.filter(cat => cat.id !== categoryId));
+      await axios.delete(`/api/categories/${deleteCategoryId}`); // Replace with your API endpoint
+      setCategories(categories.filter(cat => cat.id !== deleteCategoryId));
+      setDeleteCategoryId(null);
     } catch (error) {
       console.error('Error removing category:', error);
     } finally {
       setLoading(false);
+      setConfirmDelete(false);
     }
   };
 
@@ -113,15 +182,14 @@ const CropCategory = () => {
       {!viewingCategoryId ? (
         <>
           <Typography variant="h7" gutterBottom>
-            {/* Crop Categories */}
-
+            Crop Categories
           </Typography>
           
           <Button
             variant="contained"
             color="primary"
             startIcon={<AddIcon />}
-            onClick={handleOpenDialog}
+            onClick={() => handleOpenDialog()}
             sx={{ mb: 2 }}
           >
             Add Category
@@ -152,6 +220,12 @@ const CropCategory = () => {
                     <TableCell>{category.description}</TableCell>
                     <TableCell>
                       <IconButton
+                        color="primary"
+                        onClick={() => handleOpenDialog(category.id)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
                         color="secondary"
                         onClick={() => handleRemoveCategory(category.id)}
                       >
@@ -177,12 +251,12 @@ const CropCategory = () => {
             </Table>
           </TableContainer>
 
-          {/* Dialog for Adding a New Category */}
+          {/* Dialog for Adding/Editing a Category */}
           <Dialog open={openDialog} onClose={handleCloseDialog}>
-            <DialogTitle>Add New Category</DialogTitle>
+            <DialogTitle>{editingCategoryId ? 'Edit Category' : 'Add New Category'}</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Please enter the category details below.
+                {editingCategoryId ? 'Update the category details below.' : 'Please enter the category details below.'}
               </DialogContentText>
               <TextField
                 autoFocus
@@ -201,13 +275,37 @@ const CropCategory = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setPicture(e.target.files[0])}
+                style={{ marginTop: 16 }}
+              />
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseDialog} color="secondary">
                 Cancel
               </Button>
-              <Button onClick={handleAddCategory} color="primary">
-                Add Category
+              <Button onClick={editingCategoryId ? handleEditCategory : handleAddCategory} color="primary">
+                {editingCategoryId ? 'Save Changes' : 'Add Category'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Confirm Delete Dialog */}
+          <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)}>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to delete this category? This action cannot be undone.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setConfirmDelete(false)} color="secondary">
+                Cancel
+              </Button>
+              <Button onClick={confirmRemoveCategory} color="primary">
+                Confirm
               </Button>
             </DialogActions>
           </Dialog>
