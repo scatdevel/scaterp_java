@@ -13,7 +13,21 @@ export const getAllUsers = async () => {
   };
 
 
-
+  export const fetchRoles = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/admin/roles`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      });
+      console.log('Roles fetched:', response.data); // Debugging log
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch roles:', error);
+      throw error;
+    }
+  };
   export const registerUser = async (userData) => {
     try {
       const response = await axios.post(`${API_URL}/register`, userData, {

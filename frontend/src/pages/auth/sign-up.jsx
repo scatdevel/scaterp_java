@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { registerUser } from '../../components/api';
-import {
-  Input,
-  Checkbox,
-  Button,
-  Typography,
-} from "@material-tailwind/react";
+import { registerUser, fetchRoles } from '../../components/api'; 
+import { Input, Checkbox, Button, Typography, Select, Option } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 
 export function SignUp() {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
-    password: ''
+    password: '',
+    roleId: '' 
   });
 
+  const [roles, setRoles] = useState([]); 
   const [alertMessage, setAlertMessage] = useState('');
   const [emailError, setEmailError] = useState('');
   const [error, setError] = useState(null);
@@ -23,7 +20,20 @@ export function SignUp() {
   const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
 
-  // Validate email when formData.email changes
+ 
+  useEffect(() => {
+    async function loadRoles() {
+      try {
+        const rolesData = await fetchRoles(); 
+        setRoles(rolesData);
+      } catch (error) {
+        console.error('Failed to fetch roles:', error);
+      }
+    }
+    loadRoles();
+  }, []);
+
+ 
   useEffect(() => {
     if (formData.email && !validateEmail(formData.email)) {
       setEmailError('Invalid email address.');
@@ -32,7 +42,7 @@ export function SignUp() {
     }
   }, [formData.email]);
 
-  const isValid = formData.email.length > 0 && formData.password.length > 0 && agree && !emailError;
+  const isValid = formData.email.length > 0 && formData.password.length > 0 && agree && !emailError && formData.roleId;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,6 +54,13 @@ export function SignUp() {
 
   const handleAgreeChange = () => {
     setAgree(!agree);
+  };
+
+  const handleRoleChange = (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      roleId: value
+    }));
   };
 
   const validateEmail = (email) => {
@@ -60,13 +77,13 @@ export function SignUp() {
     }
 
     try {
-      await registerUser(formData);
+      await registerUser(formData); 
       setSuccess(true);
       setAlertMessage('Registration successful! Redirecting to login...');
       setShowAlert(true);
       setTimeout(() => {
         navigate('/sign-in');
-      }, 2000); // Redirect to login after 2 seconds
+      }, 2000); 
     } catch (err) {
       if (err.response) {
         setError(`Error: ${err.response.data.message}`);
@@ -139,6 +156,23 @@ export function SignUp() {
               onChange={handleChange}
               required
             />
+          </div>
+          <div>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Role</Typography>
+            <Select
+  size="lg"
+  placeholder="Select a role"
+  value={formData.roleId}
+  onChange={handleRoleChange}
+  className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+>
+  {roles.map((role) => (
+    <Option key={role.id} value={role.id}>
+      {role.name}
+    </Option>
+  ))}
+</Select>
+
           </div>
           <Checkbox
             checked={agree}
