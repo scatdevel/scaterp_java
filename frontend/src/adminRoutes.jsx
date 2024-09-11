@@ -1,6 +1,9 @@
 import Home from "@/pages/dashboard/Home";
 import CropCategory from "@/pages/dashboard/CropCategory";
 import FarmersList from "@/pages/dashboard/FarmersList";
+import UserDetails from "./pages/dashboard/UserDetails";
+import RolesPage from "./pages/dashboard/RolesPage";
+
 
 // Admin routes configuration
 const adminRoutes = [
@@ -11,6 +14,17 @@ const adminRoutes = [
         name: "Home", 
         path: "/admin-dashboard/home", 
         element: <Home /> 
+      },
+
+      { 
+        name: "Roles", 
+        path: "/admin-dashboard/roles-page", // Use relative path
+        element: <RolesPage /> 
+      },
+      { 
+        name: "User Details", // New User List page
+        path: "/admin-dashboard/user-details", 
+        element: <UserDetails /> 
       },
       { 
         name: "Crop Categories",

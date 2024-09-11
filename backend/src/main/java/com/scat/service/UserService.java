@@ -1,16 +1,17 @@
 package com.scat.service;
 
-import java.util.List;
-
+import com.scat.dto.UserDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import com.scat.dto.UserDTO;
+import java.util.List;
 
 public interface UserService extends UserDetailsService {
-    UserDTO createUser(UserDTO user);
-    UserDTO getUser(String email);
+    UserDTO createUser(UserDTO userDTO);
+    UserDTO getUserByUsername(String username);
     UserDTO updateUser(UserDTO userDTO);
     List<UserDTO> getAllUsers();
-    UserDTO updateProfilePicture(String username, String profilePictureUrl); 
-    UserDTO getUserByUsername(String username);
+    UserDTO getUser(String email);
+    UserDTO updateProfilePicture(String emailOrUsername, String profilePictureUrl);
+    void initiatePasswordReset(String email);
+    boolean resetPassword(String token, String newPassword);
 }
