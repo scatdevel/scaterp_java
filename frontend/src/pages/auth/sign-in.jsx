@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { loginUser } from '../../components/api';
+import { useNavigate, Link } from 'react-router-dom';
 import { Input, Checkbox, Button, Typography } from "@material-tailwind/react";
-import { Link, useNavigate } from "react-router-dom";
+import { loginUser, loginAdmin } from '../../components/api';
 
-export function SignIn() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+export function SignIn({ setAuthenticated, setIsAdmin }) {
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [alertMessage, setAlertMessage] = useState('');
   const [emailError, setEmailError] = useState('');
   const [error, setError] = useState(null);
   const [agree, setAgree] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const authToken = localStorage.getItem('authToken');
+    const authToken = localStorage.getItem('jwtToken');
     const tokenExpiration = localStorage.getItem('tokenExpiration');
     const currentTime = new Date().getTime();
     if (authToken && tokenExpiration && currentTime < tokenExpiration) {
-      navigate('/dashboard/home');
+      const role = localStorage.getItem('userRole');
+      navigate(role === 'admin' ? '/admin-dashboard/home' : '/dashboard/home');
     }
   }, [navigate]);
 
@@ -31,15 +30,11 @@ export function SignIn() {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
 
     if (name === 'email') {
-      if (!validateEmail(value)) {
-        setEmailError('Please enter a valid email.');
-      } else {
-        setEmailError('');
-      }
+      setEmailError(validateEmail(value) ? '' : 'Please enter a valid email.');
     }
   };
 
@@ -52,59 +47,44 @@ export function SignIn() {
     return emailRegex.test(email);
   };
 
-  useEffect(() => {
-    if (formData.email && !validateEmail(formData.email)) {
-      setEmailError('Please enter a valid email.');
-    } else {
-      setEmailError('');
-    }
-  }, [formData.email]);
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    if (!validateEmail(formData.email)) {
-      setEmailError('Please enter a valid email.');
-      setError(null);
-      setAlertMessage('');
-      setShowAlert(true);
-      return;
-    }
-  
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long.');
-      setEmailError('');
-      setAlertMessage('');
-      setShowAlert(true);
-      return;
-    }
+    setLoading(true);
+    setShowAlert(false); // Reset alert visibility
   
     try {
-      console.log('Submitting form with data:', formData);
-      const token = await loginUser(formData);
-      console.log('Login successful, received token:', token);
+      const emailDomain = formData.email.split('@')[1];
+      let token, role;
   
-      const expirationTime = new Date().getTime() + (60 * 60 * 1000); // Token valid for 1 hour
-      localStorage.setItem('authToken', token); // Store the token
-      localStorage.setItem('tokenExpiration', expirationTime); // Store expiration time
+      if (emailDomain === 'admin.com') {
+        ({ token, role } = await loginAdmin(formData));
+        setIsAdmin(true);
+        role = 'admin';
+      } else {
+        ({ token, role } = await loginUser(formData));
+        setIsAdmin(false);
+        role = 'user';
+      }
   
+      localStorage.setItem('jwtToken', token);
+      localStorage.setItem('userRole', role);
+      localStorage.setItem('tokenExpiration', new Date().getTime() + 3600000);
+  
+      setAuthenticated(true);
       setAlertMessage('Login successful!');
       setError(null);
-      setEmailError('');
       setShowAlert(true);
   
       setTimeout(() => {
-        navigate('/dashboard/home');
-      }, 1000);
+        navigate(role === 'admin' ? '/admin-dashboard/home' : '/dashboard/home');
+      }, 1500);
     } catch (err) {
-      console.error('Login error:', err);
-      if (err.response && err.response.status === 401) {
-        setError('Invalid email or password.');
-      } else {
-        setError('An error occurred. Please try again later.');
-      }
-      setEmailError('');
+      console.error('Login error:', err.response ? err.response.data : err.message);
+      setError('Invalid email or password. Please try again.');
       setAlertMessage('');
       setShowAlert(true);
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -173,10 +153,10 @@ export function SignIn() {
               </Typography>
             }
           />
-          <Button type="submit" className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" disabled={!isValid}>
-            Sign In
+          <Button type="submit" className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" disabled={!isValid || loading}>
+            {loading ? 'Signing in...' : 'Sign In'}
           </Button>
-          
+
           {showAlert && (
             <div className={`alert shadow-blue-500/40 hover:shadow-indigo-500/40 mt-6 content-center text-black text-center rounded-lg ${error ? 'bg-red-300' : 'bg-green-300'}`}>
               {error || alertMessage}

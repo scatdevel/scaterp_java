@@ -11,8 +11,16 @@ public class UserDetailsRequestModel {
     private Long phoneNumber;
     private String bio;
     private Date dob;
-    
-    public Date getDob() {
+    private Long roleId;
+    public Long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+
+	public Date getDob() {
 		return dob;
 	}
 

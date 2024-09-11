@@ -45,6 +45,12 @@ public class UserController {
         userDto.setFullName(userDetails.getFullName());
         userDto.setPhoneNumber(userDetails.getPhoneNumber());
         userDto.setDob(userDetails.getDob());
+        
+        // If roleId is provided, set it in UserDTO
+        if (userDetails.getRoleId() != null) {
+            userDto.setRoleId(userDetails.getRoleId());
+        }
+
         UserDTO createdUser = userService.createUser(userDto);
 
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);

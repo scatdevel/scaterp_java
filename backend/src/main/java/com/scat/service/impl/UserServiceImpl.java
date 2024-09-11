@@ -1,6 +1,7 @@
 package com.scat.service.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -8,9 +9,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scat.dto.UserDTO;
+import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
+import com.scat.repository.RoleRepository;
 import com.scat.repository.UserRepository;
-import com.scat.service.EmailService;
 import com.scat.service.UserService;
 
 import java.util.ArrayList;
@@ -24,18 +26,18 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final EmailService emailService;
 
+    private final RoleRepository roleRepository;
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, EmailService emailService, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.modelMapper = modelMapper;
-        this.emailService =emailService;
+       
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
     
     
-
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
@@ -45,9 +47,15 @@ public class UserServiceImpl implements UserService {
 
         UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
-        UserEntity storedUserDetails = userRepository.save(userEntity);
 
-        return modelMapper.map(storedUserDetails, UserDTO.class);   
+        if (userDTO.getRole() != null) {
+            RoleEntity role = roleRepository.findByName(userDTO.getRole().getName())
+                    .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole().getName()));
+            userEntity.setRole(role);
+        }
+
+        UserEntity storedUserDetails = userRepository.save(userEntity);
+        return modelMapper.map(storedUserDetails, UserDTO.class);
     }
 
     @Override
@@ -92,9 +100,17 @@ public class UserServiceImpl implements UserService {
         }
         userEntity.setProfilePictureUrl(userDTO.getProfilePictureUrl());
 
+        if (userDTO.getRole() != null) {
+            RoleEntity role = roleRepository.findByName(userDTO.getRole().getName())
+                    .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole().getName()));
+            userEntity.setRole(role);
+        }
+
         UserEntity updatedUserEntity = userRepository.save(userEntity);
         return modelMapper.map(updatedUserEntity, UserDTO.class);
     }
+
+   
 
     @Override
     public List<UserDTO> getAllUsers() {
@@ -107,24 +123,27 @@ public class UserServiceImpl implements UserService {
         }
 
         return userDTOs;
-    }
-    
+   }
 
+        @Override
+        public UserDetails loadUserByUsername(String emailOrUsername) throws UsernameNotFoundException {
+            UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
+            if (userEntity == null) {
+                userEntity = userRepository.findByEmail(emailOrUsername).orElse(null);
+            }
+            if (userEntity == null) {
+                throw new UsernameNotFoundException("User not found with identifier: " + emailOrUsername);
+            }
 
+            // Convert roles to GrantedAuthority
+            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            if (userEntity.getRole() != null) {
+                authorities.add(new SimpleGrantedAuthority(userEntity.getRole().getName()));
+            }
 
-    @Override
-    public UserDetails loadUserByUsername(String emailOrUsername) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
-        if (userEntity == null) {
-            userEntity = userRepository.findByEmail(emailOrUsername).orElse(null);
+            // Return a UserDetails object with roles
+            return new User(userEntity.getUsername(), userEntity.getEncryptedPassword(), authorities);
         }
-        if (userEntity == null) {
-            throw new UsernameNotFoundException("User not found with identifier: " + emailOrUsername);
-        }
-
-        return new User(userEntity.getUsername(), userEntity.getEncryptedPassword(), new ArrayList<>());
-    }
-
 
     @Override
     public UserDTO updateProfilePicture(String emailOrUsername, String profilePictureUrl) {
@@ -141,8 +160,7 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(updatedUserEntity, UserDTO.class);
     }
     
-
-
+    
     public void initiatePasswordReset(String email) {
         Optional<UserEntity> userOpt = userRepository.findByEmail(email);
         if (userOpt.isPresent()) {
@@ -175,5 +193,6 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
+
 
 }
