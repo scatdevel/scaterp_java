@@ -10,6 +10,7 @@ import Profile from './pages/dashboard/Profile';
 import { Tables } from './pages/dashboard';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
+import TemporaryPage from './pages/auth/TemporaryPage';
 import CropDetailsForm from './pages/dashboard/CropDetailsForm';
 import CropOverview from './pages/dashboard/CropOverview';
 import AdminDashboard from './pages/dashboard/AdminDashboard';

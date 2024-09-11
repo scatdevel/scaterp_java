@@ -13,10 +13,13 @@ import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
 import com.scat.repository.RoleRepository;
 import com.scat.repository.UserRepository;
+import com.scat.service.EmailService;
 import com.scat.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final EmailService emailService;
 
     private final RoleRepository roleRepository;
     @Autowired
@@ -39,6 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
+        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
         if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
             throw new RuntimeException("Email already in use");
         }
@@ -59,6 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUser(String emailOrUsername) {
         UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
+        UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
         if (userEntity == null) {
             userEntity = userRepository.findByUsername(emailOrUsername);
         }
@@ -68,6 +74,8 @@ public class UserServiceImpl implements UserService {
 
         return modelMapper.map(userEntity, UserDTO.class);
     }
+    
+    
     
     
 
@@ -145,6 +153,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateProfilePicture(String emailOrUsername, String profilePictureUrl) {
+        UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
         UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
         if (userEntity == null) {
             userEntity = userRepository.findByUsername(emailOrUsername);
