@@ -13,14 +13,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    
 
     @Autowired
     public WebSecurityConfig(@Lazy UserService userService, @Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
@@ -31,19 +29,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .cors().and().csrf().disable()
+            .cors() 
+            .and()
+            .csrf().disable() 
             .authorizeRequests()
-                .antMatchers(SecurityConstants.SIGNUP_URL, SecurityConstants.LOGIN_URL).permitAll()
-               // .antMatchers("/users/upload/profile-picture/**").permitAll() // Allow access to profile picture upload
-       //.anyRequest().authenticated()
-                
-                .and()
-            .addFilter(new AuthenticationFilter(authenticationManager()))
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .antMatchers(SecurityConstants.SIGNUP_URL, SecurityConstants.LOGIN_URL, "/users/forgot-password", "/users/reset-password").permitAll()
+                .antMatchers("/admin/login").permitAll()
+                .antMatchers("/users/crops/save", "/users/crops/all").permitAll() // Allow access to login without authentication
+                .antMatchers("/crops/category/get/all", "/crops/categories/add").permitAll() // Allow access to login without authentication
+                .anyRequest().authenticated() // Require authentication for all other endpoints
+            .and()
+            .addFilter(new AuthenticationFilter(authenticationManager())) // Add your custom filter here
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // Stateless session
     }
-    
-    
-
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -55,5 +53,3 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 }
-
-

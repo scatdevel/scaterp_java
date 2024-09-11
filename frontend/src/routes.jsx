@@ -6,7 +6,7 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
+import { Home, Profile, Tables } from "@/pages/dashboard";
 
 import CropDetailsForm from "@/pages/dashboard/CropDetailsForm";
 import CropOverview from "@/pages/dashboard/CropOverview";
