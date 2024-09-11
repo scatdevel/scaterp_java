@@ -193,7 +193,7 @@ export function SignUp() {
               </Typography>
             }
           />
-          <Button type="submit" className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" disabled={!isValid}>
+          <Button type="submit" className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md" disabled={!isValid}>
             Sign Up
           </Button>
 
