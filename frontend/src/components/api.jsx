@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/users';
+const API_URL = 'http://localhost:8080';
 
 export const getAllUsers = async () => {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(API_URL)/users;
       return response.data;
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -16,7 +16,7 @@ export const getAllUsers = async () => {
 
   export const registerUser = async (userData) => {
     try {
-      const response = await axios.post(`${API_URL}/register`, userData, {
+      const response = await axios.post(`${API_URL}/users/register`, userData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -39,7 +39,7 @@ export const getAllUsers = async () => {
 
   export const loginUser = async (credentials) => {
     try {
-      const response = await axios.post(`${API_URL}/login`, credentials, {
+      const response = await axios.post(`${API_URL}/users/login`, credentials, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -68,7 +68,7 @@ export const getAllUsers = async () => {
 
   export const sendPasswordReset = async (contactInfo) => {
     try {
-      const response = await axios.post(`${API_URL}/forgot-password`, contactInfo, {
+      const response = await axios.post(`${API_URL}/users/forgot-password`, contactInfo, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -88,7 +88,7 @@ export const getAllUsers = async () => {
   };
   export const resetPassword = async (data) => {
     try {
-      const response = await axios.post(`${API_URL}/reset-password`, data, {
+      const response = await axios.post(`${API_URL}/users/reset-password`, data, {
         headers: {
           'Content-Type': 'application/json',
         },

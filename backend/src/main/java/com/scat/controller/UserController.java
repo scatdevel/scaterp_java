@@ -7,6 +7,9 @@ import com.scat.service.StorageService;
 import com.scat.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +32,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserController {
 
+	@Value("${file.upload-dir}")
+	private String baseDirectory;
+	
     private final UserService userService;
     private final StorageService storageService;
 
@@ -50,18 +58,55 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{username}")
-    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody UserDTO userDTO) {
-        try {
-            UserDTO updatedUser = userService.updateUser(userDTO);
-            return ResponseEntity.ok().body(updatedUser);
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving user information");
-        }
-    }
+
+	@PutMapping("/{username}")
+	public ResponseEntity<?> updateUser(@PathVariable String username, @RequestParam("fullName") String fullName,
+			@RequestParam("phoneNumber") Long phoneNumber, @RequestParam("email") String email,
+			@RequestParam("bio") String bio, @RequestParam("dob") Date dob,
+			@RequestParam(value = "image", required = false) MultipartFile profilePictureUrl) {
+
+		try {
+			// Prepare UserDTO
+			UserDTO userDTO = new UserDTO();
+			userDTO.setUsername(username);
+			userDTO.setFullName(fullName);
+			userDTO.setPhoneNumber(phoneNumber);
+			userDTO.setEmail(email);
+			userDTO.setBio(bio);
+			userDTO.setDob(dob);
+
+			// Handle file upload if present
+			if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
+				String originalFilename = profilePictureUrl.getOriginalFilename();
+				Path fileNameAndPath = Paths.get(baseDirectory, originalFilename);
+
+				// Save the file
+				Files.write(fileNameAndPath, profilePictureUrl.getBytes());
+
+				// Set the profile picture URL in userDTO
+				userDTO.setProfilePictureUrl(originalFilename); // or fileNameAndPath.toString() if you need the full
+																// path
+			}
+
+			// Update the user
+			UserDTO updatedUser = userService.updateUser(userDTO);
+			return ResponseEntity.ok().body(updatedUser);
+		} catch (UsernameNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving user information");
+		}
+	}
+
+	@GetMapping("/image/{username}")
+	public ResponseEntity<Resource> getProfileImage(@PathVariable String username) throws IOException {
+		UserDTO user = userService.getUserByUsername(username);
+		Path imagePath = Paths.get(baseDirectory, user.getProfilePictureUrl());
+		org.springframework.core.io.Resource resource = new FileSystemResource(imagePath.toFile());
+		String contentType = Files.probeContentType(imagePath);
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
+	}
 
     @GetMapping("/{email}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String email) {
@@ -83,7 +128,7 @@ public class UserController {
                     return userRest;
                 })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(userRestList);
+        return ResponseEntity.ok(userRestList) ;
     }
     
     

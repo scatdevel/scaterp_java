@@ -56,7 +56,41 @@ public class CropCategoryController {
         }
     }
     
-    @DeleteMapping("/{id}")
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateCategory(
+        @PathVariable Long id,
+        @RequestParam(value = "name", required = false) String name,
+        @RequestParam(value = "description", required = false) String description,
+        @RequestParam(value = "picture", required = false) MultipartFile picture) {
+
+        try {
+            Optional<CropCategory> existingCategoryOptional = service.getCategoryById(id);
+            if (!existingCategoryOptional.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            CropCategory existingCategory = existingCategoryOptional.get();
+
+            if (name != null) {
+                existingCategory.setName(name);
+            }
+            if (description != null) {
+                existingCategory.setDescription(description);
+            }
+            if (picture != null && !picture.isEmpty()) {
+                existingCategory.setPicture(picture.getBytes());
+            }
+
+            CropCategory updatedCategory = service.updateCategory(existingCategory);
+            return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Error processing file", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         service.deleteCategory(id);
         return ResponseEntity.noContent().build();

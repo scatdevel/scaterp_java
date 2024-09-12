@@ -27,8 +27,6 @@ public class CropCategoryServiceImpl {
 	public CropCategory addCategory(CropCategory category) {
 		return repository.save(category);
 	}
-	
-
 	public void deleteCategory(Long id) {
 		repository.deleteById(id);
 	}
@@ -41,6 +39,14 @@ public class CropCategoryServiceImpl {
 	            repository.save(category); // Save the updated category
 	        } else {
 	            throw new RuntimeException("Category not found with id: " + id);
+	        }
+	    }
+	 
+	  public CropCategory updateCategory(CropCategory category) {
+	        if (repository.existsById(category.getId())) {
+	            return repository.save(category);
+	        } else {
+	            throw new RuntimeException("Category not found");
 	        }
 	    }
 }

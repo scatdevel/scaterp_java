@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "users")
 public class UserEntity implements Serializable {
@@ -26,7 +28,7 @@ public class UserEntity implements Serializable {
 	    private String profilePictureUrl;
 
 	    @Column(name = "dob")
-		@Temporal(TemporalType.DATE)
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
 		private Date dob;
   
 
