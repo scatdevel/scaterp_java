@@ -1,6 +1,6 @@
 package com.scat.model.request;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class UserDetailsRequestModel {
 

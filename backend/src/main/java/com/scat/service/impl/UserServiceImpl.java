@@ -1,4 +1,5 @@
 package com.scat.service.impl;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +27,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
     private final RoleRepository roleRepository;
     @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
@@ -175,24 +175,24 @@ public class UserServiceImpl implements UserService {
     }
 
 
+
 //  String resetLink = "http://localhost:8080/users/reset-password?token=" + token;
 //  emailService.sendEmail(user.getEmail(), "Password Reset", "Click the link to reset your password: " + resetLink);
 
-
-    public boolean resetPassword(String token, String newPassword) {
-        Optional<UserEntity> userOpt = userRepository.findByResetToken(token);
-        if (userOpt.isPresent()) {
-            UserEntity user = userOpt.get();
-            if (user.getResetTokenExpiration() > System.currentTimeMillis()) {
-                user.setEncryptedPassword(bCryptPasswordEncoder.encode(newPassword));
-                user.setResetToken(null);
-                user.setResetTokenExpiration(null);
-                userRepository.save(user);
-                return true;
-            }
-        }
-        return false;
-    }
+	public boolean resetPassword(String token, String newPassword) {
+		Optional<UserEntity> userOpt = userRepository.findByResetToken(token);
+		if (userOpt.isPresent()) {
+			UserEntity user = userOpt.get();
+			if (user.getResetTokenExpiration() > System.currentTimeMillis()) {
+				user.setEncryptedPassword(bCryptPasswordEncoder.encode(newPassword));
+				user.setResetToken(null);
+				user.setResetTokenExpiration(null);
+				userRepository.save(user);
+				return true;
+			}
+		}
+		return false;
+	}
 
 
 }

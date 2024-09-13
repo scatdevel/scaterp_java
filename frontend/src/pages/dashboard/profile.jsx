@@ -38,41 +38,41 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const PhotoUpload = ({ onFileChange, previewUrl }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const PhotoUpload = ({ onFileChange, previewUrl }) => {
+    const [selectedFile, setSelectedFile] = useState(null);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      onFileChange(file);
-    }
-  };
+    const handleFileChange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        setSelectedFile(file);
+        onFileChange(file);
+      }
+    };
 
-  return (
-    <Box className="p-4 flex flex-col items-center">
-      <Typography variant="h6" className="mb-4 text-center">Your Photo</Typography>
-      <Box className="flex items-center justify-center my-4">
-        <MUIAvatar
-          src={previewUrl || "https://via.placeholder.com/150"}
-          className="mr-4"
-          sx={{ width: 100, height: 100 }}
+    return (
+      <Box className="p-4 flex flex-col items-center">
+        <Typography variant="h6" className="mb-4 text-center">Your Photo</Typography>
+        <Box className="flex items-center justify-center my-4">
+          <MUIAvatar
+            src={previewUrl || "https://via.placeholder.com/150"}
+            className="mr-4"
+            sx={{ width: 100, height: 100 }}
+          />
+        </Box>
+        <Box className="flex space-x-2 mb-4">
+          <MUIButton variant="outlined" color="primary" onClick={() => onFileChange(null)}>Delete</MUIButton>
+          <MUIButton variant="contained" color="primary" onClick={() => document.getElementById('fileInput').click()}>Update</MUIButton>
+        </Box>
+        <input
+          id="fileInput"
+          type="file"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+          accept=".svg, .png, .jpg, .gif"
         />
       </Box>
-      <Box className="flex space-x-2 mb-4">
-        <MUIButton variant="outlined" color="primary" onClick={() => onFileChange(null)}>Delete</MUIButton>
-        <MUIButton variant="contained" color="primary" onClick={() => document.getElementById('fileInput').click()}>Update</MUIButton>
-      </Box>
-      <input
-        id="fileInput"
-        type="file"
-        style={{ display: 'none' }}
-        onChange={handleFileChange}
-        accept=".svg, .png, .jpg, .gif"
-      />
-    </Box>
-  );
-};
+    );
+  };
 
 export function Profile() {
   const classes = useStyles();
@@ -116,22 +116,25 @@ export function Profile() {
       setAlert({ message: 'Please enter a valid date of birth', type: 'error' });
       hasError = true;
     }
-  
+      if (hasError) return;
 
     try {
-      const userData = {
-        fullName,
-        phoneNumber,
-        email,
-        username,
-        bio
-      };
+        const formData = new FormData();
+        formData.append('fullName', fullName);
+        formData.append('phoneNumber', phoneNumber);
+        formData.append('email', email);
+        formData.append('username', username);
+        formData.append('bio', bio);
+        formData.append('dob', dob);
 
-      await axios.put(`http://localhost:8080/users/${username}`, userData, {
-        headers: {
-          'Content-Type': 'application/json'
+        if (selectedFile) {
+            formData.append('image', selectedFile);
         }
-      });
+
+        await axios.put(`http://localhost:8080/users/${username}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then(response => console.log(response))
+        .catch(error => console.error('Error:', error));
 
       if (selectedFile) {
         const formData = new FormData();
@@ -147,20 +150,20 @@ export function Profile() {
         };
 
         await axios.post(uploadUrl, formData, { headers });
-        setAlert({ message: 'Profile updated and photo uploaded successfully', type: 'success' });
-      } else {
+        }
+    
         setAlert({ message: 'Profile updated successfully', type: 'success' });
+      } catch (error) {
+        if (error.response) {
+          setAlert({ message: `Error: ${error.response.data.message || 'Error saving profile'}`, type: 'error' });
+        } else if (error.request) {
+          setAlert({ message: 'Error: No response received from server', type: 'error' });
+        } else {
+          setAlert({ message: 'Error: Request failed', type: 'error' });
+        }
       }
-    } catch (error) {
-      if (error.response) {
-        setAlert({ message: `Error: ${error.response.data.message || 'Error saving profile'}`, type: 'error' });
-      } else if (error.request) {
-        setAlert({ message: 'Error: No response received from server', type: 'error' });
-      } else {
-        setAlert({ message: 'Error: Request failed', type: 'error' });
-      }
-    }
-  };
+    };
+    
 
   const handleCancel = () => {
     setFullName('');
@@ -176,15 +179,15 @@ export function Profile() {
     setPreviewUrl(null);
   };
 
-  useEffect(() => {
-    if (alert.message) {
-      const timer = setTimeout(() => {
-        setAlert({ message: '', type: '' });
-      }, 3000);
+    useEffect(() => {
+      if (alert.message) {
+        const timer = setTimeout(() => {
+          setAlert({ message: '', type: '' });
+        }, 3000);
 
-      return () => clearTimeout(timer);
-    }
-  }, [alert]);
+        return () => clearTimeout(timer);
+      }
+    }, [alert]);
 
   return (
     <>
@@ -339,4 +342,4 @@ export function Profile() {
   );
 }
 
-export default Profile;
+  export default Profile;

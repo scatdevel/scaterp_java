@@ -1,7 +1,7 @@
 
 package com.scat.dto;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class UserDTO {
 
@@ -101,15 +101,17 @@ public class UserDTO {
         this.profilePictureUrl = profilePictureUrl;
     }
 
+   
+
     public Date getDob() {
-        return dob;
-    }
+		return dob;
+	}
 
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
 
-    public String getResetToken() {
+	public String getResetToken() {
         return resetToken;
     }
 
