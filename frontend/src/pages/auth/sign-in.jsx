@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Input, Checkbox, Button, Typography } from "@material-tailwind/react";
 import { loginUser, loginAdmin } from '../../components/api';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
+import './i18n'; // Import the i18n configuration
+
 
 export function SignIn({ setAuthenticated, setIsAdmin }) {
+  const { t,i18n } = useTranslation(); // Initialize i18n
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [alertMessage, setAlertMessage] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -87,23 +91,42 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
       setLoading(false);
     }
   };
-  
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
 
   return (
     <section className="relative flex flex-col lg:flex-row items-center justify-center min-h-screen bg-gray-100">
+      
+        <div className="absolute top-4 right-4 flex space-x-2 z-20">
+        <img
+          src="/img/en-flag.png"
+          alt="English"
+          className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+          onClick={() => changeLanguage('en')}
+        />
+        <img
+          src="/img/ta-flag.png"
+          alt="Tamil"
+          className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+          onClick={() => changeLanguage('ta')}
+        />
+      </div>
+
       <div className="lg:w-1/2 p-8 lg:p-16 bg-white bg-opacity-90 rounded-lg shadow-lg z-10">
         <div className="flex justify-center mb-8">
           <img src="/img/logo_scat.png" className="w-24" alt="Logo" />
         </div>
         <div className="text-center mb-8">
-          <Typography variant="h4" className="font-bold mb-2">Sign In</Typography>
+          <Typography variant="h4" className="font-bold mb-2">{t('signIn')}</Typography>
           <Typography variant="paragraph" color="blue-gray" className="text-lg">
-            Enter your Email and password to Sign In.
+            {t('Enter your Email and password to Sign In.')}
           </Typography>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md">
           <div>
-            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Email</Typography>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Email')}</Typography>
             <Input
               size="lg"
               placeholder="name@mail.com"
@@ -119,7 +142,7 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
             {emailError && <Typography variant="small" color="red" className="mt-1 text-sm">{emailError}</Typography>}
           </div>
           <div>
-            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Password</Typography>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Password')}</Typography>
             <Input
               type="password"
               size="lg"
@@ -143,19 +166,24 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
                 color="gray"
                 className="flex items-center font-medium"
               >
-                I agree to the&nbsp;
+               {t('agreeTerms')}&nbsp;
                 <a
                   href="#"
-                  className="font-normal text-black transition-colors hover:text-gray-900 underline"
+                  className="font-normal text-blue-600 transition-colors hover:text-blue-800 underline"
                 >
-                  Terms and Conditions
+                  {t('Terms and Conditions')}
                 </a>
               </Typography>
             }
           />
-          <Button type="submit" className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md" disabled={!isValid || loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
-          </Button>
+       
+<Button
+  type="submit"
+  className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md"
+  disabled={!isValid || loading}
+>
+  {loading ? 'Signing in...' : t('signIn')}
+</Button>
 
           {showAlert && (
             <div className={`alert shadow-blue-500/40 hover:shadow-indigo-500/40 mt-6 content-center text-black text-center rounded-lg ${error ? 'bg-red-300' : 'bg-green-300'}`}>
@@ -165,18 +193,20 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
 
           <div className="mt-6 text-center">
             <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
-              Forgot your password?
+            {t('forgotPassword')}
               <Link to="/auth/forgot-password" className="text-gray-900 ml-1 underline">
-                Reset it here
+               
+
+                {t('resetPassword')}
               </Link>
             </Typography>
           </div>
 
           <div className="text-center mt-2">
             <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
-              Not registered?
+               {t('notRegistered')}
               <Link to="/auth/sign-up" className="text-gray-900 ml-1 underline">
-                Create an account
+               {t('createAccount')}
               </Link>
             </Typography>
           </div>
