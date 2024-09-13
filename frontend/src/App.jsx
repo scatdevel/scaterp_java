@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import SignIn from './pages/auth/sign-in';
@@ -11,7 +10,6 @@ import Profile from './pages/dashboard/Profile';
 import { Tables } from './pages/dashboard';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
-import TemporaryPage from './pages/auth/TemporaryPage';
 import CropDetailsForm from './pages/dashboard/CropDetailsForm';
 import CropOverview from './pages/dashboard/CropOverview';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
@@ -20,8 +18,6 @@ import CropCategory from './pages/dashboard/CropCategory';
 import FarmersList from './pages/dashboard/FarmersList';
 import UserDetails from './pages/dashboard/UserDetails';
 import RolesPage from './pages/dashboard/RolesPage';
-import CategoryDetails from './pages/dashboard/AdminAssets/CategoryDetails'; // Missing import added
-
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -58,8 +54,6 @@ const App = () => {
       <Route path="/auth/forgot-password" element={<ForgotPassword />} />
       <Route path="/auth/reset-password" element={<ResetPassword />} />
       <Route path="/dashboard/*" element={authenticated && !isAdmin ? <Dashboard /> : <Navigate to="/auth/sign-in" />} />
-
-      <Route path="/temporary" element={<TemporaryPage />} /> 
       <Route path="/auth/*" element={<Auth />} />
       <Route path="/user-list" element={<UserList />} />
       <Route path="/settings" element={<SettingsPage />} />
@@ -75,7 +69,6 @@ const App = () => {
       >
         <Route path="home" element={<Home />} />
         <Route path="crop-categories" element={<CropCategory />} />
-        <Route path="crop-categories/get/all" element={<CategoryDetails />} /> {/* Category details added */}
         <Route path="farmers-list" element={<FarmersList />} />
         <Route path="user-details" element={<UserDetails />} />
         <Route path="roles-page" element={<RolesPage />} />
@@ -88,4 +81,3 @@ const App = () => {
 };
 
 export default App;
-
