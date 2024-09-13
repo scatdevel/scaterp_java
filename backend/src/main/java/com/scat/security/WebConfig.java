@@ -24,10 +24,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(3600);
     }
+    
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/img/profile/**")
-                .addResourceLocations("file:/C:/Users/SCAT-1/scat_17/scat/public/img/profile/");
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:" + uploadDir);
     }
 
 

@@ -2,7 +2,10 @@ package com.scat.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import javax.persistence.*;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 
 @Entity
 @Table(name = "users")
@@ -33,14 +36,14 @@ public class UserEntity implements Serializable {
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 
-    @Temporal(TemporalType.DATE)
-    private Date dob;
+  @Column(name = "dob")
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
+		private Date dob;
+  
 
     @Column(name = "reset_token")
     private String resetToken;
 
-    
-    
     
     @Column(name = "reset_token_expiration")
     private Long resetTokenExpiration;

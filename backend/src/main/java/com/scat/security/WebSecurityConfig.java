@@ -48,6 +48,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf().disable()
             .authorizeRequests()
                 .antMatchers(SecurityConstants.SIGNUP_URL, SecurityConstants.LOGIN_URL, "/users/forgot-password", "/users/reset-password").permitAll()
+
+                .antMatchers("/admin/login").permitAll()
+                .antMatchers("/users/crops/save", "/users/crops/all").permitAll() // Allow access to login without authentication
+                .antMatchers("/crops/category/get/all", "/crops/categories/add").permitAll() // Allow access to login without authentication
+//                .anyRequest().authenticated() // Require authentication for all other endpoints
+
                 .antMatchers("/users/admin/login").permitAll()
                 .antMatchers("/users/admin/create").hasRole("ADMIN")
                 .antMatchers("/users/admin/create").permitAll()
@@ -68,11 +74,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                 
                 .antMatchers("/users/land-details").hasRole("USER")
                 .antMatchers("/users/land-details/submit").permitAll()
-                .antMatchers("/users/crops/save", "/users/crops/all").permitAll()
-                .antMatchers("/crops/category/get/all", "/crops/categories/add").permitAll()
                 .antMatchers("/**").permitAll()  
                 .anyRequest().authenticated()
-                
+              
             .and()
             .addFilter(new AuthenticationFilter(authenticationManagerBean(), jwtUtil, userRepository))
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
