@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { registerUser, fetchRoles } from '../../components/api'; 
 import { Input, Checkbox, Button, Typography, Select, Option } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
+import './i18n'; 
 
 export function SignUp() {
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -20,7 +23,6 @@ export function SignUp() {
   const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
 
- 
   useEffect(() => {
     async function loadRoles() {
       try {
@@ -33,14 +35,13 @@ export function SignUp() {
     loadRoles();
   }, []);
 
- 
   useEffect(() => {
     if (formData.email && !validateEmail(formData.email)) {
-      setEmailError('Invalid email address.');
+      setEmailError(t('invalidEmailAddress'));
     } else {
       setEmailError('');
     }
-  }, [formData.email]);
+  }, [formData.email, t]);
 
   const isValid = formData.email.length > 0 && formData.password.length > 0 && agree && !emailError && formData.roleId;
 
@@ -79,7 +80,7 @@ export function SignUp() {
     try {
       await registerUser(formData); 
       setSuccess(true);
-      setAlertMessage('Registration successful! Redirecting to login...');
+      setAlertMessage(t('registrationSuccess'));
       setShowAlert(true);
       setTimeout(() => {
         navigate('/sign-in');
@@ -92,29 +93,48 @@ export function SignUp() {
       } else {
         setError(`Error: ${err.message}`);
       }
-      setAlertMessage('Registration failed. Please try again.');
+      setAlertMessage(t('registrationFailed'));
       setShowAlert(true);
     }
   };
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
   return (
     <section className="relative flex flex-col lg:flex-row items-center justify-center h-screen bg-gray-100">
+      
+      <div className="absolute top-4 right-4 flex space-x-2 z-20">
+        <img
+          src="/img/en-flag.png"
+          alt="English"
+          className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+          onClick={() => changeLanguage('en')}
+        />
+        <img
+          src="/img/ta-flag.png"
+          alt="Tamil"
+          className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+          onClick={() => changeLanguage('ta')}
+        />
+      </div>
       <div className="lg:w-1/2 p-8 lg:p-16 bg-white bg-opacity-90 rounded-lg shadow-lg z-10">
         <div className="flex justify-center mb-8">
           <img src="/img/logo_scat.png" className="w-24" alt="Logo" />
         </div>
         <div className="text-center mb-8">
-          <Typography variant="h4" className="font-bold mb-2">Sign Up</Typography>
+          <Typography variant="h4" className="font-bold mb-2">{t('signUp')}</Typography>
           <Typography variant="paragraph" color="blue-gray" className="text-lg">
-            Enter your details to create your account.
+            {t('enterDetails')}
           </Typography>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md">
           <div>
-            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Username</Typography>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Username')}</Typography>
             <Input
               size="lg"
-              placeholder="Enter your username"
+              placeholder={t('username')}
               className="!border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
                 className: "before:content-none after:content-none",
@@ -126,7 +146,7 @@ export function SignUp() {
             />
           </div>
           <div>
-            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Your email</Typography>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Email')}</Typography>
             <Input
               size="lg"
               placeholder="name@mail.com"
@@ -142,7 +162,7 @@ export function SignUp() {
             {emailError && <Typography variant="small" color="red" className="mt-1 text-sm">{emailError}</Typography>}
           </div>
           <div>
-            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Password</Typography>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Password')}</Typography>
             <Input
               type="password"
               size="lg"
@@ -158,21 +178,20 @@ export function SignUp() {
             />
           </div>
           <div>
-            <Typography variant="small" color="blue-gray" className="font-medium mb-1">Role</Typography>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('role')}</Typography>
             <Select
-  size="lg"
-  placeholder="Select a role"
-  value={formData.roleId}
-  onChange={handleRoleChange}
-  className="!border-t-blue-gray-200 focus:!border-t-gray-900"
->
-  {roles.map((role) => (
-    <Option key={role.id} value={role.id}>
-      {role.name}
-    </Option>
-  ))}
-</Select>
-
+              size="lg"
+              placeholder={t('role')}
+              value={formData.roleId}
+              onChange={handleRoleChange}
+              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+            >
+              {roles.map((role) => (
+                <Option key={role.id} value={role.id}>
+                  {role.name}
+                </Option>
+              ))}
+            </Select>
           </div>
           <Checkbox
             checked={agree}
@@ -183,19 +202,21 @@ export function SignUp() {
                 color="gray"
                 className="flex items-center font-medium"
               >
-                I agree to the&nbsp;
+                {t('agreeTerms')}&nbsp;
                 <a
                   href="#"
                   className="font-normal text-blue-600 transition-colors hover:text-blue-800 underline"
                 >
-                  Terms and Conditions
+                  {t('Terms and Conditions')}
                 </a>
               </Typography>
             }
           />
-          <Button type="submit" className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" disabled={!isValid}>
-            Sign Up
-          </Button>
+      
+
+<Button type="submit" className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md" disabled={!isValid}>
+  {t('signUp')}
+</Button>
 
           {showAlert && (
             <div className={`alert shadow-blue-500/40 hover:shadow-indigo-500/40 mt-6 content-center text-black text-center rounded-lg ${success ? 'bg-green-300' : 'bg-red-300'}`}>
@@ -217,16 +238,16 @@ export function SignUp() {
                   </clipPath>
                 </defs>
               </svg>
-              Continue with Google
+              {t('Continue with Google')}
             </Button>
           </div>
           <Typography color="gray" className="mt-4 text-center font-normal">
-            Already have an account?&nbsp;
+            {t('alreadyHaveAccount')}&nbsp;
             <Link
               to="/sign-in"
               className="font-medium text-black transition-colors hover:text-gray-900"
             >
-              Sign In
+              {t('signIn')}
             </Link>
           </Typography>
         </form>
