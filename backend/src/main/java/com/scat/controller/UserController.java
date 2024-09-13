@@ -139,39 +139,29 @@ public class UserController {
     
     
     @PostMapping(value = "/uploadProfilePicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadProfilePicture(@RequestParam("username") String username,
-                                                  @RequestParam("file") MultipartFile file) {
-        try {
-            // Define the base directory and user-specific directory
-            String baseDirectory = "C:/Users/SCAT-1/scat_17/scat/public/img/profile/";
-            String userDirectory = baseDirectory + username;
-            
-            // Create directories if they do not exist
-            File userDir = new File(userDirectory);
-            if (!userDir.exists()) {
-                userDir.mkdirs(); // Create directories
-            }
+	public ResponseEntity<?> uploadProfilePicture(@RequestParam("username") String username,
+			@RequestParam("file") MultipartFile file) {
+		try {
+			String userDirectory = Paths.get(baseDirectory, username).toString();
+			File userDir = new File(userDirectory);
+			if (!userDir.exists()) {
+				userDir.mkdirs();
+			}
 
-            // Save the file
-            String fileName = file.getOriginalFilename();
-            Path targetLocation = Paths.get(userDirectory, fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			String fileName = file.getOriginalFilename();
+			Path targetLocation = Paths.get(userDirectory, fileName);
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            // Build the file download URI
-            String fileDownloadUri = MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-                    "serveFile", fileName).build().toUri().toString();
+			UserDTO userDTO = userService.getUserByUsername(username);
+			userDTO.setProfilePictureUrl(fileName);
+			userService.updateUser(userDTO);
 
-            // Update the user's profile picture URL
-            UserDTO userDTO = userService.getUserByUsername(username);
-            userDTO.setProfilePictureUrl(fileDownloadUri);
-            userService.updateUser(userDTO);
-
-            return ResponseEntity.ok().body("Profile picture uploaded successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
-        }
-    }
+			return ResponseEntity.ok().body("Profile picture uploaded successfully");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
+		}
+	}
 
     
 }
