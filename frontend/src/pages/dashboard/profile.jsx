@@ -1,7 +1,7 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { HomeIcon } from "@heroicons/react/24/solid";
-import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar ,Grid} from "@mui/material";
+import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from 'axios';
 import UserIcon from '@mui/icons-material/Person';
@@ -9,6 +9,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import InfoIcon from '@mui/icons-material/Info';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+
 const useStyles = makeStyles(() => ({
   input: {
     width: '100%',
@@ -38,43 +39,45 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-  const PhotoUpload = ({ onFileChange, previewUrl }) => {
-    const [selectedFile, setSelectedFile] = useState(null);
 
-    const handleFileChange = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        setSelectedFile(file);
-        onFileChange(file);
-      }
-    };
-
-    return (
-      <Box className="p-4 flex flex-col items-center">
-        <Typography variant="h6" className="mb-4 text-center">Your Photo</Typography>
-        <Box className="flex items-center justify-center my-4">
-          <MUIAvatar
-            src={previewUrl || "https://via.placeholder.com/150"}
-            className="mr-4"
-            sx={{ width: 100, height: 100 }}
-          />
-        </Box>
-        <Box className="flex space-x-2 mb-4">
-          <MUIButton variant="outlined" color="primary" onClick={() => onFileChange(null)}>Delete</MUIButton>
-          <MUIButton variant="contained" color="primary" onClick={() => document.getElementById('fileInput').click()}>Update</MUIButton>
-        </Box>
-        <input
-          id="fileInput"
-          type="file"
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-          accept=".svg, .png, .jpg, .gif"
-        />
-      </Box>
-    );
+const PhotoUpload = ({ onFileChange, previewUrl }) => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const { t } = useTranslation(); 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      onFileChange(file);
+    }
   };
 
+  return (
+    <Box className="p-4 flex flex-col items-center">
+      <Typography variant="h6" className="mb-4 text-center">{t('yourPhoto')}</Typography>
+      <Box className="flex items-center justify-center my-4">
+        <MUIAvatar
+          src={previewUrl || "https://via.placeholder.com/150"}
+          className="mr-4"
+          sx={{ width: 100, height: 100 }}
+        />
+      </Box>
+      <Box className="flex space-x-2 mb-4">
+        <MUIButton variant="outlined" color="primary" onClick={() => onFileChange(null)}>{t('delete')}</MUIButton>
+        <MUIButton variant="contained" color="primary" onClick={() => document.getElementById('fileInput').click()}>{t('update')}</MUIButton>
+      </Box>
+      <input
+        id="fileInput"
+        type="file"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+        accept=".svg, .png, .jpg, .gif"
+      />
+    </Box>
+  );
+};
+
 export function Profile() {
+  const { t, i18n } = useTranslation();
   const classes = useStyles();
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -164,54 +167,80 @@ export function Profile() {
       }
     };
     
-
-  const handleCancel = () => {
-    setFullName('');
-    setPhoneNumber('');
-    setEmail('');
-    setUsername('');
-    setBio('');
-    setDob(''); 
-    setAlert({ message: '', type: '' });
-    setEmailError('');
-    setPhoneNumberError('');
-    setSelectedFile(null);
-    setPreviewUrl(null);
+    const handleCancel = () => {
+      setFullName('');
+      setPhoneNumber('');
+      setEmail('');
+      setUsername('');
+      setBio('');
+      setDob(''); 
+      setAlert({ message: '', type: '' });
+      setEmailError('');
+      setPhoneNumberError('');
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    };
+  
+      useEffect(() => {
+        if (alert.message) {
+          const timer = setTimeout(() => {
+            setAlert({ message: '', type: '' });
+          }, 3000);
+  
+          return () => clearTimeout(timer);
+        }
+      }, [alert]);
+  
+  const handleLanguageChange = (lng) => {
+    i18n.changeLanguage(lng);
   };
-
-    useEffect(() => {
-      if (alert.message) {
-        const timer = setTimeout(() => {
-          setAlert({ message: '', type: '' });
-        }, 3000);
-
-        return () => clearTimeout(timer);
-      }
-    }, [alert]);
 
   return (
     <>
-      <div className="relative mt-6 h-32 w-full overflow-hidden rounded-xl bg-[url('/img/background-image.png')] bg-cover bg-center">
+      <div className="relative mt-6 ">
         <div className="absolute inset-0 h-full w-full bg-gray-700/75 flex items-center justify-center">
+
+        <div className="absolute top-1 right-14 flex space-x-2 z-20">
+  <img
+    src="/img/en-flag.png"
+    alt="English"
+    className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+    onClick={() => handleLanguageChange('en')}
+  />
+  <img
+    src="/img/ta-flag.png"
+    alt="Tamil"
+    className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+    onClick={() => handleLanguageChange('ta')}
+  />
+</div>
+
           <Typography variant="h3" className="text-white"> </Typography>
         </div>
+      
       </div>
-      <Card className="mx-1 -mt-6 mb-2 lg:mx-2 shadow-lg">
-        <CardBody className="p-1">
-          <div className="mb-4 flex items-center justify-between flex-wrap gap-4">
-            <div className="w-64 flex items-center">
-              <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-              <Typography variant="h6" className="inline-block">App</Typography>
-            </div>
-          </div>
-          <PhotoUpload onFileChange={(file) => {
+
+<div className="flex justify-center py-4">
+  <Card className="mx-1 mb-1 lg:mx-1 shadow-lg w-64 bg-blue-50 border border-blue-200 rounded-lg overflow-hidden transition-transform hover:scale-105">
+    <CardBody className="p-4">
+     
+      <div className="mb-4 flex items-center justify-center">
+        <PhotoUpload 
+          onFileChange={(file) => {
             setSelectedFile(file);
             setPreviewUrl(file ? URL.createObjectURL(file) : null);
-          }} previewUrl={previewUrl} />
-        </CardBody>
-      </Card>
+          }} 
+          previewUrl={previewUrl} 
+        />
+      </div>
+      
+    </CardBody>
+  </Card>
+</div>
+
+
       <Box className="p-2">
-        <Typography variant="h5" className="mb-6">Settings Page</Typography>
+        <Typography variant="h5" className="mb-6">{t('settingsPage')}</Typography>
         {alert.message && (
           <div className={`alert ${alert.type === 'success' ? 'alert-success' : 'alert-error'}`}>
             <Typography variant="body1" color={alert.type === 'success' ? 'green' : 'red'}>
@@ -219,13 +248,13 @@ export function Profile() {
             </Typography>
           </div>
         )}
-            <Box className="mb-4">
-          <Typography variant="h6" className="mb-2">Personal Information</Typography>
+        <Box className="mb-4">
+          <Typography variant="h6" className="mb-2">{t('personal Information')}</Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Username"
+                label={t('username')}
                 variant="outlined"
                 className="my-2"
                 value={username}
@@ -242,7 +271,7 @@ export function Profile() {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Full Name"
+                label={t('fullName')}
                 variant="outlined"
                 className="my-2"
                 value={fullName}
@@ -259,7 +288,7 @@ export function Profile() {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Email"
+                label={t('email')}
                 variant="outlined"
                 className="my-2"
                 value={email}
@@ -278,7 +307,7 @@ export function Profile() {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Phone Number"
+                label={t('phoneNumber')}
                 variant="outlined"
                 className="my-2"
                 value={phoneNumber}
@@ -297,7 +326,7 @@ export function Profile() {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Date of Birth"
+                label={t('dob')}
                 type="date"
                 variant="outlined"
                 className="my-2"
@@ -315,7 +344,7 @@ export function Profile() {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Bio"
+                label={t('bio')}
                 variant="outlined"
                 className="my-2"
                 value={bio}
@@ -334,12 +363,12 @@ export function Profile() {
           </Grid>
         </Box>
         <Box className="flex justify-end space-x-4">
-          <MUIButton variant="outlined" color="primary" onClick={handleCancel}>Cancel</MUIButton>
-          <MUIButton variant="contained" color="primary" onClick={handleSave}>Save</MUIButton>
+          <MUIButton variant="outlined" color="primary" onClick={handleCancel}>{t('cancel')}</MUIButton>
+          <MUIButton variant="contained" color="primary" onClick={handleSave}>{t('save')}</MUIButton>
         </Box>
       </Box>
     </>
   );
 }
 
-  export default Profile;
+export default Profile;
