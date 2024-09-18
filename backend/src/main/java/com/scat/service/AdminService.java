@@ -7,26 +7,25 @@ import java.util.List;
 
 public interface AdminService {
 
-    boolean validateAdmin(String email, String password);
+	boolean validateAdmin(String email, String password);
 
-    void createAdmin(String email, String password, String username, List<String> roleNames); // No changes here
+	void createAdmin(String email, String password, String username, List<String> roleNames); // No changes here
 
-    UserEntity getAdminByEmail(String email);
+	UserEntity getAdminByEmail(String email);
 
-    RoleEntity createRole(String roleName);
+	RoleEntity createRole(String roleName);
 
-    RoleEntity getRoleByName(String roleName);
+	RoleEntity getRoleByName(String roleName);
 
-    List<RoleEntity> getAllRoles();
+	List<RoleEntity> getAllRoles();
 
-    void assignRoleToUser(String email, String roleName);
+	void assignRoleToUser(String email, String roleName);
 
-    void updateRole(Long roleId, String newRoleName);
+	void updateRole(Long roleId, String newRoleName);
 
-    void deleteRole(Long roleId);
-    
-    void editRole(String email, String oldRoleName, String newRoleName);
-    
-    void deleteRoleFromUser(String email);
+	void deleteRole(Long roleId);
+
+	void editRole(String email, String oldRoleName, String newRoleName);
+
+	void deleteRoleFromUser(String email);
 }
-

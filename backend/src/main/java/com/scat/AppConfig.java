@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 @Configuration
 public class AppConfig {
 
@@ -16,6 +18,11 @@ public class AppConfig {
 	@Bean
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
+	}
+
+	@Bean
+	public Dotenv dotenv() {
+		return Dotenv.load();
 	}
 
 }
