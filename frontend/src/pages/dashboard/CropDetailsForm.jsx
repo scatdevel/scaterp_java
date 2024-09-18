@@ -30,7 +30,7 @@ const CropDetailsForm = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('/api/categories'); // Replace with your API endpoint
+        const response = await axios.get('http://localhost:8080/crops/categories/get/all'); // Replace with your API endpoint
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching categories:', error);

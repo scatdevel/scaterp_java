@@ -1,6 +1,9 @@
 package com.scat.model.response;
 
 public class UserRest {
+	
+	private Long id;
+	private Long phoneNumber;
     private String username;
     private String email;
     // Add other fields as necessary
@@ -22,4 +25,22 @@ public class UserRest {
     public void setEmail(String email) {
         this.email = email;
     }
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(Long phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+    
+    
 }

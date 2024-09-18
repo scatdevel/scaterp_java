@@ -96,10 +96,16 @@ public class CropCategoryController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/block")
+    @PostMapping("/block/{id}")
     public ResponseEntity<Void> blockCategory(@PathVariable Long id) {
         service.blockCategory(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PostMapping("/enable/id")
+    public ResponseEntity<Void>  enableCategory(@PathVariable Long id){
+    	service.enableCategory(id);
+    	return ResponseEntity.noContent().build();
     }
 }
 
