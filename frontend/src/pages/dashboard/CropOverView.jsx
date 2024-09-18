@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { Typography, Card, CardBody, Button } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const ITEMS_PER_PAGE = 10;
 
 const CropOverview = () => {
+  const { t, i18n } = useTranslation();
   const [crops, setCrops] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -57,12 +59,28 @@ const CropOverview = () => {
     <div className="bg-gray-100 min-h-screen py-6 px-4 flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <Typography variant="h6" className="text-green-600 font-semibold text-lg">
-          Crop Overview
+        {t('cropOverview')}
         </Typography>
+
+
+        <div className="absolute top-1 right-14 flex space-x-2 z-20">
+          <img
+            src="/img/en-flag.png"
+            alt="English"
+            className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+            onClick={() => i18n.changeLanguage('en')}
+          />
+          <img
+            src="/img/ta-flag.png"
+            alt="Tamil"
+            className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+            onClick={() => i18n.changeLanguage('ta')}
+          />
+        </div>
       </div>
       {loading ? (
         <div className="flex justify-center items-center">
-          <Typography variant="body2" className="text-gray-500">Loading...</Typography>
+          <Typography variant="body2" className="text-gray-500">{t('loading')}</Typography>
         </div>
       ) : errorMessage ? (
         <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded relative">
@@ -70,7 +88,7 @@ const CropOverview = () => {
         </div>
       ) : displayedCrops.length === 0 ? (
         <Typography variant="body2" className="text-gray-500 text-center col-span-full">
-          No crop details found.
+          {t('noCrops')}
         </Typography>
       ) : (
         <div>
@@ -90,7 +108,7 @@ const CropOverview = () => {
                     />
                   ) : (
                     <div className="w-full h-48 bg-gray-200 rounded-lg border border-gray-200 mb-3 flex items-center justify-center">
-                      <Typography variant="body2" className="text-gray-500">No Image Available</Typography>
+                      <Typography variant="body2" className="text-gray-500">{t('noImageAvailable')}</Typography>
                     </div>
                   )}
                   <Typography variant="subtitle2" className="font-semibold mb-2 text-center text-sm">
@@ -98,22 +116,22 @@ const CropOverview = () => {
                   </Typography>
                   <div className="flex flex-col space-y-2 text-xs">
                     <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">Actual Production:</span> {crop.actualProduction}
+                      <span className="font-semibold">{t('actualProduction')}:</span> {crop.actualProduction}
                     </Typography>
                     <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">Projected Production:</span> {crop.projectedProduction}
+                      <span className="font-semibold">{t('projectedProduction')}:</span> {crop.projectedProduction}
                     </Typography>
                     <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">Cultivation Land Value:</span> {crop.cultivationLandValue} {crop.landValueUnit}
+                      <span className="font-semibold">{t('cultivationLandValue')}:</span> {crop.cultivationLandValue} {crop.landValueUnit}
                     </Typography>
                     <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">Cost:</span> ${crop.cost}
+                      <span className="font-semibold">{t('cost')}:</span> ${crop.cost}
                     </Typography>
                     <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">Project Cost:</span> ${crop.projectCost}
+                      <span className="font-semibold">{t('projectCost')}:</span> ${crop.projectCost}
                     </Typography>
                     <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">Projection Timeline:</span> {crop.projectionTimelineValue} {crop.projectionTimelineType}
+                      <span className="font-semibold">{t('projectionTimeline')}:</span> {crop.projectionTimelineValue} {crop.projectionTimelineType}
                     </Typography>
                   </div>
                 </CardBody>
@@ -128,7 +146,7 @@ const CropOverview = () => {
               onClick={() => handlePageChange('prev')}
               disabled={currentPage === 1}
             >
-              Previous
+              {t('previous')}
             </Button>
             <Typography variant="body2" className="text-gray-700">
               Page {currentPage}
@@ -140,7 +158,7 @@ const CropOverview = () => {
               onClick={() => handlePageChange('next')}
               disabled={endIndex >= crops.length}
             >
-              Next
+            {t('next')}
             </Button>
           </div>
         </div>

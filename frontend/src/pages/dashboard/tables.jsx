@@ -1,8 +1,12 @@
 import { Card, CardBody } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+
 
 export function Tables() {
+
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     village: "",
     district: "",
@@ -170,14 +174,32 @@ export function Tables() {
     }
   };
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
   return (
     <div className="relative mt-12 mb-8 flex flex-col gap-12 p-6 bg-gray-20 rounded-lg shadow-lg h-screen">
+
+<div className="absolute top-1 right-14 flex space-x-2 z-20">
+        <img
+          src="/img/en-flag.png"
+          alt="English"
+          className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+          onClick={() => changeLanguage('en')}
+        />
+        <img
+          src="/img/ta-flag.png"
+          alt="Tamil"
+          className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+          onClick={() => changeLanguage('ta')}
+        />
+      </div>
       <CardBody className="px-6 py-4">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
             {/* Address field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="address" className="text-gray-700">Address</label>
+              <label htmlFor="address" className="text-gray-700">{t('address')}</label>
               <div className="relative flex items-center border border-gray-300 rounded-lg shadow-sm">
                 <i className="text-gray-500 p-2">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="#FF7E8B" width="40" height="20" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" className="iRDDBk">
@@ -194,7 +216,7 @@ export function Tables() {
                   onFocus={handleFocus}
                   onBlur={handleBlur}
                   className="p-3 border-0 bg-white text-gray-800 placeholder-gray-500 flex-1 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter address"
+                  placeholder={t('enterAddress')}
                  
                 />
                 {showDropdown && (
@@ -206,7 +228,7 @@ export function Tables() {
                           <path d="M13.58 10c0 1.977-1.603 3.58-3.58 3.58s-3.58-1.603-3.58-3.58c0-1.977 1.603-3.58 3.58-3.58v0c1.977 0 3.58 1.603 3.58 3.58v0zM10 0.425c-5.286 0-9.575 4.289-9.575 9.575s4.289 9.575 9.575 9.575c5.286 0 9.575-4.289 9.575-9.575v0c0-5.286-4.289-9.575-9.575-9.575v0zM16.633 10.833c-0.375 3.044-2.856 5.524-5.9 5.899v2.018h-1.467v-2.018c-3.044-0.375-5.524-2.856-5.899-5.9h-2.018v-1.467h2.018c0.375-3.044 2.856-5.524 5.9-5.899v-2.018h1.467v2.018c3.044 0.375 5.524 2.856 5.899 5.9h2.018v1.467h-2.018z"></path>
                         </svg>
                       </i>
-                      {isFetchingLocation ? 'Fetching...' : 'Locate on Map'}
+                      {isFetchingLocation ? t('fetching') : t('locateOnMap')}
                     </div>
                   </div>
                 )}
@@ -215,7 +237,7 @@ export function Tables() {
 
             {/* Village field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="village" className="text-gray-700">Village</label>
+              <label htmlFor="village" className="text-gray-700">{t('village')}</label>
               <input
                 type="text"
                 id="village"
@@ -224,13 +246,13 @@ export function Tables() {
                 onChange={handleInputChange}
                 disabled={isFieldsDisabled}
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter village name"
+                placeholder={t('enterVillageName')}
               />
             </div>
 
             {/* District field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="district" className="text-gray-700">District</label>
+              <label htmlFor="district" className="text-gray-700">{t('district')}</label>
               <input
                 type="text"
                 id="district"
@@ -239,13 +261,13 @@ export function Tables() {
                 onChange={handleInputChange}
                 disabled={isFieldsDisabled}
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter district"
+                placeholder={t('enterDistrict')}
               />
             </div>
 
             {/* Pincode field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="pincode" className="text-gray-700">Pincode</label>
+              <label htmlFor="pincode" className="text-gray-700">{t('pincode')}</label>
               <input
                 type="text"
                 id="pincode"
@@ -253,13 +275,13 @@ export function Tables() {
                 value={formData.pincode}
                 onChange={handleInputChange}
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter pincode"
+                placeholder={t('enterPincode')}
               />
             </div>
 
             {/* State field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="state" className="text-gray-700">State</label>
+              <label htmlFor="state" className="text-gray-700">{t('state')}</label>
               <input
                 type="text"
                 id="state"
@@ -268,13 +290,13 @@ export function Tables() {
                 onChange={handleInputChange}
                 disabled={isFieldsDisabled}
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter state"
+                placeholder={t('enterState')}
               />
             </div>
 
             {/* Street field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="street" className="text-gray-700">Street</label>
+              <label htmlFor="street" className="text-gray-700">{t('street')}</label>
               <input
                 type="text"
                 id="street"
@@ -282,13 +304,13 @@ export function Tables() {
                 value={formData.street}
                 onChange={handleInputChange}
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter street name"
+                placeholder={t('enterStreetName')}
               />
             </div>
 
             {/* Cultivation Type field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="cultivationType" className="text-gray-700">Cultivation Type</label>
+              <label htmlFor="cultivationType" className="text-gray-700">{t('cultivationType')}</label>
               <select
                 id="cultivationType"
                 name="cultivationType"
@@ -296,16 +318,16 @@ export function Tables() {
                 onChange={handleInputChange}
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select Cultivation Type</option>
-                <option value="Organic">Organic</option>
-                <option value="Conventional">Conventional</option>
-                <option value="Hydroponic">Hydroponic</option>
+                <option value="">{t('selectCultivationType')}</option>
+                <option value="Organic">{t('organic')}</option>
+                <option value="Conventional">{t('conventional')}</option>
+                <option value="Hydroponic">{t('hydroponic')}</option>
               </select>
             </div>
 
             {/* Land Ownership field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="landOwnership" className="text-gray-700">Land Ownership</label>
+              <label htmlFor="landOwnership" className="text-gray-700">{t('landOwnership')}</label>
               <select
                 id="landOwnership"
                 name="landOwnership"
@@ -313,16 +335,16 @@ export function Tables() {
                 onChange={handleInputChange}
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">Select Land Ownership</option>
-                <option value="Owned">Owned</option>
-                <option value="Leased">Leased</option>
-                <option value="Rented">Rented</option>
+                <option value="">{t('select')}</option>
+                <option value="Owned">{t('owned')}</option>
+                <option value="Leased">{t('leased')}</option>
+                <option value="Rented">{t('rented')}</option>
               </select>
             </div>
 
             {/* Width field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="width" className="text-gray-700">Width (in meters)</label>
+              <label htmlFor="width" className="text-gray-700">{t('width')}</label>
               <input
                 type="number"
                 id="width"
@@ -330,13 +352,13 @@ export function Tables() {
                 value={formData.width}
                 onChange={handleInputChange}
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter width"
+                placeholder={t('enterWidth')}
               />
             </div>
 
             {/* Breadth field */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="breadth" className="text-gray-700">Breadth (in meters)</label>
+              <label htmlFor="breadth" className="text-gray-700">{t('breadth')}</label>
               <input
                 type="number"
                 id="breadth"
@@ -344,13 +366,13 @@ export function Tables() {
                 value={formData.breadth}
                 onChange={handleInputChange}
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter breadth"
+                placeholder={t('enterBreadth')}
               />
             </div>
 
             {/* Area field (auto-generated) */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="area" className="text-gray-700">Area (in square meters)</label>
+              <label htmlFor="area" className="text-gray-700">{t('area')}</label>
               <input
                 type="text"
                 id="area"
@@ -358,7 +380,7 @@ export function Tables() {
                 value={formData.area}
                 readOnly
                 className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200"
-                placeholder="Auto-calculated area"
+                placeholder={t('autoCalculatedArea')}
               />
             </div>
           </div>
@@ -371,7 +393,7 @@ export function Tables() {
     className="bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-600 text-sm"
     style={{ width: '5rem', height: '2rem', padding: '0.10rem', aspectRatio: '5' }}
   >
-    Submit
+   {t('submit')}
   </button>
 
 
