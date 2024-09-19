@@ -22,11 +22,14 @@ import org.slf4j.LoggerFactory;
 @Service
 public class FileSystemStorageService implements StorageService {
 
+	 @Value("${file.upload-dir}")
+	    private String uploadDir;
+	
     private static final Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
     private final Path rootLocation;
 
     @Autowired
-    public FileSystemStorageService(@Value("${storage.location:C:/default/path}") String location) {
+    public FileSystemStorageService(@Value("uploadDir") String location) {
         this.rootLocation = Paths.get(location);
         logger.info("Storage location: " + this.rootLocation.toAbsolutePath());
     }

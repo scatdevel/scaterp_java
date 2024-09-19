@@ -24,6 +24,8 @@ const CropCategory = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  
+
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true);
@@ -324,4 +326,4 @@ const CropCategory = () => {
   );
 };
 
-export default CropCategory;
+export default CropCategory;  
