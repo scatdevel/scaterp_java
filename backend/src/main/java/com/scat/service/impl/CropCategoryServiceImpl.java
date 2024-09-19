@@ -49,6 +49,19 @@ public class CropCategoryServiceImpl {
 	            throw new RuntimeException("Category not found");
 	        }
 	    }
+	  
+	 public void enableCategory(Long id) {
+		 Optional<CropCategory> cat= repository.findById(id);
+		 if(cat.isPresent()) {
+			 CropCategory category =cat.get();
+			 category.setBlocked(false);
+			 repository.save(category);
+		 }
+		 else {
+			 throw new RuntimeException("Category not Found");
+		 }
+		 
+	 }
 }
 
 

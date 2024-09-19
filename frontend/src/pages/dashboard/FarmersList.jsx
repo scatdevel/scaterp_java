@@ -41,8 +41,8 @@ const FarmersList = () => {
 
   return (
     <div>
-      <Typography variant="h6" gutterBottom>
-        Farmers List
+      <Typography variant="h6" gutterBottom style={{ color: '#4A90E2' , fontWeight:'bold'}} >
+        USER'S  LIST
       </Typography>
       <TableContainer component={Paper}>
         <Table>
