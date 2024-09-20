@@ -1,4 +1,4 @@
-package com.scat.security;
+ package com.scat.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
