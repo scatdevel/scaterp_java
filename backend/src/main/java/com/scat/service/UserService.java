@@ -14,4 +14,5 @@ public interface UserService extends UserDetailsService {
     UserDTO updateProfilePicture(String emailOrUsername, String profilePictureUrl);
     void initiatePasswordReset(String email);
     boolean resetPassword(String token, String newPassword);
+//	void login(String email, String password);
 }

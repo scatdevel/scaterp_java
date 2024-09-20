@@ -24,7 +24,7 @@ const CropCategory = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  
+    // Use the environment variable for the API URL
 
   useEffect(() => {
     const fetchCategories = async () => {

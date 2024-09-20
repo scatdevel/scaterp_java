@@ -21,5 +21,5 @@ public class UserLoginRequestModel {
 		this.password = password;
 	}
 
-    // getters and setters
+  
 }

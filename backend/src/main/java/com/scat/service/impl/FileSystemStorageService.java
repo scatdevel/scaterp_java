@@ -29,7 +29,7 @@ public class FileSystemStorageService implements StorageService {
     private final Path rootLocation;
 
     @Autowired
-    public FileSystemStorageService(@Value("uploadDir") String location) {
+    public FileSystemStorageService(@Value("${storage.location:C:/default/path}") String location) {
         this.rootLocation = Paths.get(location);
         logger.info("Storage location: " + this.rootLocation.toAbsolutePath());
     }
