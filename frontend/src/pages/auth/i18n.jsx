@@ -116,12 +116,6 @@ loading: "Loading...",
 noCrops: "No crop details found.",
 previous: "Previous",
 next: "Next",
-actualProduction: "Actual Production",
-projectedProduction: "Projected Production",
-cultivationLandValue: "Cultivation Land Value",
-cost: "Cost",
-projectCost: "Project Cost",
-projectionTimeline: "Projection Timeline",
 noImageAvailable: "No Image Available"
         }
       },
@@ -243,12 +237,6 @@ cropOverview: "வளையத்திட்டம் மேலோட்டம�
           noCrops: "வளையங்கள் காணவில்லை.",
           previous: "முந்தைய",
           next: "அடுத்த",
-          actualProduction: "உண்மையான உற்பத்தி",
-          projectedProduction: "முன்கூட்டிய உற்பத்தி",
-          cultivationLandValue: "கிரித பூமி மதிப்பு",
-          cost: "செலவு",
-          projectCost: "திட்ட செலவு",
-          projectionTimeline: "முன்கூட்டிய கால வரிசை",
           noImageAvailable: "சேமிப்பு இல்லை"
 
 

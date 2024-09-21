@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -140,41 +141,36 @@ public class UserController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(userRestList) ;
     }
-
+    
     @PostMapping(value = "/uploadProfilePicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadProfilePicture(@RequestParam("username") String username,
                                                   @RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("No file uploaded");
-        }
-
         try {
-            // Create user directory
+            // Create user directory if it doesn't exist
             String userDirectory = Paths.get(baseDirectory, username).toString();
-            Files.createDirectories(Paths.get(userDirectory));
-
-            // Handle file upload
-            String fileName = file.getOriginalFilename();
-            if (fileName == null) {
-                return ResponseEntity.badRequest().body("Invalid file name");
+            File userDir = new File(userDirectory);
+            if (!userDir.exists()) {
+                userDir.mkdirs();
             }
 
+            // Save the file to the user directory
+            String fileName = file.getOriginalFilename();
             Path targetLocation = Paths.get(userDirectory, fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            // Fetch user without altering the password
+            // Retrieve the current user entity
             UserDTO userDTO = userService.getUserByUsername(username);
+            
             // Update only the profile picture URL
             userDTO.setProfilePictureUrl(fileName);
-            
-            // Update user profile without changing the password
+
+            // Update the user in the database without changing the password
             userService.updateProfilePicture(userDTO.getUsername(), userDTO.getProfilePictureUrl());
 
-            return ResponseEntity.ok("Profile picture uploaded successfully");
+            return ResponseEntity.ok().body("Profile picture uploaded successfully");
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture: " + e.getMessage());
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
         }
     }
 
