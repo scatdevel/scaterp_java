@@ -50,7 +50,7 @@ public class UserController {
         UserDTO userDto = new UserDTO();
         userDto.setUsername(userDetails.getUsername());
         userDto.setEmail(userDetails.getEmail());
-        userDto.setEncryptedPassword(userDetails.getPassword());
+        userDto.setPassword(userDetails.getPassword());
         userDto.setFullName(userDetails.getFullName());
         userDto.setPhoneNumber(userDetails.getPhoneNumber());
         userDto.setDob(userDetails.getDob());
@@ -141,29 +141,32 @@ public class UserController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(userRestList) ;
     }
+
     
     @PostMapping(value = "/uploadProfilePicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadProfilePicture(@RequestParam("username") String username,
                                                   @RequestParam("file") MultipartFile file) {
         try {
+            // Create user directory if it doesn't exist
             String userDirectory = Paths.get(baseDirectory, username).toString();
             File userDir = new File(userDirectory);
             if (!userDir.exists()) {
                 userDir.mkdirs();
             }
 
+            // Save the file to the user directory
             String fileName = file.getOriginalFilename();
             Path targetLocation = Paths.get(userDirectory, fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
+            // Retrieve the current user entity
             UserDTO userDTO = userService.getUserByUsername(username);
-            // Store the current password so it won't be lost
-            String currentPassword = userDTO.getEncryptedPassword();
-
+            
+            // Update only the profile picture URL
             userDTO.setProfilePictureUrl(fileName);
-            userDTO.setEncryptedPassword(currentPassword); // Restore the original password
 
-            userService.updateUser(userDTO);
+            // Update the user in the database without changing the password
+            userService.updateProfilePicture(userDTO.getUsername(), userDTO.getProfilePictureUrl());
 
             return ResponseEntity.ok().body("Profile picture uploaded successfully");
         } catch (IOException e) {
@@ -171,6 +174,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
         }
     }
+
 
     
 }

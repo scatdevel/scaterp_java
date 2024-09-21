@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
-		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
+		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
 
 		if (userDTO.getRole() != null) {
 			RoleEntity role = roleRepository.findByName(userDTO.getRole().getName())
@@ -93,8 +93,8 @@ public class UserServiceImpl implements UserService {
 		userEntity.setEmail(userDTO.getEmail());
 		userEntity.setBio(userDTO.getBio());
 		userEntity.setDob(userDTO.getDob());
-		if (userDTO.getEncryptedPassword() != null && !userDTO.getEncryptedPassword().isEmpty()) {
-			userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
+		if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+			userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
 		}
 		userEntity.setProfilePictureUrl(userDTO.getProfilePictureUrl());
 
@@ -141,6 +141,7 @@ public class UserServiceImpl implements UserService {
 		return new User(userEntity.getUsername(), userEntity.getEncryptedPassword(), authorities);
 	}
 
+	
 	@Override
 	public UserDTO updateProfilePicture(String emailOrUsername, String profilePictureUrl) {
 		UserEntity userEntity = userRepository.findByUsername(emailOrUsername);

@@ -8,7 +8,7 @@ public class UserDTO {
     private long id;
     private String email;
     private String username;
-    private String encryptedPassword; // Handle securely
+    private String Password; // Handle securely
     private String fullName;
     private Long phoneNumber;
     private String bio;
@@ -45,12 +45,12 @@ public class UserDTO {
         this.username = username;
     }
 
-    public String getEncryptedPassword() {
-		return encryptedPassword;
+	public String getPassword() {
+		return Password;
 	}
 
-	public void setEncryptedPassword(String encryptedPassword) {
-		this.encryptedPassword = encryptedPassword;
+	public void setPassword(String password) {
+		Password = password;
 	}
 
 	public String getFullName() {
