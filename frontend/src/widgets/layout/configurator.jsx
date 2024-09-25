@@ -40,7 +40,8 @@ export function Configurator() {
   }, []);
 
   // Logout function
-  const handleLogout = () => {
+  const handleLogout = async () => {
+   
     localStorage.removeItem('authToken'); // Remove the token from local storage
     localStorage.removeItem('tokenExpiration'); // Remove expiration time
     window.location.href = '/auth/sign-in'; // Redirect to the login page

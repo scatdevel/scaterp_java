@@ -46,7 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .cors()
             .and()
             .csrf().disable()
-            .authorizeRequests()
+            .authorizeRequests().antMatchers("/users/me").authenticated().anyRequest().permitAll()
                 .antMatchers(SecurityConstants.SIGNUP_URL, SecurityConstants.LOGIN_URL, "/users/forgot-password", "/users/reset-password").permitAll()
 
                 .antMatchers("/admin/login").permitAll()
@@ -75,7 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/land-details").hasRole("USER")
                 .antMatchers("/users/land-details/submit").permitAll()
                 .antMatchers("/**").permitAll()  
-                .anyRequest().authenticated()
+//                .anyRequest().authenticated()
               
             .and()
             .addFilter(new AuthenticationFilter(authenticationManagerBean(), jwtUtil, userRepository))

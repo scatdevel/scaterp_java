@@ -2,13 +2,14 @@ package com.scat.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.scat.dto.UserDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -39,6 +41,14 @@ public class UserServiceImpl implements UserService {
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
 
+	 public UserEntity getCurrentUser() {
+	      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	        String username = authentication.getName();
+	        return userRepository.findByUsername(username);
+	    }
+
+
+
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
 		if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
@@ -46,7 +56,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
-		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
 
 		if (userDTO.getRole() != null) {
 			RoleEntity role = roleRepository.findByName(userDTO.getRole().getName())
@@ -71,7 +81,7 @@ public class UserServiceImpl implements UserService {
 		return modelMapper.map(userEntity, UserDTO.class);
 	}
 
-		@Override
+	@Override
 	public UserDTO getUserByUsername(String username) {
 		UserEntity userEntity = userRepository.findByUsername(username);
 		if (userEntity == null) {
@@ -93,8 +103,8 @@ public class UserServiceImpl implements UserService {
 		userEntity.setEmail(userDTO.getEmail());
 		userEntity.setBio(userDTO.getBio());
 		userEntity.setDob(userDTO.getDob());
-		if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
-			userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+		if (userDTO.getEncryptedPassword() != null && !userDTO.getEncryptedPassword().isEmpty()) {
+			userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
 		}
 		userEntity.setProfilePictureUrl(userDTO.getProfilePictureUrl());
 
@@ -141,7 +151,6 @@ public class UserServiceImpl implements UserService {
 		return new User(userEntity.getUsername(), userEntity.getEncryptedPassword(), authorities);
 	}
 
-	
 	@Override
 	public UserDTO updateProfilePicture(String emailOrUsername, String profilePictureUrl) {
 		UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
@@ -155,6 +164,17 @@ public class UserServiceImpl implements UserService {
 		userEntity.setProfilePictureUrl(profilePictureUrl);
 		UserEntity updatedUserEntity = userRepository.save(userEntity);
 		return modelMapper.map(updatedUserEntity, UserDTO.class);
+	}
+
+	@Override
+	public void deleteUserByUsername(String username) {
+		// Optionally, you can check if the user exists before deleting
+		UserEntity user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new UsernameNotFoundException("User not found with username: " + username);
+		}
+
+		userRepository.deleteByUsername(username); // Delete the user
 	}
 
 	public void initiatePasswordReset(String email) {
@@ -188,6 +208,10 @@ public class UserServiceImpl implements UserService {
 		return false;
 	}
 
+	@Override
+	public Optional<UserEntity> getUserById(Long id) {
+		return userRepository.findById(id);
+	}
 
 
 }

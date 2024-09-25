@@ -75,7 +75,7 @@ public class AdminController {
 
 
 
-    @GetMapping("/user/{email}")
+     @GetMapping("/user/{email}")
     public ResponseEntity<UserEntity> getUserByEmail(@PathVariable String email) {
         try {
             UserEntity user = userRepository.findByEmail(email)

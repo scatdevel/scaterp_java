@@ -15,6 +15,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByResetToken(String resetToken);
       Optional<UserEntity> findById(Long id);
     List<UserEntity> findByRole_Id(Long roleId);
+    UserEntity deleteByUsername(String username); 
     boolean existsByRoleId(Long roleId);
 
 }
