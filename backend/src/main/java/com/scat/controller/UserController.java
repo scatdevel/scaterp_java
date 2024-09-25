@@ -180,20 +180,7 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
 		}
 	}
-//
-//	  @GetMapping("/me/{email}")
-//	    public ResponseEntity<?> getUserData(@PathVariable String email) {
-//	        try {
-//	            Optional<UserEntity> user = userService.getCurrentUser(email);
-//	            return ResponseEntity.ok(user);
-//	        } catch (EntityNotFoundException e) {
-//	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//	        } catch (Exception e) {
-//	            e.printStackTrace();
-//	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
-//	        }
-//	    }
-	
+
 	
 	  @PostMapping("/logout")
 	    public ResponseEntity<?> logout(HttpServletRequest request) {
