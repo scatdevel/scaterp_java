@@ -179,6 +179,16 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	
+	  @PostMapping("/logout")
+	    public ResponseEntity<?> logout(HttpServletRequest request) {
+	        request.getSession().invalidate();
+	        return ResponseEntity.ok().build();
+	    }
+>>>>>>> b4fd71f2400d878d6d718290de469d7a2802bfeb
 
     
 }

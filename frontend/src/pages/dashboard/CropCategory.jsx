@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Typography, Container, Table, TableBody, TableCell,
@@ -17,21 +16,23 @@ const CropCategory = () => {
   const [picture, setPicture] = useState(null); // State for picture
   const [viewingCategoryId, setViewingCategoryId] = useState(null);   
   const [openDialog, setOpenDialog] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false); // Flag to determine if we're editing
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false); // State for confirmation dialog
-  const [categoryToDelete, setCategoryToDelete] = useState(null); // State to hold the category id for deletion
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   const navigate = useNavigate();
   const { id } = useParams();
-
-    // Use the environment variable for the API URL
 
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true);
       try {
         const response = await axios.get('http://localhost:8080/crops/categories/get/all');
-        setCategories(response.data);
+        const categoriesWithPictures = response.data.map(category => ({
+          ...category,
+          picture: category.picture ? `data:image/jpeg;base64,${category.picture}` : null,
+        }));
+        setCategories(categoriesWithPictures);
       } catch (error) {
         console.error('Error fetching categories:', error);
       } finally {
@@ -62,7 +63,7 @@ const CropCategory = () => {
         } finally {
           setLoading(false);
         }
-      }; 
+      };
 
       fetchCategoryById();
     }
@@ -76,16 +77,18 @@ const CropCategory = () => {
       formData.append('name', name);
       formData.append('description', description);
       if (picture instanceof File) {
-        formData.append('picture', picture); // Append file object
+        formData.append('picture', picture);
       }
 
       const response = await axios.post('http://localhost:8080/crops/categories/add', formData, {
-        headers: {
-           'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setCategories([...categories, response.data]);
-      handleCloseDialog(); // Close the dialog after adding
+      const newCategory = {
+        ...response.data,
+        picture: response.data.picture ? `data:image/jpeg;base64,${response.data.picture}` : null,
+      };
+      setCategories([...categories, newCategory]);
+      handleCloseDialog();
     } catch (error) {
       console.error('Error adding category:', error.response ? error.response.data : error.message);
     } finally {
@@ -101,19 +104,21 @@ const CropCategory = () => {
       formData.append('name', name);
       formData.append('description', description);
       if (picture instanceof File) {
-        formData.append('picture', picture); // Append file object
+        formData.append('picture', picture);
       }
 
       await axios.put(`http://localhost:8080/crops/categories/update/${viewingCategoryId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      // Update the category in the state
-      setCategories(categories.map(cat =>
-        cat.id === viewingCategoryId ? { ...cat, name, description, picture: picture ? URL.createObjectURL(picture) : cat.picture } : cat
-      ));
-      handleCloseDialog(); // Close the dialog after updating
+
+      const updatedCategories = categories.map(cat =>
+        cat.id === viewingCategoryId
+          ? { ...cat, name, description, picture: picture instanceof File ? URL.createObjectURL(picture) : cat.picture }
+          : cat
+      );
+
+      setCategories(updatedCategories);
+      handleCloseDialog();
     } catch (error) {
       console.error('Error updating category:', error.response ? error.response.data : error.message);
     } finally {
@@ -121,18 +126,26 @@ const CropCategory = () => {
     }
   };
 
-  const handleOpenDialog = () => {
-    setName('');
-    setDescription('');
-    setPicture(null);
-    setViewingCategoryId(null);
-    setIsEditMode(false); // Add mode
+  const handleOpenDialog = (category) => {
+    if (category) {
+      setName(category.name);
+      setDescription(category.description);
+      setPicture(category.picture); // Directly use the base64 string for editing
+      setViewingCategoryId(category.id);
+      setIsEditMode(true);
+    } else {
+      setName('');
+      setDescription('');
+      setPicture(null);
+      setViewingCategoryId(null);
+      setIsEditMode(false);
+    }
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    setViewingCategoryId(null); // Clear the viewingCategoryId
+    setViewingCategoryId(null);
     setName('');
     setDescription('');
     setPicture(null);
@@ -157,14 +170,14 @@ const CropCategory = () => {
       console.error('Error removing category:', error);
     } finally {
       setLoading(false);
-      handleCloseConfirmDialog(); // Close the confirmation dialog after deleting
+      handleCloseConfirmDialog();
     }
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPicture(file); // Set the file object
+      setPicture(file);
     }
   };
 
@@ -176,7 +189,7 @@ const CropCategory = () => {
         variant="contained"
         color="primary"
         startIcon={<AddIcon />}
-        onClick={handleOpenDialog} // Open dialog in add mode
+        onClick={() => handleOpenDialog(null)} // Open dialog for adding
         sx={{ mb: 2 }}
       >
         Add Category
@@ -199,7 +212,7 @@ const CropCategory = () => {
                 <TableCell>
                   {category.picture ? (
                     <img
-                      src={`data:image/jpeg;base64,${category.picture}`}
+                      src={category.picture}
                       alt={category.name}
                       style={{ width: 50, height: 50, borderRadius: '50%' }}
                     />
@@ -209,35 +222,16 @@ const CropCategory = () => {
                 </TableCell>
                 <TableCell>{category.name}</TableCell>
                 <TableCell>{category.description}</TableCell>
-                <TableCell sx={{ display: '', justifyContent: 'center' }}>
+                <TableCell>
                   <Button
                     variant="contained"
-                    sx={{
-                      bgcolor: '#a5d6a7',
-                      '&:hover': {
-                        bgcolor: 'green',
-                      },
-                    }}
-                    onClick={() => {
-                      setName(category.name);
-                      setDescription(category.description);
-                      setPicture(category.picture ? `data:image/jpeg;base64,${category.picture}` : null);
-                      setViewingCategoryId(category.id);
-                      setIsEditMode(true);
-                      setOpenDialog(true);
-                    }}
+                    onClick={() => handleOpenDialog(category)} // Pass category for editing
                   >
                     Edit
                   </Button>
                   <Button
                     variant="contained"
                     color="error"
-                    sx={{
-                      bgcolor: '#f48fb1',
-                      '&:hover': {
-                        bgcolor: 'red',
-                      },
-                    }}
                     onClick={() => handleOpenConfirmDialog(category.id)}
                   >
                     Delete
@@ -250,7 +244,7 @@ const CropCategory = () => {
       </TableContainer>
 
       {/* Dialog for Adding/Editing Category */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>   
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>{isEditMode ? 'Edit Category' : 'Add New Category'}</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -283,7 +277,7 @@ const CropCategory = () => {
           />
           {picture && (
             <img
-              src={picture instanceof File ? URL.createObjectURL(picture) : picture}
+              src={typeof picture === 'string' ? picture : URL.createObjectURL(picture)}
               alt="Preview"
               style={{ width: 100, height: 100, marginTop: 16, borderRadius: '10%' }}
             />
@@ -326,4 +320,4 @@ const CropCategory = () => {
   );
 };
 
-export default CropCategory;  
+export default CropCategory;
