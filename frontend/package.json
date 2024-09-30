@@ -27,7 +27,10 @@
     "http-proxy-middleware": "^3.0.0",
     "i18next": "^23.15.1",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "jwt-decode": "^4.0.0",
+=======
+>>>>>>> b4fd71f2400d878d6d718290de469d7a2802bfeb
 =======
 >>>>>>> b4fd71f2400d878d6d718290de469d7a2802bfeb
     "material-tailwind-dashboard-react": "file:",
@@ -41,6 +44,9 @@
 =======
     "react-dom": "18.2.0",
     "react-i18next": "^15.0.2",
+<<<<<<< HEAD
+>>>>>>> b4fd71f2400d878d6d718290de469d7a2802bfeb
+=======
 >>>>>>> b4fd71f2400d878d6d718290de469d7a2802bfeb
     "react-router-dom": "^6.24.1"
   },

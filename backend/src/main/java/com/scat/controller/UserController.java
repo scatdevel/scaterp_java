@@ -180,7 +180,10 @@ public class UserController {
 		}
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> b4fd71f2400d878d6d718290de469d7a2802bfeb
 
 	
 	  @PostMapping("/logout")
