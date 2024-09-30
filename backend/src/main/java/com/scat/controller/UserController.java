@@ -1,9 +1,9 @@
 package com.scat.controller;
 
 import com.scat.dto.UserDTO;
-import com.scat.entity.UserEntity;
 import com.scat.model.request.UserDetailsRequestModel;
 import com.scat.model.response.UserRest;
+
 import com.scat.service.StorageService;
 import com.scat.service.UserService;
 import org.springframework.beans.BeanUtils;
@@ -68,6 +68,7 @@ public class UserController {
 		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
 	}
 
+
 	@PutMapping("/{username}")
 	public ResponseEntity<?> updateUser(@PathVariable String username, @RequestParam("fullName") String fullName,
 			@RequestParam("phoneNumber") Long phoneNumber, @RequestParam("email") String email,
@@ -75,7 +76,6 @@ public class UserController {
 			@RequestParam(value = "image", required = false) MultipartFile profilePictureUrl) {
 
 		try {
-
 			// Prepare UserDTO
 			UserDTO userDTO = new UserDTO();
 			userDTO.setUsername(username);
@@ -85,20 +85,20 @@ public class UserController {
 			userDTO.setBio(bio);
 			userDTO.setDob(dob);
 
-			// Preserve the existing password from the repository
+            // Handle file upload if present
+            if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
+                String originalFilename = profilePictureUrl.getOriginalFilename();
+                Path fileNameAndPath = Paths.get(baseDirectory, originalFilename);
 
-			// Handle file upload if present
-			if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
-				String originalFilename = profilePictureUrl.getOriginalFilename();
-				Path fileNameAndPath = Paths.get(baseDirectory, originalFilename);
-
-				// Save the file
-				Files.write(fileNameAndPath, profilePictureUrl.getBytes());
+                // Save the file
+                Files.write(fileNameAndPath, profilePictureUrl.getBytes()); 
 
 				// Set the profile picture URL in userDTO
-				userDTO.setProfilePictureUrl(originalFilename);
-				// or fileNameAndPath.toString() if you need the full path
-			} // Update the user
+				userDTO.setProfilePictureUrl(originalFilename); // or fileNameAndPath.toString() if you need the full
+																// path
+			}
+
+			// Update the user
 			UserDTO updatedUser = userService.updateUser(userDTO);
 			return ResponseEntity.ok().body(updatedUser);
 		} catch (UsernameNotFoundException e) {
@@ -108,6 +108,8 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving user information");
 		}
 	}
+
+
 
 	@GetMapping("/image/{username}")
 	public ResponseEntity<Resource> getProfileImage(@PathVariable String username) throws IOException {
@@ -138,41 +140,37 @@ public class UserController {
 	}
 
 
-	@GetMapping("/all")
-	public ResponseEntity<List<UserRest>> getAllUsers() {
-		List<UserDTO> users = userService.getAllUsers();
-		List<UserRest> userRestList = users.stream().map(userDTO -> {
-			UserRest userRest = new UserRest();
-			BeanUtils.copyProperties(userDTO, userRest);
-			return userRest;
-		}).collect(Collectors.toList());
-		return ResponseEntity.ok(userRestList);
-	}
-
-	@PostMapping(value = "/uploadProfilePicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @GetMapping("/all")
+    public ResponseEntity<List<UserRest>> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
+        List<UserRest> userRestList = users.stream()
+                .map(userDTO -> {
+                    UserRest userRest = new UserRest();
+                    BeanUtils.copyProperties(userDTO, userRest);
+                    return userRest;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userRestList) ;
+    }
+    
+    
+    @PostMapping(value = "/uploadProfilePicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> uploadProfilePicture(@RequestParam("username") String username,
 			@RequestParam("file") MultipartFile file) {
 		try {
-			// Create user directory if it doesn't exist
 			String userDirectory = Paths.get(baseDirectory, username).toString();
 			File userDir = new File(userDirectory);
 			if (!userDir.exists()) {
 				userDir.mkdirs();
 			}
 
-			// Save the file to the user directory
 			String fileName = file.getOriginalFilename();
 			Path targetLocation = Paths.get(userDirectory, fileName);
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-			// Retrieve the current user entity
 			UserDTO userDTO = userService.getUserByUsername(username);
-
-			// Update only the profile picture URL
 			userDTO.setProfilePictureUrl(fileName);
-
-			// Update the user in the database without changing the password
-			userService.updateProfilePicture(userDTO.getUsername(), userDTO.getProfilePictureUrl());
+			userService.updateUser(userDTO);
 
 			return ResponseEntity.ok().body("Profile picture uploaded successfully");
 		} catch (IOException e) {
@@ -180,25 +178,6 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
 		}
 	}
-//
-//	  @GetMapping("/me/{email}")
-//	    public ResponseEntity<?> getUserData(@PathVariable String email) {
-//	        try {
-//	            Optional<UserEntity> user = userService.getCurrentUser(email);
-//	            return ResponseEntity.ok(user);
-//	        } catch (EntityNotFoundException e) {
-//	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//	        } catch (Exception e) {
-//	            e.printStackTrace();
-//	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
-//	        }
-//	    }
-	
-	
-	  @PostMapping("/logout")
-	    public ResponseEntity<?> logout(HttpServletRequest request) {
-	        request.getSession().invalidate();
-	        return ResponseEntity.ok().build();
-	    }
 
+    
 }
