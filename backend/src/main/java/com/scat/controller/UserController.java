@@ -1,6 +1,7 @@
 package com.scat.controller;
 
 import com.scat.dto.UserDTO;
+import com.scat.entity.UserEntity;
 import com.scat.model.request.UserDetailsRequestModel;
 import com.scat.model.response.UserRest;
 
