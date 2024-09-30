@@ -50,6 +50,8 @@ const App = () => {
           )
         }
       />
+      {/* <Route path="/profile/users/:userId" component={Profile} /> */}
+
       <Route path="/auth/sign-up" element={<SignUp />} />
       <Route path="/auth/forgot-password" element={<ForgotPassword />} />
       <Route path="/auth/reset-password" element={<ResetPassword />} />

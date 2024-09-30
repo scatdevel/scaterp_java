@@ -7,6 +7,7 @@ import com.scat.repository.LandDetailsRepository;
 import com.scat.service.LandDetailsService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LandDetailsServiceImpl implements LandDetailsService {
@@ -36,5 +37,10 @@ public class LandDetailsServiceImpl implements LandDetailsService {
     @Override
     public List<LandDetails> getLandDetailsByUsername(String username) {
         return landDetailsRepository.findByUsername(username);
+    }
+    
+    @Override
+    public Optional<LandDetails> getLandDetailsById(Long id){
+    	return landDetailsRepository.findById(id);
     }
 }

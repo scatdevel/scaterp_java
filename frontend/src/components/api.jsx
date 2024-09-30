@@ -14,6 +14,7 @@ export const loginUser = async (credentials) => {
     if (response.data && response.data.token) {
       return {
         token: response.data.token,
+        id:response.data.id,
         role: response.data.role || 'user', // Assume role is provided or default to 'user'
       };
     } else {

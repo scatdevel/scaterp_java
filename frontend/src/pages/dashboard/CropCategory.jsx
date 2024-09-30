@@ -15,7 +15,7 @@ const CropCategory = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [picture, setPicture] = useState(null); // State for picture
-  const [viewingCategoryId, setViewingCategoryId] = useState(null);
+  const [viewingCategoryId, setViewingCategoryId] = useState(null);   
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false); // Flag to determine if we're editing
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false); // State for confirmation dialog
