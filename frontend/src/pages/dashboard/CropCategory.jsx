@@ -13,13 +13,8 @@ const CropCategory = () => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-<<<<<<< HEAD
-  const [picture, setPicture] = useState(null); // State for picture
-  const [viewingCategoryId, setViewingCategoryId] = useState(null);   
-=======
   const [picture, setPicture] = useState(null);
   const [viewingCategoryId, setViewingCategoryId] = useState(null);
->>>>>>> b4fd71f2400d878d6d718290de469d7a2802bfeb
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);

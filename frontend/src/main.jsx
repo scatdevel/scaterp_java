@@ -6,7 +6,8 @@ import { ThemeProvider } from "@material-tailwind/react";
 import { MaterialTailwindControllerProvider } from "@/context";
 import { Provider } from "react-redux";
 import store from "./redux/store"; // Adjust the path as needed
-import "../public/css/tailwind.css";  
+import "/public/css/tailwind.css";  
+//import "/css/tailwind.css";  
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
