@@ -38,7 +38,7 @@ public class UserEntity implements Serializable {
 	    private String profilePictureUrl;
 
 	    @Column(name = "dob")
-		@DateTimeFormat(pattern = "yyyy-MM-dd")
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
 		private Date dob;
   
 

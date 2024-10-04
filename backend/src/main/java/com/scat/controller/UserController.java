@@ -138,6 +138,7 @@ public class UserController {
 	}
 
 
+
 	@GetMapping("/all")
 	public ResponseEntity<List<UserRest>> getAllUsers() {
 		List<UserDTO> users = userService.getAllUsers();

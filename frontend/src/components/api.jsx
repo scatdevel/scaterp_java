@@ -14,7 +14,8 @@ export const loginUser = async (credentials) => {
     if (response.data && response.data.token) {
       return {
         token: response.data.token,
-        role: response.data.role || 'user', // Assume role is provided or default to 'user'
+        // role: response.data.role || 'user', // Assume role is provided or default to 'user'
+        role: response.data.role,
       };
     } else {
       throw new Error('Token not found in the response');

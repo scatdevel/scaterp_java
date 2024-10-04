@@ -58,6 +58,7 @@ const App = () => {
       <Route path="/user-list" element={<UserList />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/profile" element={<Profile />} />
+    
       <Route path="/tables" element={<Tables />} />
       <Route path="/cropDetailsForm" element={<CropDetailsForm />} />
       <Route path="/crop-overview" element={<CropOverview />} />

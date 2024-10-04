@@ -46,19 +46,14 @@ public class AdminController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createAdmin(
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam String username,
-            @RequestBody List<String> roleNames) {
+    public ResponseEntity<String> createAdmin(@RequestBody CreateAdmin createAdmin) {
         try {
-            adminService.createAdmin(email, password, username, roleNames);
+            adminService.createAdmin(createAdmin.getEmail(), createAdmin.getPassword(), createAdmin.getUsername(), createAdmin.getRoleNames());
             return ResponseEntity.status(HttpStatus.CREATED).body("{\"message\":\"Admin created successfully\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Failed to create admin: " + e.getMessage() + "\"}");
         }
     }
-
     @GetMapping("/roles")
     public ResponseEntity<?> getAllRoles() {
         try {
@@ -223,5 +218,39 @@ public class AdminController {
         }
     }
     
+    
+    
+    public static class CreateAdmin {
+        private String email;
+        private String password;
+        private String username;
+        public String getEmail() {
+			return email;
+		}
+		public void setEmail(String email) {
+			this.email = email;
+		}
+		public String getPassword() {
+			return password;
+		}
+		public void setPassword(String password) {
+			this.password = password;
+		}
+		public String getUsername() {
+			return username;
+		}
+		public void setUsername(String username) {
+			this.username = username;
+		}
+		public List<String> getRoleNames() {
+			return roleNames;
+		}
+		public void setRoleNames(List<String> roleNames) {
+			this.roleNames = roleNames;
+		}
+		private List<String> roleNames;
+
+        // Getters and Setters
+    }
 
 }
