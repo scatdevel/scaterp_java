@@ -65,6 +65,7 @@ export const fetchRoles = async () => {
   }
 };
 
+
 export const getAllUsers = async () => {
   try {
     const response = await axios.get(API_URL);
