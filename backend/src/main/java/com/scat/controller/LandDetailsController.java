@@ -1,6 +1,7 @@
 package com.scat.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,12 +32,29 @@ public class LandDetailsController {
             return new ResponseEntity<>("Failed to submit form", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<LandDetails> getLandDetailsById(@PathVariable Long id){
+		
+    	Optional<LandDetails> landDetails = landDetailsService.getLandDetailsById(id);
+    	
+    	if(landDetails.isPresent()) {
+    		return ResponseEntity.ok(landDetails.get());
+    	}
+    	else
+    	{
+    		return  ResponseEntity.notFound().build();
+    	}
+    	
+    	
+    }
 
     @GetMapping
     public ResponseEntity<List<LandDetails>> getAllLandDetails() {
         List<LandDetails> landDetailsList = landDetailsService.getAllLandDetails();
         return new ResponseEntity<>(landDetailsList, HttpStatus.OK);
     }
+    
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteLandDetails(@PathVariable Long id) {

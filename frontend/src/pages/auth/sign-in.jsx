@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Input, Checkbox, Button, Typography } from "@material-tailwind/react";
 import { loginUser, loginAdmin } from '../../components/api';
-import { useTranslation } from 'react-i18next'; // Import useTranslation
-import './i18n'; // Import the i18n configuration
-
+import { useTranslation } from 'react-i18next'; 
+import { useDispatch } from 'react-redux'; //  Import useDispatch
+import { login } from '../../redux/userslice'; // Adjust the path as needed
+import './i18n'; 
 
 export function SignIn({ setAuthenticated, setIsAdmin }) {
-  const { t,i18n } = useTranslation(); // Initialize i18n
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [alertMessage, setAlertMessage] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -17,6 +18,7 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // Initialize dispatch
 
   useEffect(() => {
     const authToken = localStorage.getItem('jwtToken');
@@ -54,26 +56,34 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setShowAlert(false); // Reset alert visibility
+    setShowAlert(false); 
   
     try {
       const emailDomain = formData.email.split('@')[1];
-      let token, role;
+      let token, role, userId;
   
       if (emailDomain === 'admin.com') {
-        ({ token, role } = await loginAdmin(formData));
-        setIsAdmin(true);
+        const response = await loginAdmin(formData);
+        token = response.token;
         role = 'admin';
+        userId = response.id;
+        setIsAdmin(true);
       } else {
-        ({ token, role } = await loginUser(formData));
-        setIsAdmin(false);
+        const response = await loginUser(formData);
+        token = response.token;
         role = 'user';
+        userId = response.id;
+        setIsAdmin(false);
       }
-  
+
       localStorage.setItem('jwtToken', token);
       localStorage.setItem('userRole', role);
+      localStorage.setItem('id', userId); 
       localStorage.setItem('tokenExpiration', new Date().getTime() + 3600000);
-  
+
+      // Dispatch the login action
+      dispatch(login({ userId, role }));
+
       setAuthenticated(true);
       setAlertMessage('Login successful!');
       setError(null);
@@ -98,8 +108,8 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
 
   return (
     <section className="relative flex flex-col lg:flex-row items-center justify-center min-h-screen bg-gray-100">
-      
-        <div className="absolute top-4 right-4 flex space-x-2 z-20">
+      {/* Language Switcher */}
+      <div className="absolute top-4 right-4 flex space-x-2 z-20">
         <img
           src="/img/en-flag.png"
           alt="English"
@@ -166,7 +176,7 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
                 color="gray"
                 className="flex items-center font-medium"
               >
-               {t('agreeTerms')}&nbsp;
+                {t('agreeTerms')}&nbsp;
                 <a
                   href="#"
                   className="font-normal text-blue-600 transition-colors hover:text-blue-800 underline"
@@ -176,14 +186,13 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
               </Typography>
             }
           />
-       
-<Button
-  type="submit"
-  className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md"
-  disabled={!isValid || loading}
->
-  {loading ? 'Signing in...' : t('signIn')}
-</Button>
+          <Button
+            type="submit"
+            className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md"
+            disabled={!isValid || loading}
+          >
+            {loading ? 'Signing in...' : t('signIn')}
+          </Button>
 
           {showAlert && (
             <div className={`alert shadow-blue-500/40 hover:shadow-indigo-500/40 mt-6 content-center text-black text-center rounded-lg ${error ? 'bg-red-300' : 'bg-green-300'}`}>
@@ -193,10 +202,8 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
 
           <div className="mt-6 text-center">
             <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
-            {t('forgotPassword')}
+              {t('forgotPassword')}
               <Link to="/auth/forgot-password" className="text-gray-900 ml-1 underline">
-               
-
                 {t('resetPassword')}
               </Link>
             </Typography>
@@ -204,9 +211,9 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
 
           <div className="text-center mt-2">
             <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
-               {t('notRegistered')}
+              {t('notRegistered')}
               <Link to="/auth/sign-up" className="text-gray-900 ml-1 underline">
-               {t('createAccount')}
+                {t('createAccount')}
               </Link>
             </Typography>
           </div>

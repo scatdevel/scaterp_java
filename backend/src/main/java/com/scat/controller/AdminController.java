@@ -45,6 +45,7 @@ public class AdminController {
         }
     }
 
+
     @PostMapping("/create")
     public ResponseEntity<String> createAdmin(@RequestBody CreateAdmin createAdmin) {
         try {
@@ -217,9 +218,7 @@ public class AdminController {
             this.password = password;
         }
     }
-    
-    
-    
+
     public static class CreateAdmin {
         private String email;
         private String password;
@@ -252,5 +251,4 @@ public class AdminController {
 
         // Getters and Setters
     }
-
 }
