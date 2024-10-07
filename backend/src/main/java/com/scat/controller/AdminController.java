@@ -1,5 +1,4 @@
 package com.scat.controller;
-
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
 import com.scat.repository.UserRepository;
@@ -57,6 +56,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Failed to create admin: " + e.getMessage() + "\"}");
         }
     }
+
 
     @GetMapping("/roles")
     public ResponseEntity<?> getAllRoles() {
@@ -223,7 +223,7 @@ public class AdminController {
     }
     
     
- // Define the CreateAdminRequest class here
+ //Define the CreateAdminRequest class here
     public static class CreateAdmin {
         private String email;
         private String password;
@@ -243,6 +243,7 @@ public class AdminController {
             return password;
         }
 
+        
         public void setPassword(String password) {
             this.password = password;
         }
