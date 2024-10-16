@@ -1,3 +1,4 @@
+
  package com.scat.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,4 +83,3 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     }
 
 }
-

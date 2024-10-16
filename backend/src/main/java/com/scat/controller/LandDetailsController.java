@@ -49,12 +49,26 @@ public class LandDetailsController {
     	
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<LandDetails>> getAllLandDetails() {
         List<LandDetails> landDetailsList = landDetailsService.getAllLandDetails();
         return new ResponseEntity<>(landDetailsList, HttpStatus.OK);
     }
-    
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateLandDetails(@PathVariable Long id, @RequestBody LandDetails updatedLandDetails) {
+        try {
+            if (!landDetailsService.getLandDetailsById(id).isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            updatedLandDetails.setId(id); // Ensure the ID is set for the entity
+            landDetailsService.saveLandDetails(updatedLandDetails);
+            return new ResponseEntity<>("Updated successfully!", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Failed to update", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteLandDetails(@PathVariable Long id) {

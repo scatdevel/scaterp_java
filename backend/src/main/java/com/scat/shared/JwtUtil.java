@@ -1,3 +1,4 @@
+
 package com.scat.shared;
 
 import io.jsonwebtoken.Claims;
@@ -67,4 +68,3 @@ public class JwtUtil {
         return roles;
     }
 }
-
