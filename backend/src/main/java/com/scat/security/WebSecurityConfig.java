@@ -48,14 +48,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf().disable()
             .authorizeRequests()
                 .antMatchers(SecurityConstants.SIGNUP_URL, SecurityConstants.LOGIN_URL, "/users/forgot-password", "/users/reset-password").permitAll()
-                .antMatchers("/users/current-user").permitAll()
-                //.antMatchers("/users/current-user").authenticated() 
-                .antMatchers("/users/current-user").hasAnyRole("USER")
                 .antMatchers("/admin/login").permitAll()
                 .antMatchers("/users/crops/save", "/users/crops/all").permitAll() // Allow access to login without authentication
-                .antMatchers("/crops/category/get/all", "/crops/categories/add").permitAll() // Allow access to login without authentication
-//                .anyRequest().authenticated() // Require authentication for all other endpoints
-              
+                .antMatchers("/crops/category/get/all", "/crops/categories/add").permitAll() // Allow access to login without authentication              
                 .antMatchers("/users/admin/login").permitAll()
                 .antMatchers("/users/admin/create").hasRole("ADMIN")
                 .antMatchers("/users/admin/create").permitAll()
