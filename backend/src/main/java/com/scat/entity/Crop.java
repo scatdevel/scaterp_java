@@ -27,19 +27,6 @@ public class Crop {
     private byte[] image;  // Store the image as a byte array
 
     private Date createdAt;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-    
-    
-	public UserEntity getUser() {
-		return user;
-	}
-
-	public void setUser(UserEntity user) {
-		this.user = user;
-	}
-
 	public Long getId() {
 		return id;
 	}

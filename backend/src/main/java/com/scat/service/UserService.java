@@ -18,9 +18,6 @@ public interface UserService extends UserDetailsService {
     void initiatePasswordReset(String email);
     boolean resetPassword(String token, String newPassword);
 	void deleteUserByUsername(String username);
-//	Optional<UserEntity> getCurrentUser(String email);
-//	Optional<UserEntity> findById(Long id);
-//	Optional<UserEntity> getUserByusername(String username);
 	Optional<UserEntity> getUserById(Long id);
-	 UserEntity getCurrentUser();
+	
 }
