@@ -27,7 +27,6 @@ public class Crop {
     private byte[] image;  // Store the image as a byte array
 
     private Date createdAt;
-
 	public Long getId() {
 		return id;
 	}
@@ -104,6 +103,8 @@ public class Crop {
 		return projectionTimelineValue;
 	}
 
+	
+	
 	public void setProjectionTimelineValue(int projectionTimelineValue) {
 		this.projectionTimelineValue = projectionTimelineValue;
 	}
@@ -111,6 +112,8 @@ public class Crop {
 	public byte[] getImage() {
 		return image;
 	}
+	
+	
 
 	public void setImage(byte[] image) {
 		this.image = image;

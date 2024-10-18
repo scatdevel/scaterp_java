@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -28,7 +30,18 @@ public class LandDetails {
     private double breadth;          // Added field for breadth
     private double area;             // Added field for area
 
-    // Getters and Setters
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+    public UserEntity getUser() {
+		return user;
+	}
+
+	public void setUser(UserEntity user) {
+		this.user = user;
+	}
+
+	// Getters and Setters
     public Long getId() {
         return id;
     }

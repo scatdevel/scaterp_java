@@ -49,7 +49,7 @@ public class LandDetailsController {
     	
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<LandDetails>> getAllLandDetails() {
         List<LandDetails> landDetailsList = landDetailsService.getAllLandDetails();
         return new ResponseEntity<>(landDetailsList, HttpStatus.OK);

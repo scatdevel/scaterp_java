@@ -107,7 +107,6 @@ public class UserController {
 	}
 
 
-
 	@GetMapping("/image/{username}")
 	public ResponseEntity<Resource> getProfileImage(@PathVariable String username) throws IOException {
 		UserDTO user = userService.getUserByUsername(username);
