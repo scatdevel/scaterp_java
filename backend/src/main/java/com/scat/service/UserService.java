@@ -1,4 +1,3 @@
-
 package com.scat.service;
 
 import com.scat.dto.UserDTO;
@@ -23,4 +22,5 @@ public interface UserService extends UserDetailsService {
 //	Optional<UserEntity> findById(Long id);
 //	Optional<UserEntity> getUserByusername(String username);
 	Optional<UserEntity> getUserById(Long id);
+	 UserEntity getCurrentUser();
 }

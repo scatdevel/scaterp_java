@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 const Address = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [landDetails, setLandDetails] = useState([]);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentDetail, setCurrentDetail] = useState(null);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const [detailToDelete, setDetailToDelete] = useState(null);
 
   const fetchAllLandDetails = async () => {
     try {
@@ -44,81 +46,96 @@ const Address = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:8080/users/land-details/${id}`);
-      fetchAllLandDetails(); // Refresh the list
-    } catch (error) {
-      console.error('Error deleting land details:', error);
-      setError('Failed to delete land details. Please try again.');
+  const handleDelete = async () => {
+    if (detailToDelete) {
+      try {
+        await axios.delete(`http://localhost:8080/users/land-details/${detailToDelete.id}`);
+        fetchAllLandDetails(); // Refresh the list
+        setIsConfirmingDelete(false);
+        setDetailToDelete(null);
+      } catch (error) {
+        console.error('Error deleting land details:', error);
+        setError('Failed to delete land details. Please try again.');
+      }
     }
   };
 
-  return (
-    <div className="p-6 bg-gray-100 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold mb-4 text-center">{t('LandDetails')}</h2>
-      {error && <p className="text-red-500">{error}</p>}
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
 
-      {landDetails.length > 0 ? (
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr>
-              <th className="py-2 border-b">{t('village')}</th>
-              <th className="py-2 border-b">{t('district')}</th>
-              <th className="py-2 border-b">{t('state')}</th>
-              <th className="py-2 border-b">{t('pincode')}</th>
-              <th className="py-2 border-b">{t('address')}</th>
-              <th className="py-2 border-b">{t('street')}</th>
-              <th className="py-2 border-b">{t('cultivationType')}</th>
-              <th className="py-2 border-b">{t('landOwnership')}</th>
-              <th className="py-2 border-b">{t('width')}</th>
-              <th className="py-2 border-b">{t('breadth')}</th>
-              <th className="py-2 border-b">{t('area')}</th>
-              <th className="py-2 border-b">{t('actions')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {landDetails.map((detail) => (
-              <tr key={detail.id} className="hover:bg-gray-100">
-                <td className="py-2 border-b">{detail.village}</td>
-                <td className="py-2 border-b">{detail.district}</td>
-                <td className="py-2 border-b">{detail.state}</td>
-                <td className="py-2 border-b">{detail.pincode}</td>
-                <td className="py-2 border-b">{detail.address}</td>
-                <td className="py-2 border-b">{detail.street}</td>
-                <td className="py-2 border-b">{detail.cultivationType}</td>
-                <td className="py-2 border-b">{detail.landOwnership}</td>
-                <td className="py-2 border-b">{detail.width}</td>
-                <td className="py-2 border-b">{detail.breadth}</td>
-                <td className="py-2 border-b">{detail.area}</td>
-                <td className="py-2 border-b">
-                  <button onClick={() => handleEditClick(detail)} className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    {t('Edit')}
-                  </button>
-                  <button onClick={() => handleDelete(detail.id)} className="ml-2 px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                    {t('Delete')}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="text-center">{t('noLandDetailsAvailable')}</p>
-      )}
+  return (
+    <div className="p-6 bg-gray-50 rounded-lg shadow-md">
+      <div className="absolute top-1 right-14 flex space-x-2 z-20">
+        <img
+          src="/img/en-flag.png"
+          alt="English"
+          className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+          onClick={() => changeLanguage('en')}
+        />
+        <img
+          src="/img/ta-flag.png"
+          alt="Tamil"
+          className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+          onClick={() => changeLanguage('ta')}
+        />
+      </div>
+      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">{t('Land Details')}</h2>
+      {error && <p className="text-red-600 text-center">{error}</p>}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {landDetails.length > 0 ? (
+          landDetails.map((detail) => (
+            <div 
+              key={detail.id} 
+              className="bg-white p-5 rounded-lg shadow-lg hover:shadow-xl transition-shadow transform hover:scale-105"
+              style={{ border: '1px solid #e2e8f0' }}
+            >
+              <h3 className="text-xl font-semibold text-blue-600">{detail.village}</h3>
+              <p><strong>{t('district')}: </strong>{detail.district}</p>
+              <p><strong>{t('state')}: </strong>{detail.state}</p>
+              <p><strong>{t('pincode')}: </strong>{detail.pincode}</p>
+              <p><strong>{t('address')}: </strong>{detail.address}</p>
+              <p><strong>{t('street')}: </strong>{detail.street}</p>
+              <p><strong>{t('cultivationType')}: </strong>{detail.cultivationType}</p>
+              <p><strong>{t('landOwnership')}: </strong>{detail.landOwnership}</p>
+              <div className="flex justify-between mt-4">
+                <button onClick={() => handleEditClick(detail)} className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                  {t('Edit')}
+                </button>
+                <button onClick={() => { setDetailToDelete(detail); setIsConfirmingDelete(true); }} className="ml-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                  {t('Delete')}
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500">{t('noLandDetailsAvailable')}</p>
+        )}
+      </div>
 
       {isEditing && (
         <EditModal
           detail={currentDetail}
           onClose={handleCloseModal}
           onSave={handleSaveChanges}
+          t={t} // Pass t function
+        />
+      )}
+
+      {isConfirmingDelete && (
+        <ConfirmationModal
+          onConfirm={handleDelete}
+          onCancel={() => setIsConfirmingDelete(false)}
+          message={t('Confirm delete address? This action cannot be undone.')}
+          t={t} // Pass t function
         />
       )}
     </div>
   );
 };
 
-const EditModal = ({ detail, onClose, onSave }) => {
+const EditModal = ({ detail, onClose, onSave, t }) => {
   const [updatedDetail, setUpdatedDetail] = useState(detail);
 
   useEffect(() => {
@@ -132,108 +149,60 @@ const EditModal = ({ detail, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-4 rounded-lg shadow-lg w-80 mx-4"> {/* Adjusted width here */}
-        <h3 className="text-lg font-bold mb-4">Edit Land Details</h3>
-        <input 
-          type="text"
-          name="village"
-          value={updatedDetail.village}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="Village"
-        />
-        <input 
-          type="text"
-          name="district"
-          value={updatedDetail.district}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="District"
-        />
-        <input 
-          type="text"
-          name="state"
-          value={updatedDetail.state}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="State"
-        />
-        <input 
-          type="text"
-          name="pincode"
-          value={updatedDetail.pincode}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="Pincode"
-        />
-        <input 
-          type="text"
-          name="address"
-          value={updatedDetail.address}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="Address"
-        />
-        <input 
-          type="text"
-          name="street"
-          value={updatedDetail.street}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="Street"
-        />
-        <input 
-          type="text"
-          name="cultivationType"
-          value={updatedDetail.cultivationType}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="Cultivation Type"
-        />
-        <input 
-          type="text"
-          name="landOwnership"
-          value={updatedDetail.landOwnership}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="Land Ownership"
-        />
-        <input 
-          type="number"
-          name="width"
-          value={updatedDetail.width}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="Width"
-        />
-        <input 
-          type="number"
-          name="breadth"
-          value={updatedDetail.breadth}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="Breadth"
-        />
-        <input 
-          type="number"
-          name="area"
-          value={updatedDetail.area}
-          onChange={handleChange}
-          className="border p-2 w-full mb-2"
-          placeholder="Area"
-        />
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96 mx-4">
+        <h3 className="text-xl font-semibold mb-4 text-center">{t('Edit')} {t('LandDetails')}</h3>
+        {['village', 'district', 'state', 'pincode', 'address', 'street', 'cultivationType', 'landOwnership'].map((field) => (
+          <div key={field} className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={field}>
+              {t(field)}
+            </label>
+            <input 
+              type="text"
+              id={field}
+              name={field}
+              value={updatedDetail[field]}
+              onChange={handleChange}
+              className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder={t(`Enter ${field}`)}
+            />
+          </div>
+        ))}
         <div className="flex justify-between mt-4">
           <button 
             onClick={() => onSave(updatedDetail)} 
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            className="px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700 transition"
           >
-            Save Changes
+            {t('Save Changes')}
           </button>
           <button 
             onClick={onClose} 
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded shadow hover:bg-gray-400 transition"
           >
-            Cancel
+            {t('Cancel')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ConfirmationModal = ({ onConfirm, onCancel, message, t }) => {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96 mx-4">
+        <h3 className="text-lg font-semibold mb-4 text-center">{message}</h3>
+        <div className="flex justify-between mt-4">
+          <button 
+            onClick={onConfirm} 
+            className="px-4 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition"
+          >
+            {t('Delete')}
+          </button>
+          <button 
+            onClick={onCancel} 
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded shadow hover:bg-gray-400 transition"
+          >
+            {t('Cancel')}
           </button>
         </div>
       </div>

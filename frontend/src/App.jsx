@@ -62,6 +62,8 @@ const App = () => {
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/profile" element={<Profile />} />
     
+    
+    
       <Route path="/tables" element={<Tables />} />
       <Route path="/address" element={<Address />} />
       <Route path="/cropDetailsForm" element={<CropDetailsForm />} />
@@ -86,3 +88,5 @@ const App = () => {
 };
 
 export default App;
+
+

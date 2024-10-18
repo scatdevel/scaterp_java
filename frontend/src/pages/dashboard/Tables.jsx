@@ -167,7 +167,10 @@ export function Tables() {
       if (response.status === 200) {
         setSuccessMessage('Form submitted successfully!');
         setError(null);
-        navigate('/address', { state: { landDetails: formData } }); // Pass form data
+        //navigate('/address', { state: { landDetails: formData } }); // Pass form data
+
+        navigate('/dashbord/address', { state: { landDetails: formData } });
+
       }
     } catch (error) {
       console.error('Error submitting form:', error);

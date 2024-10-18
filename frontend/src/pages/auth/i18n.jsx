@@ -46,7 +46,11 @@ i18n
             "update": "Update",
           //land details
 
-
+          "Edit": "Edit",
+          "Delete": "Delete",
+          "noLandDetailsAvailable": "No land details available.",
+          "Confirm delete address? This action cannot be undone.": "Confirm delete address? This action cannot be undone."
+        ,
           "address": "Address",
           "enterAddress": "Enter address",
           "village": "Village",
@@ -194,7 +198,11 @@ noImageAvailable: "No Image Available"
   "locateOnMap": "வரைப்படத்தில் காண்க",
   "submit": "சமர்ப்பிக்கவும்",
 
-
+  "Edit": "திருத்து",
+  "Delete": "அழி",
+  "noLandDetailsAvailable": "கைப்பற்றும் நில விவரங்கள் கிடையாது.",
+  "Confirm delete address? This action cannot be undone.": "முகவரியை நீக்குவதற்கு உறுதி? இந்த நடவடிக்கை எதிர்வினைக்க முடியாது."
+,
 
 //land details form
 

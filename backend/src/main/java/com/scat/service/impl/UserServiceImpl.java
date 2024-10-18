@@ -1,4 +1,3 @@
-
 package com.scat.service.impl;
 
 import org.modelmapper.ModelMapper;
@@ -42,12 +41,16 @@ public class UserServiceImpl implements UserService {
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
 
-	 public UserEntity getCurrentUser() {
-	      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	@Override
+	public UserEntity getCurrentUser() {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    System.out.println("Authentication: " + authentication); // Log the authentication object
+	    if (authentication != null && authentication.isAuthenticated()) {
 	        String username = authentication.getName();
 	        return userRepository.findByUsername(username);
 	    }
-
+	    return null;
+	}
 
 
 	@Override
