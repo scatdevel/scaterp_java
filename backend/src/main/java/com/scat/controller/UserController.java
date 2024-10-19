@@ -39,10 +39,12 @@ public class UserController {
 	private final UserService userService;
 	private final StorageService storageService;
 
+
 	@Autowired
 	public UserController(UserService userService, StorageService storageService) {
 		this.userService = userService;
 		this.storageService = storageService;
+		
 	}
 
 	@PostMapping("/register")
@@ -186,8 +188,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found: " + e.getMessage());
         }
     }
-
-	
+ 
 	  @PostMapping("/logout")
 	    public ResponseEntity<?> logout(HttpServletRequest request) {
 	        request.getSession().invalidate();
@@ -195,7 +196,7 @@ public class UserController {
 	    }
 
 
-    
+
 }
 
 

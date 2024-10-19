@@ -1,12 +1,14 @@
+import React from 'react';
 import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Button, IconButton, Typography } from "@material-tailwind/react";
+import { Button, IconButton, Typography } from "@material-tailwind/react"; 
 import { useMaterialTailwindController, setOpenSidenav } from "@/context";
 
-export function Sidenav({ brandImg, brandName, routes }) {
+export function Sidenav({ routes }) {
   const [controller, dispatch] = useMaterialTailwindController();
-  const { sidenavColor, sidenavType, openSidenav } = controller;
+  const { sidenavType, openSidenav } = controller;
+
   const sidenavTypes = {
     dark: "bg-gray-900 text-white shadow-lg",
     light: "bg-white text-gray-900 shadow-md",
@@ -18,12 +20,14 @@ export function Sidenav({ brandImg, brandName, routes }) {
         openSidenav ? "translate-x-0" : "-translate-x-full"
       } fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-64 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-gray-300`}
     >
-      <div className="relative p-6 flex items-center justify-between">
+      <div className="relative p-6 flex items-center justify-center bg-transparent"> {/* Ensure transparent background */}
         <Link to="/" className="flex items-center">
-          <img src={brandImg} alt="Logo" className="h-8 mr-2" />
-          <Typography variant="h5" className="font-bold text-green-600">
-            {brandName}
-          </Typography>
+          <img
+            src="/img/Scat-web-logo.svg" // Updated to SVG logo path
+            alt="Logo"
+            className="h-8" // Increased height for larger logo
+            onError={(e) => { e.target.onerror = null; e.target.src="/img/Scat-web-logo.svg"; }} // Fallback image
+          />
         </Link>
         <IconButton
           variant="text"
@@ -71,14 +75,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
   );
 }
 
-Sidenav.defaultProps = {
-  brandImg: "/img/logo-ct.png",
-  brandName: "SCAT ERP",
-};
-
 Sidenav.propTypes = {
-  brandImg: PropTypes.string,
-  brandName: PropTypes.string,
   routes: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 

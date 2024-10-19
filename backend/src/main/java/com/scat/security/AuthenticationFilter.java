@@ -68,15 +68,16 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String userName = ((User) auth.getPrincipal()).getUsername();
         UserEntity userEntity = userRepository.findByUsername(userName);
         String role = userEntity.getRole() != null ? userEntity.getRole().getName() : "";
-        Long userId =userEntity.getId();
-        String token = jwtUtil.generateToken(userName, Set.of(role));
-        
+        Long userId = userEntity.getId();
 
+        // Generate token with username and role
+        String token = jwtUtil.generateToken(userName, Set.of(role));
 
         res.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
         res.setContentType("application/json");
-        res.getWriter().write("{\"token\":\"" + token + "\", \"role\":\"" + role + "\", \"id\":\""+userId+ "\"}");
+        res.getWriter().write("{\"token\":\"" + token + "\", \"role\":\"" + role + "\", \"id\":\"" + userId + "\"}");
         res.getWriter().flush();
     }
+
 
 }
