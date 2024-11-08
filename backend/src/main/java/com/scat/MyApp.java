@@ -22,7 +22,7 @@ public class MyApp {
 
 	@Bean
 	CommandLineRunner init(StorageService storageService) {
-		return (args) -> {
+		return (args) -> { 
 			storageService.deleteAll();
 			storageService.init();
 		};

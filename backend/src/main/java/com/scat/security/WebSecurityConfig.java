@@ -1,3 +1,4 @@
+
 package com.scat.security;
 
 import com.scat.service.UserService;
@@ -40,20 +41,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(new BCryptPasswordEncoder());
     }
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
             .cors()
             .and()
             .csrf().disable()
-            .authorizeRequests().antMatchers("/users/me").authenticated().anyRequest().permitAll()
+            .authorizeRequests()
                 .antMatchers(SecurityConstants.SIGNUP_URL, SecurityConstants.LOGIN_URL, "/users/forgot-password", "/users/reset-password").permitAll()
-
                 .antMatchers("/admin/login").permitAll()
                 .antMatchers("/users/crops/save", "/users/crops/all").permitAll() // Allow access to login without authentication
-                .antMatchers("/crops/category/get/all", "/crops/categories/add").permitAll() // Allow access to login without authentication
-//                .anyRequest().authenticated() // Require authentication for all other endpoints
-
+                .antMatchers("/crops/category/get/all", "/crops/categories/add").permitAll() // Allow access to login without authentication              
                 .antMatchers("/users/admin/login").permitAll()
                 .antMatchers("/users/admin/create").hasRole("ADMIN")
                 .antMatchers("/users/admin/create").permitAll()
@@ -62,7 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/create").permitAll()
                .antMatchers("/roles/all").permitAll()  
                .antMatchers("/users/admin/**").permitAll()
-
+               .antMatchers("/current").permitAll() 
                 .antMatchers("/users/admin/role/login").permitAll()
                 .antMatchers("/users/admin/user/{email}").permitAll()
                 .antMatchers("/users/admin/roles/create").permitAll()
@@ -75,12 +74,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/land-details").hasRole("USER")
                 .antMatchers("/users/land-details/submit").permitAll()
                 .antMatchers("/**").permitAll()  
-//                .anyRequest().authenticated()
+                .anyRequest().authenticated()
               
             .and()
             .addFilter(new AuthenticationFilter(authenticationManagerBean(), jwtUtil, userRepository))
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    }
+    } 
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -98,4 +97,3 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 }
-

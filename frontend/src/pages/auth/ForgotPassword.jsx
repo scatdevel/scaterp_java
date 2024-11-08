@@ -3,8 +3,6 @@ import { Input, Button, Typography } from "@material-tailwind/react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// import qs from 'qs'; // Import qs to stringify the form data
-
 export function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -34,9 +32,9 @@ export function ForgotPassword() {
           }
         }
       );
-      const {token} = response.data; 
+      const { token } = response.data; 
       localStorage.setItem('token', token);
-    return response;
+      return response;
       
     } catch (error) {
       console.error('Error sending password reset link:', error.response?.data || error.message);
@@ -44,7 +42,6 @@ export function ForgotPassword() {
     }
   };
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -72,7 +69,7 @@ export function ForgotPassword() {
       if (err.response && err.response.status === 400 && err.response.data.includes('Email not found in the database')) {
         setError('The email address is not registered in our system.');
       } else {
-        setError('Email Not Found !');
+        setError('Email Not Found!');
       }
       setShowAlert(true);
     }
@@ -86,9 +83,11 @@ export function ForgotPassword() {
   return (
     <section className="relative flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-lg p-10 bg-white bg-opacity-90 rounded-lg shadow-lg z-10">
-        <div className="flex justify-center mb-6">
-          <img src="/img/logo_scat.png" className="w-28" alt="Logo" />
+        {/* Secondary Logo Section */}
+        <div className="flex justify-center mb-8">
+          <img src="/img/Scat-web-logo.svg" className="w-45 h-10" alt="Logo" />
         </div>
+
         <div className="text-center mb-6">
           <Typography variant="h4" className="font-bold mb-2 text-gray-800">Find Your Account</Typography>
           <Typography variant="paragraph" color="blue-gray" className="text-lg">
@@ -119,6 +118,16 @@ export function ForgotPassword() {
           )}
           <Button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transition-colors duration-200">
             Send Reset Link
+          </Button>
+
+          {/* Back to Sign In Button */}
+          <Button
+            type="button"
+            onClick={() => navigate('/sign-in')} // Navigate back to the sign-in page
+            className="w-full py-3 mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md"
+           
+          >
+            Back to Sign In
           </Button>
         </form>
       </div>

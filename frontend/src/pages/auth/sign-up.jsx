@@ -121,8 +121,8 @@ export function SignUp() {
       </div>
       <div className="lg:w-1/2 p-8 lg:p-16 bg-white bg-opacity-90 rounded-lg shadow-lg z-10">
         <div className="flex justify-center mb-8">
-          <img src="/img/logo_scat.png" className="w-24" alt="Logo" />
-        </div>
+  <img src="/img/Scat-web-logo.svg" className="w-45 h-10" alt="Logo" />
+</div>
         <div className="text-center mb-8">
           <Typography variant="h4" className="font-bold mb-2">{t('signUp')}</Typography>
           <Typography variant="paragraph" color="blue-gray" className="text-lg">

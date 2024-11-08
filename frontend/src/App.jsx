@@ -18,6 +18,7 @@ import CropCategory from './pages/dashboard/CropCategory';
 import FarmersList from './pages/dashboard/FarmersList';
 import UserDetails from './pages/dashboard/UserDetails';
 import RolesPage from './pages/dashboard/RolesPage';
+import Address from './pages/dashboard/Address';
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -61,7 +62,10 @@ const App = () => {
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/profile" element={<Profile />} />
     
+    
+    
       <Route path="/tables" element={<Tables />} />
+      <Route path="/address" element={<Address />} />
       <Route path="/cropDetailsForm" element={<CropDetailsForm />} />
       <Route path="/crop-overview" element={<CropOverview />} />
 
@@ -84,3 +88,5 @@ const App = () => {
 };
 
 export default App;
+
+
