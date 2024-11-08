@@ -21,6 +21,6 @@ public interface UserService extends UserDetailsService {
 //	Optional<UserEntity> getCurrentUser(String email);
 //	Optional<UserEntity> findById(Long id);
 //	Optional<UserEntity> getUserByusername(String username);
-	UserEntity getUserByJwt(String jwt);
 	Optional<UserEntity> getUserById(Long id);
+	
 }

@@ -1,11 +1,12 @@
 
 import { Card, CardBody } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux"; // Import useSelector from Redux
+import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+
 
 export function Tables() {
+
   const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     village: "",
@@ -21,6 +22,7 @@ export function Tables() {
     breadth: "",
     area: ""
   });
+ 
   const [isFieldsDisabled, setIsFieldsDisabled] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -200,11 +202,15 @@ export function Tables() {
             Authorization: `Bearer ${token}`,  // Sending JWT token
           },
         }
-      );
+      });
 
       if (response.status === 200) {
         setSuccessMessage("Form submitted successfully!");
         setError(null);
+        //navigate('/address', { state: { landDetails: formData } }); // Pass form data
+
+        navigate('/dashbord/address', { state: { landDetails: formData } });
+
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -216,6 +222,7 @@ export function Tables() {
       }
     }
   };
+  
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);

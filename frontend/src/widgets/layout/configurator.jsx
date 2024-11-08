@@ -39,19 +39,15 @@ export function Configurator() {
       .then((data) => setStars(formatNumber(data.stargazers_count, 1)));
   }, []);
 
-  // Logout function
   const handleLogout = async () => {
-   
-    localStorage.removeItem('authToken'); // Remove the token from local storage
-    localStorage.removeItem('tokenExpiration'); // Remove expiration time
-    window.location.href = '/auth/sign-in'; // Redirect to the login page
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('tokenExpiration');
+    window.location.href = '/auth/sign-in';
   };
 
   return (
     <aside
-      className={`fixed top-0 right-0 z-50 h-screen w-96 bg-white px-2.5 shadow-lg transition-transform duration-300 ${
-        openConfigurator ? "translate-x-0" : "translate-x-96"
-      }`}
+      className={`fixed top-0 right-0 z-50 h-screen w-96 bg-white px-2.5 shadow-lg transition-transform duration-300 ${openConfigurator ? "translate-x-0" : "translate-x-96"}`}
     >
       <div className="flex items-start justify-between px-6 pt-8 pb-6">
         <div>
@@ -59,7 +55,7 @@ export function Configurator() {
             Account Settings
           </Typography>
           <a href="profile">
-            <Typography variant="h8" color="blue-gray">
+            <Typography variant="h6" color="blue-gray"> {/* Change h8 to h6 */}
               <FontAwesomeIcon icon={faUserPen} className="text-black mr-2" />
               Edit Profile
             </Typography>
@@ -77,7 +73,6 @@ export function Configurator() {
         <div className="mb-12">
           <div className="mt-3 flex flex-col px-6">
             <Button
-              className=""
               variant={sidenavType === "white" ? "gradient" : "outlined"}
               onClick={() => setSidenavType(dispatch, "none")}
             >
@@ -93,7 +88,7 @@ export function Configurator() {
               variant="gradient"
               className="flex justify-center gap-2"
               fullWidth
-              onClick={handleLogout} // Added logout handler
+              onClick={handleLogout}
             >
               <FontAwesomeIcon icon={faRightFromBracket} className="text-white" />
               Log Out
