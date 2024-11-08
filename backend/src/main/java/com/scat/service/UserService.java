@@ -13,11 +13,14 @@ public interface UserService extends UserDetailsService {
     UserDTO getUserByUsername(String username);
     UserDTO updateUser(UserDTO userDTO);
     List<UserDTO> getAllUsers();
-    UserDTO getUser(String email);
+    UserEntity getUser(String email);
     UserDTO updateProfilePicture(String emailOrUsername, String profilePictureUrl);
     void initiatePasswordReset(String email);
     boolean resetPassword(String token, String newPassword);
 	void deleteUserByUsername(String username);
+//	Optional<UserEntity> getCurrentUser(String email);
+//	Optional<UserEntity> findById(Long id);
+//	Optional<UserEntity> getUserByusername(String username);
 	Optional<UserEntity> getUserById(Long id);
 	
 }

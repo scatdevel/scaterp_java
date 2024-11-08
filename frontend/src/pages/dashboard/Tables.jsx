@@ -1,11 +1,12 @@
+
 import { Card, CardBody } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+
 
 export function Tables() {
-  const navigate = useNavigate();
+
   const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     village: "",
@@ -19,7 +20,7 @@ export function Tables() {
     landOwnership: "",
     width: "",
     breadth: "",
-    area: "",
+    area: ""
   });
  
   const [isFieldsDisabled, setIsFieldsDisabled] = useState(false);
@@ -27,6 +28,12 @@ export function Tables() {
   const [successMessage, setSuccessMessage] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+
+  // Access JWT token from Redux store using useSelector
+  const token = useSelector((state) => state.auth.token); // Access the token from Redux store
+   console.log("token :", token);
+   
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,7 +62,9 @@ export function Tables() {
 
   const fetchLocationDetails = async () => {
     try {
-      const response = await axios.get(`https://api.postalpincode.in/pincode/${formData.pincode}`);
+      const response = await axios.get(
+        `https://api.postalpincode.in/pincode/${formData.pincode}`
+      );
       const data = response.data;
       if (data && data[0] && data[0].PostOffice) {
         const postOffice = data[0].PostOffice[0];
@@ -68,7 +77,7 @@ export function Tables() {
         setIsFieldsDisabled(true);
         setError(null);
       } else {
-        setError('Invalid Pincode.');
+        setError("Invalid Pincode.");
         setFormData((prevState) => ({
           ...prevState,
           village: "",
@@ -78,8 +87,8 @@ export function Tables() {
         setIsFieldsDisabled(false);
       }
     } catch (error) {
-      console.error('Error fetching location details:', error);
-      setError('Failed to fetch location details. Please try again.');
+      console.error("Error fetching location details:", error);
+      setError("Failed to fetch location details. Please try again.");
       setFormData((prevState) => ({
         ...prevState,
         village: "",
@@ -112,7 +121,7 @@ export function Tables() {
 
           try {
             const geocodeResponse = await axios.get(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBlvXBISfsHw8e6zLp-RGqI6xhKSw2KmuM`
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_GOOGLE_MAPS_API_KEY`
             );
             if (geocodeResponse.data && geocodeResponse.data.results[0]) {
               const result = geocodeResponse.data.results[0];
@@ -123,49 +132,80 @@ export function Tables() {
               }));
               setError(null);
             } else {
-              setError('Unable to retrieve address from location. Please try again.');
+              setError(
+                "Unable to retrieve address from location. Please try again."
+              );
               setFormData((prevState) => ({
                 ...prevState,
                 address: "",
               }));
             }
           } catch (error) {
-            console.error('Error reverse geocoding location:', error);
-            setError('Failed to retrieve address from location. Please check your network connection.');
+            console.error("Error reverse geocoding location:", error);
+            setError(
+              "Failed to retrieve address from location. Please check your network connection."
+            );
           } finally {
             setIsFetchingLocation(false);
           }
         },
         (error) => {
-          console.error('Error getting current location:', error);
-          setError('Failed to get current location. Please allow location access.');
+          console.error("Error getting current location:", error);
+          setError("Failed to get current location. Please allow location access.");
           setIsFetchingLocation(false);
         }
       );
     } else {
-      setError('Geolocation is not supported by this browser.');
+      setError("Geolocation is not supported by this browser.");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.pincode) {
-      setError('Pincode is required.');
+      setError("Pincode is required.");
       return;
     }
     if (!formData.village || !formData.district || !formData.address) {
-      setError('Please provide all location details.');
+      setError("Please provide all location details.");
       return;
     }
+
+    // Ensure JWT token exists
+    if (!token) {
+      setError("No authentication token found. Please log in again.");
+      return;
+    }
+
+    const landDetailsReq = [{
+      village: formData.village,
+      district: formData.district,
+      state: formData.state,
+      address: formData.address,
+      pincode: formData.pincode,
+      street: formData.street,
+      locateonmap: formData.locateonmap,
+      cultivationType: formData.cultivationType,
+      landOwnership: formData.landOwnership,
+      width: formData.width,
+      breadth: formData.breadth,
+      area: formData.area,
+    }];
+
     try {
-      const response = await axios.post('http://localhost:8080/users/land-details/submit', formData, {
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        "http://localhost:8080/users/land-details/submit",
+        landDetailsReq,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,  // Sending JWT token
+          },
         }
       });
-  
+
       if (response.status === 200) {
-        setSuccessMessage('Form submitted successfully!');
+        setSuccessMessage("Form submitted successfully!");
         setError(null);
         //navigate('/address', { state: { landDetails: formData } }); // Pass form data
 
@@ -173,9 +213,13 @@ export function Tables() {
 
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      setError('Failed to submit form. Please try again.');
+      console.error("Error submitting form:", error);
+      setError("Failed to submit form. Please try again.");
       setSuccessMessage(null);
+
+      if (error.response && error.response.status === 401) {
+        setError("Unauthorized! Please log in again.");
+      }
     }
   };
   
@@ -185,8 +229,7 @@ export function Tables() {
   };
   return (
     <div className="relative mt-12 mb-8 flex flex-col gap-12 p-6 bg-gray-20 rounded-lg shadow-lg h-screen">
-
-<div className="absolute top-1 right-14 flex space-x-2 z-20">
+      <div className="absolute top-1 right-14 flex space-x-2 z-20">
         <img
           src="/img/en-flag.png"
           alt="English"
