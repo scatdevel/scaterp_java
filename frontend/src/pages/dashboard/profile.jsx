@@ -97,7 +97,10 @@ export function Profile() {
   // Fetch user profile details
   const fetchUserProfile = async (userId) => {
     try {
+
+      const token = localStorage.getItem('token');
       const response = await axios.get(`http://localhost:8080/users/get/${userId}`);
+      
       const userData = response.data;
       setFormData({
         username: userData.username,

@@ -54,12 +54,6 @@ export const routes = [
         path: "/crop-overview", // Updated path
         element: <CropOverview />, // Updated element
       },
-      // {
-      //   icon: <InformationCircleIcon {...icon} />,
-      //   name: "notifications",
-      //   path: "/notifications",
-      //   element: <Notifications />,
-      // },
     ],
   },
   // {

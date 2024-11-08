@@ -3,6 +3,8 @@ package com.scat.entity;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.util.Base64;
 import java.util.Date;
 
@@ -11,6 +13,7 @@ public class Crop {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cropId")
     private Long id;
 
     private String cropName;
@@ -27,6 +30,20 @@ public class Crop {
     private byte[] image;  // Store the image as a byte array
 
     private Date createdAt;
+    
+    @ManyToOne
+    @JoinColumn(name  = "user_Id", nullable = false)
+    @JsonBackReference
+    private UserEntity user;
+
+    
+	public UserEntity getUser() {
+		return user;
+	}
+
+	public void setUser(UserEntity user) {
+		this.user = user;
+	}
 
 	public Long getId() {
 		return id;

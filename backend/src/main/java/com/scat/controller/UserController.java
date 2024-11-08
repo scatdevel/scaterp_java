@@ -1,6 +1,7 @@
 package com.scat.controller;
 
 import com.scat.dto.UserDTO;
+import com.scat.entity.LandDetails;
 import com.scat.entity.UserEntity;
 import com.scat.model.request.UserDetailsRequestModel;
 import com.scat.model.response.UserRest;
@@ -67,6 +68,19 @@ public class UserController {
 		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
 	}
 
+	@RequestMapping("/profile")
+	public ResponseEntity<UserEntity>  getUserByJwt(@RequestHeader("Authorization") String  token){
+		UserEntity user = userService.getUserByJwt(token);
+		
+		if(user != null) {
+			return ResponseEntity.ok(user);
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+		
+		
+	}
 
 	@PutMapping("/{username}")
 	public ResponseEntity<?> updateUser(@PathVariable String username, @RequestParam("fullName") String fullName,
@@ -119,15 +133,16 @@ public class UserController {
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
 	}
 
-	@GetMapping("/{email}")
-	public ResponseEntity<UserDTO> getUser(@PathVariable String email) {
-		UserDTO userDto = userService.getUser(email);
+	@GetMapping("/api/{email}")
+	public ResponseEntity<UserEntity> getUser(@PathVariable String email) {
+		UserEntity userDto = userService.getUser(email);
 		if (userDto != null) {
 			return ResponseEntity.ok(userDto);
 		} else {
 			return ResponseEntity.notFound().build();
 		}
 	}
+	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
 	    Optional<UserEntity> user = userService.getUserById(id);
@@ -154,23 +169,30 @@ public class UserController {
     }
     
     
-    @PostMapping(value = "/uploadProfilePicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(value = "/uploadProfilePicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> uploadProfilePicture(@RequestParam("username") String username,
 			@RequestParam("file") MultipartFile file) {
 		try {
+			// Create user directory if it doesn't exist
 			String userDirectory = Paths.get(baseDirectory, username).toString();
 			File userDir = new File(userDirectory);
 			if (!userDir.exists()) {
 				userDir.mkdirs();
 			}
 
+			// Save the file to the user directory
 			String fileName = file.getOriginalFilename();
 			Path targetLocation = Paths.get(userDirectory, fileName);
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
+			// Retrieve the current user entity
 			UserDTO userDTO = userService.getUserByUsername(username);
+
+			// Update only the profile picture URL
 			userDTO.setProfilePictureUrl(fileName);
-			userService.updateUser(userDTO);
+
+			// Update the user in the database without changing the password
+			userService.updateProfilePicture(userDTO.getUsername(), userDTO.getProfilePictureUrl());
 
 			return ResponseEntity.ok().body("Profile picture uploaded successfully");
 		} catch (IOException e) {

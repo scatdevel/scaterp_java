@@ -16,6 +16,7 @@ import com.scat.entity.UserEntity;
 import com.scat.repository.RoleRepository;
 import com.scat.repository.UserRepository;
 import com.scat.service.UserService;
+import com.scat.shared.JwtUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,25 +31,19 @@ public class UserServiceImpl implements UserService {
 	private final ModelMapper modelMapper;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final RoleRepository roleRepository;
+	private final JwtUtil jwtUtil;
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper,
-			BCryptPasswordEncoder bCryptPasswordEncoder) {
+			BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil ) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.modelMapper = modelMapper;
+		this.jwtUtil = jwtUtil;
 
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
-
-	 public UserEntity getCurrentUser() {
-	      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	        String username = authentication.getName();
-	        return userRepository.findByUsername(username);
-	    }
-
-
-
+	
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
 		if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
@@ -69,7 +64,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDTO getUser(String emailOrUsername) {
+	public UserEntity getUser(String emailOrUsername) {
 		UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
 		if (userEntity == null) {
 			userEntity = userRepository.findByUsername(emailOrUsername);
@@ -78,7 +73,7 @@ public class UserServiceImpl implements UserService {
 			throw new UsernameNotFoundException("User not found with identifier: " + emailOrUsername);
 		}
 
-		return modelMapper.map(userEntity, UserDTO.class);
+		return userEntity;
 	}
 
 	@Override
@@ -209,15 +204,17 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<UserEntity> getUserById(Long id) {
-		 return userRepository.findById(id);
+	public UserEntity getUserByJwt(String  jwt) {
+		String email = jwtUtil.extractEmail(jwt);
+		
+		UserEntity user = getUser(email);
+		return user;
 	}
-
-
-
 	
-
-	
-
-
+	@Override
+	public Optional<UserEntity> getUserById(Long id){
+		Optional<UserEntity> user = userRepository.findById(id);
+		return user;
+		
+	}
 }

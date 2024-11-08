@@ -82,7 +82,9 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
       localStorage.setItem('tokenExpiration', new Date().getTime() + 3600000);
 
       // Dispatch the login action
-      dispatch(login({ userId, role }));
+      dispatch(login({ userId, role ,token}));
+      console.log("token :", token);
+      
 
       setAuthenticated(true);
       setAlertMessage('Login successful!');
