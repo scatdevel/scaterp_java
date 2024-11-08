@@ -1,4 +1,3 @@
-
 package com.scat.service.impl;
 
 import com.scat.entity.Crop;
@@ -10,6 +9,7 @@ import com.scat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -19,33 +19,37 @@ public class CropServiceImpl {
     private CropRepository cropRepository;
     
     @Autowired
-    private UserRepository userrepo;
+    private UserRepository userRepo;
+  
+    
+    public List<Crop> saveCrop(Crop_Req cropdt, Long user_Id) {
+        // Create a new Crop object
+        Crop crop = new Crop();
+        crop.setActualProduction(cropdt.getActualProduction());
+        crop.setCost(cropdt.getCost());
+        crop.setCropName(cropdt.getCropName());
+        crop.setCultivationLandValue(cropdt.getCultivationLandValue());
+        crop.setId(cropdt.getId());
+        crop.setCreatedAt(cropdt.getCreatedAt());
+        crop.setImage(cropdt.getImage());
+        crop.setLandValueUnit(cropdt.getLandValueUnit());
+        crop.setProjectCost(cropdt.getProjectCost());
+        crop.setProjectedProduction(cropdt.getProjectedProduction());
+        crop.setProjectionTimelineType(cropdt.getProjectionTimelineType());
+        crop.setProjectionTimelineValue(cropdt.getProjectionTimelineValue());
 
-//    public List<Crop> saveCrop(Crop_Req cropdt, Long user_Id) {
-//    	
-//    	Crop crop = new Crop();
-//    	crop.setActualProduction(cropdt.getActualProduction());
-//        crop.setCost(cropdt.getCost());
-//        crop.setCropName(cropdt.getCropName());
-//        crop.setCultivationLandValue(cropdt.getCultivationLandValue());
-//        crop.setId(cropdt.getId());
-//        crop.setCreatedAt(cropdt.getCreatedAt());
-////        crop.setImage(cropdt.getImage());
-//        crop.setLandValueUnit(cropdt.getLandValueUnit());
-//        crop.setProjectCost(cropdt.getProjectCost());
-//        crop.setProjectedProduction(cropdt.getProjectedProduction());
-//        crop.setProjectionTimelineType(cropdt.getProjectionTimelineType());
-//        crop.setProjectionTimelineValue(cropdt.getProjectionTimelineValue());
-//    	
-//    	
-//    	UserEntity user = userrepo.findById(user_Id).orElseThrow(()-> new RuntimeException("User Not Found"));
-//    	 crop.setUser(user);
-//    	 
-//        return null;
-//    }
-    public Crop saveCrop(Crop crop) {
-    	return cropRepository.save(crop);
+        // Find the user and associate with the crop
+        UserEntity user = userRepo.findById(user_Id)
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+        crop.setUser(user);
+
+        // Save the crop
+        Crop savedCrop = cropRepository.save(crop);
+        
+        // Return a List containing the saved crop
+        return Collections.singletonList(savedCrop);
     }
+
 
     public List<Crop> getAllCrops() {
         return cropRepository.findAll();
