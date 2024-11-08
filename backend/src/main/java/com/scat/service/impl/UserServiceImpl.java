@@ -125,6 +125,8 @@ public class UserServiceImpl implements UserService {
 
 		return userDTOs;
 	}
+	
+	
 
 	@Override
 	public UserDetails loadUserByUsername(String emailOrUsername) throws UsernameNotFoundException {

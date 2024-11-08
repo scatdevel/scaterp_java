@@ -19,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,10 +40,12 @@ public class UserController {
 	private final UserService userService;
 	private final StorageService storageService;
 
+
 	@Autowired
 	public UserController(UserService userService, StorageService storageService) {
 		this.userService = userService;
 		this.storageService = storageService;
+		
 	}
 
 	@PostMapping("/register")
@@ -185,23 +185,22 @@ public class UserController {
 			Path targetLocation = Paths.get(userDirectory, fileName);
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-			// Retrieve the current user entity
-			UserDTO userDTO = userService.getUserByUsername(username);
+            // Fetch user without altering the password
+            UserDTO userDTO = userService.getUserByUsername(username);
+            // Update only the profile picture URL
+            userDTO.setProfilePictureUrl(fileName);
+            
+            // Update user profile without changing the password
+            userService.updateProfilePicture(userDTO.getUsername(), userDTO.getProfilePictureUrl());
 
-			// Update only the profile picture URL
-			userDTO.setProfilePictureUrl(fileName);
-
-			// Update the user in the database without changing the password
-			userService.updateProfilePicture(userDTO.getUsername(), userDTO.getProfilePictureUrl());
-
-			return ResponseEntity.ok().body("Profile picture uploaded successfully");
-		} catch (IOException e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture");
-		}
-	}
-
-	
+            return ResponseEntity.ok("Profile picture uploaded successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload profile picture: " + e.getMessage());
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found: " + e.getMessage());
+        }
+    }
+ 
 	  @PostMapping("/logout")
 	    public ResponseEntity<?> logout(HttpServletRequest request) {
 	        request.getSession().invalidate();
