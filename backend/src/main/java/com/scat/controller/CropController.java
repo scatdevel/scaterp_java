@@ -1,14 +1,20 @@
-package com.scat.controller;
+ package com.scat.controller;
 
 
 import com.scat.entity.Crop;
+import com.scat.entity.UserEntity;
+import com.scat.model.request.Crop_Req;
 import com.scat.service.impl.CropServiceImpl;
+import com.scat.service.impl.UserServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
+import org.w3c.dom.events.EventException;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,31 +25,28 @@ public class CropController {
 
     @Autowired
     private CropServiceImpl cropService;
+    
+    @Autowired
+    private  UserServiceImpl userService;
 
     @PostMapping("/save")
-    public Crop saveCrop(@RequestParam("cropName") String cropName,
-                         @RequestParam("actualProduction") double actualProduction,
-                         @RequestParam("projectedProduction") double projectedProduction,
-                         @RequestParam("cultivationLandValue") double cultivationLandValue,
-                         @RequestParam("landValueUnit") String landValueUnit,
-                         @RequestParam("cost") double cost,
-                         @RequestParam("projectCost") double projectCost,
-                         @RequestParam("projectionTimelineType") String projectionTimelineType,
-                         @RequestParam("projectionTimelineValue") int projectionTimelineValue,
-                         @RequestParam("image") MultipartFile image) throws IOException {
-        Crop crop = new Crop();
-        crop.setCropName(cropName);
-        crop.setActualProduction(actualProduction);
-        crop.setProjectedProduction(projectedProduction);
-        crop.setCultivationLandValue(cultivationLandValue);
-        crop.setLandValueUnit(landValueUnit);
-        crop.setCost(cost);
-        crop.setProjectCost(projectCost);
-        crop.setProjectionTimelineType(projectionTimelineType);
-        crop.setProjectionTimelineValue(projectionTimelineValue);
-        crop.setImage(image.getBytes());  // Convert the image to a byte array
-        return cropService.saveCrop(crop);
+    public ResponseEntity<List<Crop>> saveCrops(
+            @RequestBody List<Crop_Req> cropDetails,
+            @RequestHeader("Authorization") String jwt) throws Exception {
+        
+        UserEntity user = userService.getUserByJwtToken(jwt);
+        
+        List<Crop> savedCrops = new ArrayList<>();
+        
+        // Iterate through each Crop_Req and save it
+        for (Crop_Req cropReq : cropDetails) {
+            List<Crop> savedCrop = cropService.saveCrop(cropReq, user.getId());
+            savedCrops.addAll(savedCrop); // Add the saved crop to the list
+        }
+        
+        return new ResponseEntity<>(savedCrops, HttpStatus.OK);
     }
+
 
     @GetMapping("/all")
     public List<Crop> getAllCrops() {

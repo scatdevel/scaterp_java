@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-By: SCAT-3
+Build-Jdk: 22.0.1
+Implementation-Title: Scat
+Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Vendor-Id: com.scat
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot
+ -starter-parent/Scat_Project
+Created-By: Maven Integration for Eclipse
+
