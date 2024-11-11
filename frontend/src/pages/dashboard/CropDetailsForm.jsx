@@ -30,6 +30,12 @@ const CropDetailsForm = () => {
   const [showAddCropButton, setShowAddCropButton] = useState(true);
 
  const token = useSelector((state) => state.auth.token);
+ useEffect(() => {
+  if (token) {
+    console.log("Token:", token);
+  }
+}, [token]);
+ 
  
   useEffect(() => {
     if (token) {

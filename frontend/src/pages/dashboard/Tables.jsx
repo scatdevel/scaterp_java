@@ -1,12 +1,11 @@
-
 import { Card, CardBody } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-
+import { useSelector } from 'react-redux'; // Import useSelector
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 export function Tables() {
-
   const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({
     village: "",
@@ -31,17 +30,22 @@ export function Tables() {
 
   // Access JWT token from Redux store using useSelector
   const token = useSelector((state) => state.auth.token); // Access the token from Redux store
-   console.log("token :", token);
-   
+  useEffect(() => {
+    if (token) {
+      console.log("Token:", token);
+    }
+  }, [token]);
 
+  const navigate = useNavigate(); // useNavigate hook for navigation
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevState) => ({
+      ...prevState,
       [name]: value,
-    });
+    }));
 
+    // Calculate area if width or breadth is changed
     if (name === "width" || name === "breadth") {
       const width = formData.width || 0;
       const breadth = formData.breadth || 0;
@@ -132,9 +136,7 @@ export function Tables() {
               }));
               setError(null);
             } else {
-              setError(
-                "Unable to retrieve address from location. Please try again."
-              );
+              setError("Unable to retrieve address from location. Please try again.");
               setFormData((prevState) => ({
                 ...prevState,
                 address: "",
@@ -142,9 +144,7 @@ export function Tables() {
             }
           } catch (error) {
             console.error("Error reverse geocoding location:", error);
-            setError(
-              "Failed to retrieve address from location. Please check your network connection."
-            );
+            setError("Failed to retrieve address from location. Please check your network connection.");
           } finally {
             setIsFetchingLocation(false);
           }
@@ -162,6 +162,7 @@ export function Tables() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Basic validation
     if (!formData.pincode) {
       setError("Pincode is required.");
       return;
@@ -202,15 +203,13 @@ export function Tables() {
             Authorization: `Bearer ${token}`,  // Sending JWT token
           },
         }
-      });
+      );
 
       if (response.status === 200) {
         setSuccessMessage("Form submitted successfully!");
         setError(null);
-        //navigate('/address', { state: { landDetails: formData } }); // Pass form data
-
-        navigate('/dashbord/address', { state: { landDetails: formData } });
-
+        // navigate to dashboard after successful submission
+        navigate('/dashboard/address', { state: { landDetails: formData } });
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -222,7 +221,6 @@ export function Tables() {
       }
     }
   };
-  
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
