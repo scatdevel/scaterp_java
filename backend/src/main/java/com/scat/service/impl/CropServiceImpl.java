@@ -52,7 +52,7 @@ public class CropServiceImpl {
 
 
     public List<Crop> getAllCrops() {
-        return cropRepository.findAll();
+        return  cropRepository.findAll();
     }
 
     public Crop getCropById(Long id) {
