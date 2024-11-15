@@ -153,7 +153,7 @@ export function Tables() {
           console.error("Error getting current location:", error);
           setError("Failed to get current location. Please allow location access.");
           setIsFetchingLocation(false);
-        }
+         }
       );
     } else {
       setError("Geolocation is not supported by this browser.");

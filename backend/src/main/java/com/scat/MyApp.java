@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.scat.service.StorageService;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.scat") 
 public class MyApp {
  
 	public static void main(String[] args) {
