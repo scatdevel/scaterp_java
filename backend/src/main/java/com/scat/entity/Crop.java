@@ -1,8 +1,6 @@
 package com.scat.entity;
 
-
 import javax.persistence.*;
-
 import java.util.Base64;
 import java.util.Date;
 
@@ -23,118 +21,135 @@ public class Crop {
     private String projectionTimelineType;
     private int projectionTimelineValue;
 
+    // Add units for actual and projected production
+    private String actualProductionUnit;
+    private String projectedProductionUnit;
+
     @Lob
     private byte[] image;  // Store the image as a byte array
 
     private Date createdAt;
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    // Getters and Setters
 
-	public String getCropName() {
-		return cropName;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCropName(String cropName) {
-		this.cropName = cropName;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public double getActualProduction() {
-		return actualProduction;
-	}
+    public String getCropName() {
+        return cropName;
+    }
 
-	public void setActualProduction(double actualProduction) {
-		this.actualProduction = actualProduction;
-	}
+    public void setCropName(String cropName) {
+        this.cropName = cropName;
+    }
 
-	public double getProjectedProduction() {
-		return projectedProduction;
-	}
+    public double getActualProduction() {
+        return actualProduction;
+    }
 
-	public void setProjectedProduction(double projectedProduction) {
-		this.projectedProduction = projectedProduction;
-	}
+    public void setActualProduction(double actualProduction) {
+        this.actualProduction = actualProduction;
+    }
 
-	public double getCultivationLandValue() {
-		return cultivationLandValue;
-	}
+    public double getProjectedProduction() {
+        return projectedProduction;
+    }
 
-	public void setCultivationLandValue(double cultivationLandValue) {
-		this.cultivationLandValue = cultivationLandValue;
-	}
+    public void setProjectedProduction(double projectedProduction) {
+        this.projectedProduction = projectedProduction;
+    }
 
-	public String getLandValueUnit() {
-		return landValueUnit;
-	}
+    public double getCultivationLandValue() {
+        return cultivationLandValue;
+    }
 
-	public void setLandValueUnit(String landValueUnit) {
-		this.landValueUnit = landValueUnit;
-	}
+    public void setCultivationLandValue(double cultivationLandValue) {
+        this.cultivationLandValue = cultivationLandValue;
+    }
 
-	public double getCost() {
-		return cost;
-	}
+    public String getLandValueUnit() {
+        return landValueUnit;
+    }
 
-	public void setCost(double cost) {
-		this.cost = cost;
-	}
+    public void setLandValueUnit(String landValueUnit) {
+        this.landValueUnit = landValueUnit;
+    }
 
-	public double getProjectCost() {
-		return projectCost;
-	}
+    public double getCost() {
+        return cost;
+    }
 
-	public void setProjectCost(double projectCost) {
-		this.projectCost = projectCost;
-	}
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
 
-	public String getProjectionTimelineType() {
-		return projectionTimelineType;
-	}
+    public double getProjectCost() {
+        return projectCost;
+    }
 
-	public void setProjectionTimelineType(String projectionTimelineType) {
-		this.projectionTimelineType = projectionTimelineType;
-	}
+    public void setProjectCost(double projectCost) {
+        this.projectCost = projectCost;
+    }
 
-	public int getProjectionTimelineValue() {
-		return projectionTimelineValue;
-	}
+    public String getProjectionTimelineType() {
+        return projectionTimelineType;
+    }
 
-	
-	
-	public void setProjectionTimelineValue(int projectionTimelineValue) {
-		this.projectionTimelineValue = projectionTimelineValue;
-	}
+    public void setProjectionTimelineType(String projectionTimelineType) {
+        this.projectionTimelineType = projectionTimelineType;
+    }
 
-	public byte[] getImage() {
-		return image;
-	}
-	
-	
+    public int getProjectionTimelineValue() {
+        return projectionTimelineValue;
+    }
 
-	public void setImage(byte[] image) {
-		this.image = image;
-	}
+    public void setProjectionTimelineValue(int projectionTimelineValue) {
+        this.projectionTimelineValue = projectionTimelineValue;
+    }
 
-	public Date getCreatedAt() {
-		return createdAt;
-	}
+    // Add getters and setters for the new unit fields
+    public String getActualProductionUnit() {
+        return actualProductionUnit;
+    }
 
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-	
+    public void setActualProductionUnit(String actualProductionUnit) {
+        this.actualProductionUnit = actualProductionUnit;
+    }
 
+    public String getProjectedProductionUnit() {
+        return projectedProductionUnit;
+    }
+
+    public void setProjectedProductionUnit(String projectedProductionUnit) {
+        this.projectedProductionUnit = projectedProductionUnit;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    // Method to return the image URL as a base64 string
     public String getImageUrl() {
         if (image != null) {
             return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(image);
         }
         return null;
     }
-
-     
 }
-

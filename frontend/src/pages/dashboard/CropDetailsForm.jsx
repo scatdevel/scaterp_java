@@ -21,7 +21,10 @@ const CropDetailsForm = () => {
     imageUrl: '',
     projectionTimelineType: '',
     projectionTimelineValue: '',
-    categoryId: ''
+    actualProductionUnit: '',
+    projectedProductionUnit: '',
+    categoryId: '',
+    
   }]);
   const [categories, setCategories] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
@@ -43,6 +46,7 @@ const CropDetailsForm = () => {
 
   const handleChange = (e, id) => {
     const { name, value, type, files } = e.target;
+  
     if (type === 'file') {
       const file = files[0];
       const imagePreview = URL.createObjectURL(file);
@@ -59,7 +63,7 @@ const CropDetailsForm = () => {
       ));
     }
   };
-
+  
   const handleAddCrop = () => {
     setCrops([...crops, {
       id: Date.now(),
@@ -75,38 +79,51 @@ const CropDetailsForm = () => {
       imageUrl: '',
       projectionTimelineType: '',
       projectionTimelineValue: '',
-      categoryId: ''
+      actualProductionUnit: '',
+    projectedProductionUnit: '',
+      categoryId: '',
+      
     }]);
     setShowAddCropButton(true);
+  };
+  const formatCurrency = (value) => {
+    if (value === '') return '';
+    const amount = parseFloat(value);
+    if (isNaN(amount)) return '';
+    return `₹ ${amount.toLocaleString()}`;
   };
 
   const handleSubmitDetails = async (e) => {
     e.preventDefault();
-
+  
     try {
       for (const crop of crops) {
         const formData = new FormData();
         formData.append('cropName', crop.cropName);
         formData.append('actualProduction', crop.actualProduction);
+        formData.append('actualProductionUnit', crop.actualProductionUnit);  // Add actualProductionUnit
         formData.append('projectedProduction', crop.projectedProduction);
+        formData.append('projectedProductionUnit', crop.projectedProductionUnit);  // Add projectedProductionUnit
         formData.append('cultivationLandValue', crop.cultivationLandValue);
         formData.append('landValueUnit', crop.landValueUnit);
         formData.append('cost', crop.cost);
         formData.append('projectCost', crop.projectCost);
         formData.append('projectionTimelineType', crop.projectionTimelineType);
         formData.append('projectionTimelineValue', crop.projectionTimelineValue);
-        formData.append('categoryId', crop.categoryId); // Include category ID
+        formData.append('categoryId', crop.categoryId);
         if (crop.image) {
           formData.append('image', crop.image);
         }
-
+  
+        console.log("Form Data: ", formData); // Log FormData to ensure it is correct
+  
         await axios.post('http://localhost:8080/users/crops/save', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         });
       }
-
+  
       setSuccessMessage('Crop details successfully saved!');
       setErrorMessage('');
       navigate('/crop-overview');
@@ -116,6 +133,7 @@ const CropDetailsForm = () => {
       setSuccessMessage('');
     }
   };
+  
 
   const handleCancel = () => {
     navigate(-1);
@@ -208,31 +226,59 @@ const CropDetailsForm = () => {
                     )}
                   </div>
 
+                  
                   <div className="flex flex-col space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{t('actualProduction')}</label>
-                    <input
-                      type="number"
-                      name="actualProduction"
-                      value={crop.actualProduction}
-                      onChange={(e) => handleChange(e, crop.id)}
-                      placeholder={t('enterActualProduction')}
-                      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-                      required
-                    />
-                  </div>
+  <label className="text-sm font-medium text-gray-700">{t('actualProduction')}</label>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <input
+      type="number"
+      name="actualProduction"
+      value={crop.actualProduction}
+      onChange={(e) => handleChange(e, crop.id)}
+      placeholder={t('enterActualProduction')}
+      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+      required
+    />
+    <select
+      name="actualProductionUnit"
+      value={crop.actualProductionUnit}
+      onChange={(e) => handleChange(e, crop.id)}
+      className="p-1 text-xs border border-gray-300 rounded-md w-30 h-8 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+    >
+      <option value="kg">{t('kgs')}</option>
+      <option value="ton">{t('tons')}</option>
+      {/* Add more units as needed */}
+    </select>
+  </div>
+</div>
 
-                  <div className="flex flex-col space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{t('projectedProduction')}</label>
-                    <input
-                      type="number"
-                      name="projectedProduction"
-                      value={crop.projectedProduction}
-                      onChange={(e) => handleChange(e, crop.id)}
-                      placeholder={t('enterProjectedProduction')}
-                      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-                      required
-                    />
-                  </div>
+
+<div className="flex flex-col space-y-2">
+  <label className="text-sm font-medium text-gray-700">{t('projectedProduction')}</label>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <input
+      type="number"
+      name="projectedProduction"
+      value={crop.projectedProduction}
+      onChange={(e) => handleChange(e, crop.id)}
+      placeholder={t('enterProjectedProduction')}
+      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+      required
+    />
+    <select
+      name="projectedProductionUnit"
+      value={crop.projectedProductionUnit}
+      onChange={(e) => handleChange(e, crop.id)}
+      className="p-1 text-xs border border-gray-300 rounded-md w-30 h-8 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+    >
+      <option value="kg">{t('kgs')}</option>
+      <option value="ton">{t('tons')}</option>
+      {/* Add more units as needed */}
+    </select>
+  </div>
+</div>
+
+
 
                   <div className="flex flex-col space-y-2">
                     <label className="text-sm font-medium text-gray-700">{t('landValueUnit')} & {t('cultivationLandValue')}</label>
@@ -260,8 +306,7 @@ const CropDetailsForm = () => {
                       </select>
                     </div>
                   </div>
-
-
+ 
                   <div className="flex flex-col space-y-4">
   <div className="flex items-center space-x-4">
     <div className="flex-1">
@@ -271,10 +316,16 @@ const CropDetailsForm = () => {
         name="cost"
         value={crop.cost}
         onChange={(e) => handleChange(e, crop.id)}
-        placeholder={t('enterCost')}
+        placeholder={t('cost')}
         className="p-3 border border-gray-300 rounded-md text-base w-full focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
         required
       />
+      {/* Display the formatted currency value */}
+      {crop.cost && (
+        <span className="text-gray-500 mt-1 block">
+          {formatCurrency(crop.cost)}
+        </span>
+      )}
     </div>
     <div className="flex-1">
       <label className="text-sm font-medium text-gray-700">{t('projectCost')}</label>
@@ -283,10 +334,16 @@ const CropDetailsForm = () => {
         name="projectCost"
         value={crop.projectCost}
         onChange={(e) => handleChange(e, crop.id)}
-        placeholder={t('enterProjectCost')}
+        placeholder={t('Enter Project Cost')}
         className="p-3 border border-gray-300 rounded-md text-base w-full focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
         required
       />
+      {/* Display the formatted currency value */}
+      {crop.projectCost && (
+        <span className="text-gray-500 mt-1 block">
+          {formatCurrency(crop.projectCost)}
+        </span>
+      )}
     </div>
   </div>
 </div>
