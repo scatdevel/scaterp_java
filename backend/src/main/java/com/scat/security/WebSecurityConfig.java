@@ -51,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers(SecurityConstants.SIGNUP_URL, SecurityConstants.LOGIN_URL, "/users/forgot-password", "/users/reset-password").permitAll()
                 .antMatchers("/admin/login").permitAll()
-                .antMatchers("/users/crops/save", "/users/crops/get/{id}").permitAll()
+                .antMatchers("/users/crops/save", "/users/crops/get/{id}", "/users/land-details/all").permitAll()
                 .antMatchers("/crops/categories/get/all", "/crops/categories/add").permitAll()
                 .antMatchers("/crops/categories/update/{id}", "/crops/categories/delete/{id}").permitAll()
                 .antMatchers("/users/admin/login").permitAll()
@@ -59,9 +59,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/admin/create").permitAll()
                 .antMatchers("/users/admin/**/**").permitAll()
                 .antMatchers("/roles/all").permitAll()
-                .antMatchers("/users/**").permitAll()
+                .antMatchers("/users/login").permitAll()
                 .antMatchers("/users/api/{email}").permitAll()
-                .antMatchers("/users/get/{id}").permitAll() // Ensure this line is accessible
+                .antMatchers("/users/get/{id}", "/users/crops/all").permitAll() // Ensure this line is accessible
                 .anyRequest().authenticated() // Any other requests require authentication
             .and()
             .addFilter(new AuthenticationFilter(authenticationManagerBean(), jwtUtil, userRepository))
