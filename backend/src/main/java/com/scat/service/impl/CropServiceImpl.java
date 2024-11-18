@@ -1,8 +1,10 @@
 package com.scat.service.impl;
 
 import com.scat.entity.Crop;
+import com.scat.entity.CropCategory;
 import com.scat.entity.UserEntity;
 import com.scat.model.request.Crop_Req;
+import com.scat.repository.CropCategoryRepository;
 import com.scat.repository.CropRepository;
 import com.scat.repository.UserRepository;
 
@@ -19,8 +21,10 @@ public class CropServiceImpl {
     private CropRepository cropRepository;
     
     @Autowired
-    private UserRepository userRepo;
-  
+    private UserRepository userRepo;  
+    
+    @Autowired
+    private CropCategoryRepository catRepo;
     
     public List<Crop> saveCrop(Crop_Req cropdt, Long user_Id) {
         // Create a new Crop object
@@ -43,6 +47,10 @@ public class CropServiceImpl {
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
         crop.setUser(user);
 
+       CropCategory category = catRepo.findByName(cropdt.getCategory())
+    		   .orElseThrow(() -> new RuntimeException("Category Not Found"));
+       crop.setCategory(category);
+    		   
         // Save the crop
         Crop savedCrop = cropRepository.save(crop);
         
@@ -52,7 +60,7 @@ public class CropServiceImpl {
 
 
     public List<Crop> getAllCrops() {
-        return cropRepository.findAll();
+        return  cropRepository.findAll();
     }
 
     public Crop getCropById(Long id) {

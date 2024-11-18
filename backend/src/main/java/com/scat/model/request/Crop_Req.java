@@ -15,6 +15,7 @@ public class Crop_Req {
 	    private double projectCost;
 	    private String projectionTimelineType;
 	    private int projectionTimelineValue;
+	    private String category;
 	    
 	    private String image;
 	    
@@ -91,6 +92,12 @@ public class Crop_Req {
 		}
 		public void setProjectionTimelineValue(int projectionTimelineValue) {
 			this.projectionTimelineValue = projectionTimelineValue;
+		}
+		public String getCategory() {
+			return category;
+		}
+		public void setCategory(String category) {
+			this.category = category;
 		}
 	    
 	    

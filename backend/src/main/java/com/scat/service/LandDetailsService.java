@@ -11,6 +11,6 @@ public interface LandDetailsService {
     List<LandDetails> getAllLandDetails();
     void deleteLandDetails(Long id);
    Optional<LandDetails> getLandDetailsById(Long id);
-   	Set<LandDetails> saveLandDetails(Set<LandDetails_Req> landDetails, Long user_Id);
+   public Set<LandDetails> saveLandDetails(Set<LandDetails_Req> landDetails, Long user_Id);
 	Set<LandDetails> getLandDetailsByUserId(Long user_Id);
 }

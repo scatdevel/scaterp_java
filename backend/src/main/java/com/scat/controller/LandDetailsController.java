@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import com.scat.entity.LandDetails;
 import com.scat.entity.UserEntity;
 import com.scat.model.request.LandDetails_Req;
-import com.scat.repository.UserRepository;
 import com.scat.service.LandDetailsService;
 import com.scat.service.impl.UserServiceImpl;
 

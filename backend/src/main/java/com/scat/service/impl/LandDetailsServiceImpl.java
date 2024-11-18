@@ -60,7 +60,7 @@ public class LandDetailsServiceImpl implements LandDetailsService {
             	throw new RuntimeException("Duplicate LandDetails Found For User");
             }
   
-    }
+        }
         userRepo.save(user);	
         return savedLandDetails;
     }
@@ -74,7 +74,7 @@ public class LandDetailsServiceImpl implements LandDetailsService {
     public void deleteLandDetails(Long id) {
         landDetailsRepository.deleteById(id);
     }
-
+    
     @Override
     public Set<LandDetails> getLandDetailsByUserId(Long user_Id) {
         return landDetailsRepository.findByUserId(user_Id);

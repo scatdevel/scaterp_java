@@ -30,18 +30,32 @@ public class Crop {
 	private String projectionTimelineType;
 	private int projectionTimelineValue;
 
+	private String image;
+	
 	@ManyToOne
 	@JoinColumn(name = "user_Id", nullable = false)
 	@JsonBackReference
 	private UserEntity user;
 //    private UserEntity user;
 
-	private String image;
-
+	@ManyToOne
+	@JoinColumn(name = "Cat_Id")
+	@JsonBackReference
+	private CropCategory category;
+	
 //    @Lob
 //    private byte[] image;  // Store the image as a byte array
 
 	private Date createdAt;
+
+	
+	public CropCategory getCategory() {
+		return category;
+	}
+
+	public void setCategory(CropCategory category) {
+		this.category = category;
+	}
 
 	public Long getId() {
 		return id;
