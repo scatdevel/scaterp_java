@@ -1,3 +1,4 @@
+
 package com.scat.model.request;
 
 import java.sql.Date;
@@ -17,10 +18,23 @@ public class Crop_Req {
 	    private int projectionTimelineValue;
 	    private String category;
 	    
-	    private String image;
+	    public double getActualProductionUnit() {
+			return actualProductionUnit;
+		}
+		public void setActualProductionUnit(double actualProductionUnit) {
+			this.actualProductionUnit = actualProductionUnit;
+		}
+		public double getProjectedProductionUnit() {
+			return projectedProductionUnit;
+		}
+		public void setProjectedProductionUnit(double projectedProductionUnit) {
+			this.projectedProductionUnit = projectedProductionUnit;
+		}
+		private String image;
 	    
 	    private Date createdAt;
-	    
+	    private double actualProductionUnit;
+		private double projectedProductionUnit;
 		public Date getCreatedAt() {
 			return createdAt;
 		}
@@ -102,4 +116,3 @@ public class Crop_Req {
 	    
 	    
 }
-

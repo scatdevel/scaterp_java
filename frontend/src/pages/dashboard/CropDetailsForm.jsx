@@ -23,6 +23,8 @@ const CropDetailsForm = () => {
     projectionTimelineType: '',
     projectionTimelineValue: '',
     // categoryId: ''
+    actualProductionUnit: '',
+    projectedProductionUnit: '',
   }]);
   const [categories, setCategories] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
@@ -88,6 +90,8 @@ const CropDetailsForm = () => {
       imageUrl: '',
       projectionTimelineType: '',
       projectionTimelineValue: '',
+      actualProductionUnit: '',
+      projectedProductionUnit: '',
       categoryId: ''
     }]);
     setShowAddCropButton(true);
@@ -100,7 +104,9 @@ const CropDetailsForm = () => {
         const formData = new FormData();
         formData.append('cropName', crop.cropName);
         formData.append('actualProduction', crop.actualProduction);
+        formData.append('actualProductionUnit', crop.actualProductionUnit); 
         formData.append('projectedProduction', crop.projectedProduction);
+        formData.append('projectedProductionUnit', crop.projectedProductionUnit); 
         formData.append('cultivationLandValue', crop.cultivationLandValue);
         formData.append('landValueUnit', crop.landValueUnit);
         formData.append('cost', crop.cost);
@@ -214,30 +220,57 @@ const CropDetailsForm = () => {
                   </div>
 
                   <div className="flex flex-col space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{t('actualProduction')}</label>
-                    <input
-                      type="number"
-                      name="actualProduction"
-                      value={crop.actualProduction}
-                      onChange={(e) => handleChange(e, crop.id)}
-                      placeholder={t('enterActualProduction')}
-                      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-                      required
-                    />
-                  </div>
+  <label className="text-sm font-medium text-gray-700">{t('actualProduction')}</label>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <input
+      type="number"
+      name="actualProduction"
+      value={crop.actualProduction}
+      onChange={(e) => handleChange(e, crop.id)}
+      placeholder={t('enterActualProduction')}
+      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+      required
+    />
+    <select
+      name="actualProductionUnit"
+      value={crop.actualProductionUnit}
+      onChange={(e) => handleChange(e, crop.id)}
+      className="p-1 text-xs border border-gray-300 rounded-md w-30 h-8 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+    >
+      <option value="kg">{t('kgs')}</option>
+      <option value="ton">{t('tons')}</option>
+      {/* Add more units as needed */}
+    </select>
+  </div>
+</div>
 
-                  <div className="flex flex-col space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{t('projectedProduction')}</label>
-                    <input
-                      type="number"
-                      name="projectedProduction"
-                      value={crop.projectedProduction}
-                      onChange={(e) => handleChange(e, crop.id)}
-                      placeholder={t('enterProjectedProduction')}
-                      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-                      required
-                    />
-                  </div>
+
+<div className="flex flex-col space-y-2">
+  <label className="text-sm font-medium text-gray-700">{t('projectedProduction')}</label>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <input
+      type="number"
+      name="projectedProduction"
+      value={crop.projectedProduction}
+      onChange={(e) => handleChange(e, crop.id)}
+      placeholder={t('enterProjectedProduction')}
+      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+      required
+    />
+    <select
+      name="projectedProductionUnit"
+      value={crop.projectedProductionUnit}
+      onChange={(e) => handleChange(e, crop.id)}
+      className="p-1 text-xs border border-gray-300 rounded-md w-30 h-8 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+    >
+      <option value="kg">{t('kgs')}</option>
+      <option value="ton">{t('tons')}</option>
+      {/* Add more units as needed */}
+    </select>
+  </div>
+</div>
+
+
 
                   <div className="flex flex-col space-y-2">
                     <label className="text-sm font-medium text-gray-700">{t('landValueUnit')} & {t('cultivationLandValue')}</label>
@@ -266,33 +299,45 @@ const CropDetailsForm = () => {
                   </div>
 
                   <div className="flex flex-col space-y-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-1">
-                        <label className="text-sm font-medium text-gray-700">{t('cost')}</label>
-                        <input
-                          type="number"
-                          name="cost"
-                          value={crop.cost}
-                          onChange={(e) => handleChange(e, crop.id)}
-                          placeholder={t('enterCost')}
-                          className="p-3 border border-gray-300 rounded-md text-base w-full focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-                          required
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <label className="text-sm font-medium text-gray-700">{t('projectCost')}</label>
-                        <input
-                          type="number"
-                          name="projectCost"
-                          value={crop.projectCost}
-                          onChange={(e) => handleChange(e, crop.id)}
-                          placeholder={t('enterProjectCost')}
-                          className="p-3 border border-gray-300 rounded-md text-base w-full focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
+  <div className="flex items-center space-x-4">
+    <div className="flex-1">
+      <label className="text-sm font-medium text-gray-700">{t('cost')}</label>
+      <input
+        type="number"
+        name="cost"
+        value={crop.cost}
+        onChange={(e) => handleChange(e, crop.id)}
+        placeholder={t('cost')}
+        className="p-3 border border-gray-300 rounded-md text-base w-full focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+        required
+      />
+      {/* Display the formatted currency value */}
+      {crop.cost && (
+        <span className="text-gray-500 mt-1 block">
+          {formatCurrency(crop.cost)}
+        </span>
+      )}
+    </div>
+    <div className="flex-1">
+      <label className="text-sm font-medium text-gray-700">{t('projectCost')}</label>
+      <input
+        type="number"
+        name="projectCost"
+        value={crop.projectCost}
+        onChange={(e) => handleChange(e, crop.id)}
+        placeholder={t('Enter Project Cost')}
+        className="p-3 border border-gray-300 rounded-md text-base w-full focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+        required
+      />
+      {/* Display the formatted currency value */}
+      {crop.projectCost && (
+        <span className="text-gray-500 mt-1 block">
+          {formatCurrency(crop.projectCost)}
+        </span>
+      )}
+    </div>
+  </div>
+</div>
 
                   <div className="flex flex-col space-y-2">
                     <label className="text-sm font-medium text-gray-700">{t('projectionTimeline')}</label>
@@ -372,4 +417,3 @@ const CropDetailsForm = () => {
 };
 
 export default CropDetailsForm;
-

@@ -14,7 +14,11 @@ const CropOverview = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-  
+   // Function to format currency
+   const formatCurrency = (value) => {
+    if (!value) return '';
+    return `₹ ${parseFloat(value).toLocaleString()}`;
+  };
 
   useEffect(() => {
     const fetchCrops = async () => {
@@ -117,11 +121,13 @@ const CropOverview = () => {
                     {crop.cropName}
                   </Typography>
                   <div className="flex flex-col space-y-2 text-xs">
-                    <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">{t('actualProduction')}:</span> {crop.actualProduction}
+                  <Typography variant="body2" className="text-gray-700">
+                      <span className="font-semibold">{t('actualProduction')}:</span> 
+                      {crop.actualProduction} {crop.actualProductionUnit || ''}
                     </Typography>
                     <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">{t('projectedProduction')}:</span> {crop.projectedProduction}
+                      <span className="font-semibold">{t('projectedProduction')}:</span> 
+                      {crop.projectedProduction} {crop.projectedProductionUnit || ''}
                     </Typography>
                     <Typography variant="body2" className="text-gray-700">
                       <span className="font-semibold">{t('cultivationLandValue')}:</span> {crop.cultivationLandValue} {crop.landValueUnit}
