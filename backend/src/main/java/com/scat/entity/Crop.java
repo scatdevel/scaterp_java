@@ -32,8 +32,9 @@ public class Crop {
 	private int projectionTimelineValue;
 
 	private String image;
-	private double actualProductionUnit;  
-	 public double getActualProductionUnit() {
+	private double actualProductionUnit;
+
+	public double getActualProductionUnit() {
 		return actualProductionUnit;
 	}
 
@@ -60,13 +61,12 @@ public class Crop {
 	@JoinColumn(name = "Cat_Id")
 	@JsonBackReference
 	private CropCategory category;
-	
+
 //    @Lob
 //    private byte[] image;  // Store the image as a byte array
 
 	private Date createdAt;
 
-	
 	public CropCategory getCategory() {
 		return category;
 	}
