@@ -129,10 +129,17 @@ const CropDetailsForm = () => {
       setSuccessMessage('Crop details successfully saved!');
       setErrorMessage('');
       navigate('/crop-overview');
-    } catch (error) {
-      console.error("Error saving crop details:", error);
-      setErrorMessage('Failed to save crop details. Please try again.');
-      setSuccessMessage('');
+    }  catch (error) {
+      if (error.response) {
+        // Server responded with a status other than 200-299
+        console.error("Backend error:", error.response.data);
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error("Network error:", error.request);
+      } else {
+        // Something else happened
+        console.error("Error:", error.message);
+      }
     }
   };
 
@@ -143,6 +150,18 @@ const CropDetailsForm = () => {
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
+
+  const formatCurrency = (value) => {
+    const number = parseFloat(value);
+    if (!isNaN(number)) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD', // You can change the currency type as needed, like 'INR' or 'EUR'
+      }).format(number);
+    }
+    return value;
+  };
+  
 
   return (
     <div className="bg-gray-100 min-h-screen py-12 flex items-center justify-center">

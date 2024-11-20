@@ -2,6 +2,7 @@
 package com.scat.entity;
 
 import java.sql.Date;
+import java.util.Base64;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -31,42 +33,33 @@ public class Crop {
 	private String projectionTimelineType;
 	private int projectionTimelineValue;
 
-	private String image;
+
+	
 	private double actualProductionUnit;
 
-	public double getActualProductionUnit() {
-		return actualProductionUnit;
-	}
-
-	public void setActualProductionUnit(double actualProductionUnit) {
-		this.actualProductionUnit = actualProductionUnit;
-	}
-
-	public double getProjectedProductionUnit() {
-		return projectedProductionUnit;
-	}
-
-	public void setProjectedProductionUnit(double projectedProductionUnit) {
-		this.projectedProductionUnit = projectedProductionUnit;
-	}
+	@Lob
+	private byte[] image;
 
 	private double projectedProductionUnit;
+
 	@ManyToOne
 	@JoinColumn(name = "user_Id", nullable = false)
 	@JsonBackReference
 	private UserEntity user;
-//    private UserEntity user;
 
 	@ManyToOne
 	@JoinColumn(name = "Cat_Id")
 	@JsonBackReference
 	private CropCategory category;
 
+
 //    @Lob
 //    private byte[] image;  // Store the image as a byte array
 
 	private Date createdAt;
 
+
+	//gets and sets
 	public CropCategory getCategory() {
 		return category;
 	}
@@ -79,7 +72,11 @@ public class Crop {
 		return id;
 	}
 
-	public void setImage(String image) {
+	public byte[] getImage() {
+		return image;
+	}
+
+	public void setImage(byte[] image) {
 		this.image = image;
 	}
 
@@ -105,6 +102,22 @@ public class Crop {
 
 	public double getActualProduction() {
 		return actualProduction;
+	}
+
+	public double getActualProductionUnit() {
+		return actualProductionUnit;
+	}
+
+	public void setActualProductionUnit(double actualProductionUnit) {
+		this.actualProductionUnit = actualProductionUnit;
+	}
+
+	public double getProjectedProductionUnit() {
+		return projectedProductionUnit;
+	}
+
+	public void setProjectedProductionUnit(double projectedProductionUnit) {
+		this.projectedProductionUnit = projectedProductionUnit;
 	}
 
 	public void setActualProduction(double actualProduction) {
@@ -167,10 +180,6 @@ public class Crop {
 		this.projectionTimelineValue = projectionTimelineValue;
 	}
 
-	public String getImage() {
-		return image;
-	}
-
 	public Date getCreatedAt() {
 		return createdAt;
 	}
@@ -179,4 +188,11 @@ public class Crop {
 		this.createdAt = createdAt;
 	}
 
+	   public String getImageUrl() {
+	        if (image != null) {
+	            return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(image);
+	        }
+	        return null;
+	    }
+	
 }

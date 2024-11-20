@@ -51,15 +51,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers(SecurityConstants.SIGNUP_URL, SecurityConstants.LOGIN_URL, "/users/forgot-password", "/users/reset-password").permitAll()
                 .antMatchers("/admin/login").permitAll()
-                .antMatchers("/users/crops/save", "/users/crops/get/{id}", "/users/land-details/all").permitAll()
+                .antMatchers("/users/crops/save", "/users/crops/get/{id}", "/users/land-details/all","/users/land-details/submit").permitAll()
                 .antMatchers("/crops/categories/get/all", "/crops/categories/add").permitAll()
                 .antMatchers("/crops/categories/update/{id}", "/crops/categories/delete/{id}").permitAll()
                 .antMatchers("/users/admin/login").permitAll()
                 .antMatchers("/users/admin/create").hasRole("ADMIN")
-                .antMatchers("/users/admin/create").permitAll()
+                .antMatchers("/users/admin/create", "/users/profile").permitAll()
                 .antMatchers("/users/admin/**/**").permitAll()
                 .antMatchers("/roles/all").permitAll()
-                .antMatchers("/users/login").permitAll()
+                .antMatchers("/users/login", "/users/all").permitAll()
                 .antMatchers("/users/api/{email}").permitAll()
                 .antMatchers("/users/get/{id}", "/users/crops/all").permitAll() // Ensure this line is accessible
                 .anyRequest().authenticated() // Any other requests require authentication

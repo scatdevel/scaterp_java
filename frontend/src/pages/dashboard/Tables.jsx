@@ -212,12 +212,15 @@ export function Tables() {
         navigate('/dashboard/address', { state: { landDetails: formData } });
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      setError("Failed to submit form. Please try again.");
-      setSuccessMessage(null);
-
-      if (error.response && error.response.status === 401) {
-        setError("Unauthorized! Please log in again.");
+      if (error.response) {
+        // Server responded with a status other than 200-299
+        console.error("Backend error:", error.response.data);
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error("Network error:", error.request);
+      } else {
+        // Something else happened
+        console.error("Error:", error.message);
       }
     }
   };
