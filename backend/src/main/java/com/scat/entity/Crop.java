@@ -33,14 +33,13 @@ public class Crop {
 	private String projectionTimelineType;
 	private int projectionTimelineValue;
 
-
 	
-	private double actualProductionUnit;
+	private String actualProductionUnit;
 
 	@Lob
 	private byte[] image;
 
-	private double projectedProductionUnit;
+	private String projectedProductionUnit;
 
 	@ManyToOne
 	@JoinColumn(name = "user_Id", nullable = false)
@@ -52,12 +51,10 @@ public class Crop {
 	@JsonBackReference
 	private CropCategory category;
 
-
 //    @Lob
 //    private byte[] image;  // Store the image as a byte array
 
 	private Date createdAt;
-
 
 	//gets and sets
 	public CropCategory getCategory() {
@@ -104,19 +101,20 @@ public class Crop {
 		return actualProduction;
 	}
 
-	public double getActualProductionUnit() {
+
+	public String getActualProductionUnit() {
 		return actualProductionUnit;
 	}
 
-	public void setActualProductionUnit(double actualProductionUnit) {
+	public void setActualProductionUnit(String actualProductionUnit) {
 		this.actualProductionUnit = actualProductionUnit;
 	}
 
-	public double getProjectedProductionUnit() {
+	public String getProjectedProductionUnit() {
 		return projectedProductionUnit;
 	}
 
-	public void setProjectedProductionUnit(double projectedProductionUnit) {
+	public void setProjectedProductionUnit(String projectedProductionUnit) {
 		this.projectedProductionUnit = projectedProductionUnit;
 	}
 
