@@ -118,13 +118,32 @@ public class UserController {
 	}
 
 
+//	@GetMapping("/image/{username}")
+//	public ResponseEntity<Resource> getProfileImage(@PathVariable String username) throws IOException {
+//		UserDTO user = userService.getUserByUsername(username);
+//		Path imagePath = Paths.get(baseDirectory, user.getProfilePictureUrl());
+//		org.springframework.core.io.Resource resource = new FileSystemResource(imagePath.toFile());
+//		String contentType = Files.probeContentType(imagePath);
+//		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
+//	}
 	@GetMapping("/image/{username}")
 	public ResponseEntity<Resource> getProfileImage(@PathVariable String username) throws IOException {
-		UserDTO user = userService.getUserByUsername(username);
-		Path imagePath = Paths.get(baseDirectory, user.getProfilePictureUrl());
-		org.springframework.core.io.Resource resource = new FileSystemResource(imagePath.toFile());
-		String contentType = Files.probeContentType(imagePath);
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
+	    UserDTO user = userService.getUserByUsername(username);
+
+	    if (user == null || user.getProfilePictureUrl() == null) {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	    }
+
+	    Path imagePath = Paths.get(baseDirectory, user.getProfilePictureUrl());  // Ensure correct file path
+	    if (Files.exists(imagePath)) {
+	        org.springframework.core.io.Resource resource = new FileSystemResource(imagePath.toFile());
+	        String contentType = Files.probeContentType(imagePath);
+	        return ResponseEntity.ok()
+	                .contentType(MediaType.parseMediaType(contentType))
+	                .body(resource);
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	    }
 	}
 
 	@GetMapping("/{email}")

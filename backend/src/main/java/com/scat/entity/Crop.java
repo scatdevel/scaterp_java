@@ -1,3 +1,4 @@
+
 package com.scat.entity;
 
 import java.sql.Date;
@@ -31,7 +32,24 @@ public class Crop {
 	private int projectionTimelineValue;
 
 	private String image;
-	
+	private double actualProductionUnit;  
+	 public double getActualProductionUnit() {
+		return actualProductionUnit;
+	}
+
+	public void setActualProductionUnit(double actualProductionUnit) {
+		this.actualProductionUnit = actualProductionUnit;
+	}
+
+	public double getProjectedProductionUnit() {
+		return projectedProductionUnit;
+	}
+
+	public void setProjectedProductionUnit(double projectedProductionUnit) {
+		this.projectedProductionUnit = projectedProductionUnit;
+	}
+
+	private double projectedProductionUnit;
 	@ManyToOne
 	@JoinColumn(name = "user_Id", nullable = false)
 	@JsonBackReference
@@ -162,5 +180,3 @@ public class Crop {
 	}
 
 }
-
-

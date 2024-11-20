@@ -1,3 +1,4 @@
+
 package com.scat.service.impl;
 
 import com.scat.entity.Crop;
@@ -41,7 +42,8 @@ public class CropServiceImpl {
         crop.setProjectedProduction(cropdt.getProjectedProduction());
         crop.setProjectionTimelineType(cropdt.getProjectionTimelineType());
         crop.setProjectionTimelineValue(cropdt.getProjectionTimelineValue());
-
+crop.setActualProductionUnit(cropdt.getActualProductionUnit());
+crop.setProjectedProduction(cropdt.getProjectedProductionUnit());
         // Find the user and associate with the crop
         UserEntity user = userRepo.findById(user_Id)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
