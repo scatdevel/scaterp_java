@@ -16,13 +16,8 @@ export default defineConfig({
     alias: [{ find: "@", replacement: "/src" }],
   },
   server: {
-    proxy: {
-      '/users': {
-        target: 'http://10.0.0.4:8080', // The backend IP and port
-        changeOrigin: true,             // This ensures the target will be rewritten with the correct origin
-        secure: false,                 // If using HTTPS, set this to true
-      },
-      // Add more proxies for different backend endpoints if needed
-    },
+    host: "0.0.0.0",  // This makes the server accessible on all network interfaces
+    port: 5173,        // Ensure the port is correct
+    open: true,        // Optional: Automatically open the app in the browser
   },
 });

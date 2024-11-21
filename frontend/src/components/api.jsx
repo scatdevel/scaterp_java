@@ -1,7 +1,7 @@
 import axios from 'axios';
-const API_URL = 'http://10.0.0.4:8080/users'; // Use the backend IP address and port
+// const API_URL = 'http://10.0.0.4:8080/users'; // Use the backend IP address and port
 
-//const API_URL = 'http://localhost:8080/users'; // Define your API_URL
+const API_URL = 'http://localhost:8080/users'; // Define your API_URL
 
 export const loginUser = async (credentials) => {
   try {
