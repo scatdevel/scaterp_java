@@ -36,9 +36,9 @@ public class Crop {
 	@Lob
 	private byte[] image;
 
-	private double actualProductionUnit;
+	private String actualProductionUnit;
 
-	private double projectedProductionUnit;
+	private String projectedProductionUnit;
 
 	@ManyToOne
 	@JoinColumn(name = "user_Id", nullable = false)
@@ -97,19 +97,20 @@ public class Crop {
 		return actualProduction;
 	}
 
-	public double getActualProductionUnit() {
+
+	public String getActualProductionUnit() {
 		return actualProductionUnit;
 	}
 
-	public void setActualProductionUnit(double actualProductionUnit) {
+	public void setActualProductionUnit(String actualProductionUnit) {
 		this.actualProductionUnit = actualProductionUnit;
 	}
 
-	public double getProjectedProductionUnit() {
+	public String getProjectedProductionUnit() {
 		return projectedProductionUnit;
 	}
 
-	public void setProjectedProductionUnit(double projectedProductionUnit) {
+	public void setProjectedProductionUnit(String projectedProductionUnit) {
 		this.projectedProductionUnit = projectedProductionUnit;
 	}
 
