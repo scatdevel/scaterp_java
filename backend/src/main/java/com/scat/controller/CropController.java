@@ -44,6 +44,8 @@ public class CropController {
                          @RequestParam("cultivationLandValue") double cultivationLandValue,
                          @RequestParam("landValueUnit") String landValueUnit,
                          @RequestParam("cost") double cost,
+                         @RequestParam("actualProductionUnit") String actualProductionUnit,
+                         @RequestParam("projectedProductionUnit") String projectedProductionUnit,
                          @RequestParam("projectCost") double projectCost,
                          @RequestParam("projectionTimelineType") String projectionTimelineType,
                          @RequestParam("projectionTimelineValue") int projectionTimelineValue,
@@ -58,6 +60,8 @@ public class CropController {
         crop.setProjectCost(projectCost);
         crop.setProjectionTimelineType(projectionTimelineType);
         crop.setProjectionTimelineValue(projectionTimelineValue);
+        crop.setActualProductionUnit(actualProductionUnit);
+        crop.setProjectedProductionUnit(projectedProductionUnit);
         crop.setImage(image.getBytes());  
         
         UserEntity user = service.getUserByJwtToken(jwt);
