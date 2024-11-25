@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux'; // Import useSelector
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar, Grid } from "@mui/material";
+import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar, Grid, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from 'axios';
 import UserIcon from '@mui/icons-material/Person';
@@ -82,12 +82,14 @@ export function Profile() {
   const userId = useSelector((state) => state.auth.userId); // Access user ID from Redux
 
   const [formData, setFormData] = useState({
+    prefix: '', 
     fullName: '',
-    phoneNumber: '',
+    phoneNumber: '+91',
     email: '',
     username: '',
     bio: '',
-    dob: ''
+    dob: '',
+    gender: '',
   });
   
   const [alert, setAlert] = useState({ message: '', type: '' });
@@ -100,12 +102,14 @@ export function Profile() {
       const response = await axios.get(`http://localhost:8080/users/get/${userId}`);
       const userData = response.data;
       setFormData({
+        prefix: userData.prefix || '',
         username: userData.username,
         fullName: userData.fullName,
         email: userData.email,
         phoneNumber: userData.phoneNumber,
         bio: userData.bio,
-        dob: userData.dob
+        dob: userData.dob,
+        gender: userData.gender || ""
       });
       setFileState({ selectedFile: null, previewUrl: `http://localhost:8080/users/image/${userData.username}` }); 
     } catch (error) {
@@ -134,9 +138,22 @@ export function Profile() {
       previewUrl: file ? URL.createObjectURL(file) : null
     });
   };
+// Age validation logic
+const calculateAge = (dob) => {
+  const today = new Date();
+  const birthDate = new Date(dob);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const month = today.getMonth();
+  const day = today.getDate();
+  
+  if (month < birthDate.getMonth() || (month === birthDate.getMonth() && day < birthDate.getDate())) {
+    age--; // Subtract 1 if the birthday hasn't occurred yet this year
+  }
 
+  return age;
+};
   const validateFields = () => {
-    const { username, phoneNumber, email, dob } = formData;
+    const { username, phoneNumber, email, dob,gender } = formData;
     let hasError = false;
     const newErrors = { email: '', phoneNumber: '' };
 
@@ -148,6 +165,10 @@ export function Profile() {
       newErrors.phoneNumber = 'Please enter a valid phone number (10 digits)';
       hasError = true;
     }
+  if (!gender) {
+      setAlert({ message: 'Gender is required', type: 'error' });
+      hasError = true;
+    }
     if (!isValidEmail(email)) {
       newErrors.email = 'Please enter a valid email address';
       hasError = true;
@@ -157,6 +178,18 @@ export function Profile() {
       hasError = true;
     }
 
+    if (!isValidDate(dob)) {
+      setAlert({ message: 'Please enter a valid date of birth', type: 'error' });
+      hasError = true;
+    } else {
+      const age = calculateAge(new Date(dob)); // Calculate age from DOB
+      if (age < 18) {
+        newErrors.age = 'You must be at least 18 years old.';
+        hasError = true;
+      }
+    }
+
+
     setErrors(newErrors);
     return !hasError;
   };
@@ -165,14 +198,15 @@ export function Profile() {
     if (!validateFields()) return;
 
     try {
-      const { fullName, phoneNumber, email, username, bio, dob } = formData;
+      const { prefix, fullName, phoneNumber, email, username, bio, dob } = formData;
       const formDataToSend = new FormData();
       formDataToSend.append('phoneNumber', phoneNumber);
       formDataToSend.append('email', email);
       formDataToSend.append('username', username);
-        formDataToSend.append('fullName', fullName);
+      formDataToSend.append('fullName', `${prefix} ${fullName}`); 
       formDataToSend.append('bio', bio);
       formDataToSend.append('dob', dob);
+      formDataToSend.append('gender', gender); 
       if (fileState.selectedFile) {
         formDataToSend.append('image', fileState.selectedFile);
       }
@@ -200,12 +234,14 @@ export function Profile() {
 
   const handleCancel = () => {
     setFormData({
+      prefix: '',
       fullName: '',
-      phoneNumber: '',
+      phoneNumber: '+91',
       email: '',
       username: '',
       bio: '',
-      dob: ''
+      dob: '',
+      gender: ''
     });
     setAlert({ message: '', type: '' });
     setErrors({ email: '', phoneNumber: '' });
@@ -270,36 +306,77 @@ export function Profile() {
         <Box className="mb-4">
           <Typography variant="h6" className="mb-2">{t('personal Information')}</Typography>
           <Grid container spacing={3}>
-            {Object.keys(formData).map((key) => (
-              <Grid item xs={12} sm={6} key={key}>
-                <TextField
-                  fullWidth
-                  label={t(key)}
-                  name={key}
-                  variant="outlined"
-                  className="my-2"
-                  value={formData[key]}
+
+    {/* Prefix Dropdown - Ensure it is rendered only once */}
+    <Grid item xs={12} sm={6}>
+              <FormControl fullWidth variant="outlined" className="my-2">
+                <InputLabel>{t('Prefix')}</InputLabel>
+                <Select
+                  value={formData.prefix}
                   onChange={handleInputChange}
-                  error={Boolean(errors[key])}
-                  helperText={errors[key]}
-                  InputProps={{
-                    startAdornment: (
-                      <Box sx={{ mr: 1 }}>
-                        {key === 'username' || key === 'fullName' ? <UserIcon /> :
-                         key === 'email' ? <EmailIcon /> :
-                         key === 'phoneNumber' ? <PhoneIcon /> :
-                         key === 'dob' ? <CalendarTodayIcon /> :
-                         <InfoIcon />}
-                      </Box>
-                    ),
-                  }}
-                  type={key === 'dob' ? 'date' : 'text'}
-                  multiline={key === 'bio'}
-                  rows={key === 'bio' ? 4 : 1}
-                />
-              </Grid>
+                  name="prefix"
+                  label={t('prefix')}
+                >
+                  <MenuItem value="Mr.">{t('Mr.')}</MenuItem>
+                  <MenuItem value="Ms.">{t('Ms.')}</MenuItem>
+                  <MenuItem value="Dr.">{t('Dr.')}</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Iterate over other form fields, excluding 'prefix' */}
+            {Object.keys(formData).map((key) => (
+              key !== 'prefix' && key !== 'gender' && (
+                <Grid item xs={12} sm={6} key={key}>
+                  <TextField
+                    fullWidth
+                    label={t(key)}
+                    name={key}
+                    variant="outlined"
+                    className="my-2"
+                    value={formData[key]}
+                    onChange={handleInputChange}
+                    error={Boolean(errors[key])} // Show error if field has validation issues
+                    helperText={errors[key]} // Display the error message
+                    InputProps={{
+                      startAdornment: (
+                        <Box sx={{ mr: 1 }}>
+                          {key === 'username' || key === 'fullName' ? <UserIcon /> :
+                           key === 'email' ? <EmailIcon /> :
+                           key === 'phoneNumber' ? <PhoneIcon /> :
+                           key === 'dob' ? <CalendarTodayIcon /> :
+                           <InfoIcon />}
+                        </Box>
+                      ),
+                    }}
+                    type={key === 'dob' ? 'date' : 'text'}
+                    multiline={key === 'bio'}
+                    rows={key === 'bio' ? 4 : 1}
+                  />
+                </Grid>
+              )
             ))}
+
+
+              {/* Gender Dropdown */}
+              <Grid item xs={12} sm={6}>
+              <FormControl fullWidth variant="outlined" className="my-2">
+                <InputLabel>{t('Gender')}</InputLabel>
+                <Select
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  name="gender"
+                  label={t('gender')}
+                >
+                  <MenuItem value="Male">{t('male')}</MenuItem>
+                  <MenuItem value="Female">{t('female')}</MenuItem>
+                  <MenuItem value="Others">{t('Others')}</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
+          
+          
         </Box>
         <Box className="flex justify-end space-x-4">
           <MUIButton variant="outlined" color="primary" onClick={handleCancel}>{t('cancel')}</MUIButton>
