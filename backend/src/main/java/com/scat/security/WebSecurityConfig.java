@@ -52,11 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(SecurityConstants.SIGNUP_URL, SecurityConstants.LOGIN_URL, "/users/forgot-password", "/users/reset-password").permitAll()
                 .antMatchers("/admin/login").permitAll()
                 .antMatchers("/users/crops/save", "/users/crops/get/{id}", "/users/land-details/all","/users/land-details/submit").permitAll()
-                
-                .antMatchers("/users/admin/admin-dashboard").hasRole("ADMIN")
-                .antMatchers("/users/admin/outlet-dashboard").hasRole("OUTLET")
-                .antMatchers("/users/admin/godown-dashboard").hasRole("GODOWN")
-                
+                .antMatchers("/users/outlet/create").permitAll()
                 .antMatchers("/crops/categories/get/all", "/crops/categories/add").permitAll()
                 .antMatchers("/crops/categories/update/{id}", "/crops/categories/delete/{id}").permitAll()
                 .antMatchers("/users/admin/login").permitAll()

@@ -123,11 +123,11 @@ export function Footer({ brandName = "SCAT", brandLink = "", routes = [] }) {
           ))}
         </ul>
       </div>
-      <div className="text-center mt-4">
+      {/* <div className="text-center mt-4">
         <Typography variant="small" className="font-bold">
           © {year}-{year + 1} {brandName}
         </Typography>
-      </div>
+      </div> */}
     </footer>
   );
 }

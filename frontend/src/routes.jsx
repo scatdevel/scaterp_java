@@ -11,7 +11,6 @@ import { Home, Profile, Tables } from "@/pages/dashboard";
 import CropDetailsForm from "@/pages/dashboard/CropDetailsForm";
 import CropOverview from "@/pages/dashboard/CropOverview";
 import Address from "@/pages/dashboard/Address";
-import { SignIn, SignUp } from "@/pages/auth";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWheatAwn } from '@fortawesome/free-solid-svg-icons';
 import { faAddressCard } from '@fortawesome/free-solid-svg-icons';

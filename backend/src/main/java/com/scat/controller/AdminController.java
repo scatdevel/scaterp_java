@@ -129,7 +129,7 @@ public class AdminController {
         }
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/assign-role")
     public ResponseEntity<String> assignRoleToUser(@RequestParam String email, @RequestParam String roleName) {
         System.out.println("Received email: " + email + " and roleName: " + roleName);

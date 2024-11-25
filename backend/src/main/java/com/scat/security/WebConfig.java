@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173","http://10.0.0.4:5173","http://192.168.0.115:5173", "http://scat.test", "https://farmer2.scatech.in") // Replace with your frontend URL
+                .allowedOrigins("http://localhost:5173","http://10.0.0.4:5173","http://192.168.0.115:5173", "https://farmer2.scatech.in") // Replace with your frontend URL
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true)
