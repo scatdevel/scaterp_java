@@ -19,9 +19,20 @@ import FarmersList from './pages/dashboard/FarmersList';
 import UserDetails from './pages/dashboard/UserDetails';
 import RolesPage from './pages/dashboard/RolesPage';
 import Address from './pages/dashboard/Address';
+import OutletDashboard from './pages/dashboard/OutletDashboard';
+
+import Inventory from './pages/dashboard/Inventory'; // Import Inventory page
+import Orders from './pages/dashboard/Orders'; // Import Orders page
+import Customers from './pages/dashboard/Customers'; // Import Customers page
+import Pricing from './pages/dashboard/Pricing'; // Correct import (capitalize 'Pricing')
+import GoDownDashboard from './pages/dashboard/GoDownDashboard';
+
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isOutlet, setIsOutlet] = useState(false); // Correct state name
+  const [isGodown, setIsGodown] = useState(false); // Correct state name
+
 
   useEffect(() => {
     const authToken = localStorage.getItem('jwtToken');
@@ -32,6 +43,8 @@ const App = () => {
     if (authToken && tokenExpiration && currentTime < tokenExpiration) {
       setAuthenticated(true);
       setIsAdmin(role === 'admin');
+      setIsOutlet(role== "outlet")
+      setIsGodown(role=='godown')
     }
   }, []);
 
@@ -43,20 +56,21 @@ const App = () => {
           authenticated ? (
             isAdmin ? (
               <Navigate to="/admin-dashboard/home" />
-            ) : (
+            ) : isOutlet ? ( <Navigate to="/outlet-dashboard/home" />
+            )
+              : (
               <Navigate to="/dashboard/home" />
             )
           ) : (
-            <SignIn setAuthenticated={setAuthenticated} setIsAdmin={setIsAdmin} />
+            <SignIn setAuthenticated={setAuthenticated} setIsAdmin={setIsAdmin} setIsOutlet={setIsOutlet}   setIsGodown={setIsGodown}/>
           )
         }
       />
-      {/* <Route path="/profile/users/:userId" component={Profile} /> */}
-
+      
       <Route path="/auth/sign-up" element={<SignUp />} />
       <Route path="/auth/forgot-password" element={<ForgotPassword />} />
       <Route path="/auth/reset-password" element={<ResetPassword />} />
-      <Route path="/dashboard/*" element={authenticated && !isAdmin ? <Dashboard /> : <Navigate to="/auth/sign-in" />} />
+      <Route path="/dashboard/*" element={authenticated && !isAdmin &&  !isOutlet ? <Dashboard /> : <Navigate to="/auth/sign-in" />} />
       <Route path="/auth/*" element={<Auth />} />
       <Route path="/user-list" element={<UserList />} />
       <Route path="/settings" element={<SettingsPage />} />
@@ -80,9 +94,52 @@ const App = () => {
         <Route path="user-details" element={<UserDetails />} />
         <Route path="roles-page" element={<RolesPage />} />
       </Route>
+
+
+
+      {/* Outlet Dashboard Routes */}
+      <Route
+        path="/outlet-dashboard/*"
+        element={authenticated && isOutlet ? <OutletDashboard /> : <Navigate to="/auth/sign-in" />}
+      >
+        <Route path="home" element={<Home />} />
+
+
+         {/* Add routes for Inventory, Orders, Customers, and Reports for Outlet */}
+         <Route path="inventory" element={<Inventory />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="pricing" element={<Pricing />} /> // Capitalize 'Pricing' when using it in JSX
+
+        {/* Add more outlet-specific routes here */}
+      </Route>
       
       {/* Redirect all other routes */}
-      <Route path="*" element={<Navigate to={authenticated ? (isAdmin ? "/admin-dashboard/home" : "/dashboard/home") : "/auth/sign-in"} replace />} />
+      {/* <Route path="*" element={<Navigate to={authenticated ? (isAdmin ? "/admin-dashboard/home" : "/dashboard/home") : "/auth/sign-in"} replace />} />
+    </Routes> */}
+
+
+
+<Route
+        path="/godown-dashboard/*"
+        element={authenticated && isGodown ? <GoDownDashboard /> : <Navigate to="/auth/sign-in" />}
+      >
+        <Route path="home" element={<Home />} />
+</Route>
+<Route
+        path="*"
+        element={
+          authenticated
+            ? isAdmin
+              ? <Navigate to="/admin-dashboard/home" />
+              : isOutlet
+              ? <Navigate to="/outlet-dashboard/home" />
+              : isGodown
+              ? <Navigate to="/godown-dashboard/home" />
+              : <Navigate to="/dashboard/home" />
+            : <Navigate to="/auth/sign-in" />
+        }
+      />
     </Routes>
   );
 };
