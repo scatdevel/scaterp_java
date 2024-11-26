@@ -98,6 +98,16 @@ public class UserServiceImpl implements UserService {
 		userEntity.setEmail(userDTO.getEmail());
 		userEntity.setBio(userDTO.getBio());
 		userEntity.setDob(userDTO.getDob());
+		userEntity.setHouseNumber(userDTO.getHouseNumber());
+		userEntity.setStreet(userDTO.getStreet());
+		userEntity.setLandmark(userDTO.getLandmark());
+		userEntity.setLocality(userDTO.getLocality());
+		userEntity.setCity(userDTO.getCity());
+		userEntity.setState(userDTO.getState());
+		userEntity.setPincode(userDTO.getPincode());
+		userEntity.setCountry(userDTO.getCountry());
+
+
 		if (userDTO.getEncryptedPassword() != null && !userDTO.getEncryptedPassword().isEmpty()) {
 			userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
 		}
