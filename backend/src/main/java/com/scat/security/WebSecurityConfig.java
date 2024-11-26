@@ -54,6 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/crops/save", "/users/crops/get/{id}", "/users/land-details/all","/users/land-details/submit").permitAll()
                 
                 .antMatchers("/users/admin/admin-dashboard").hasRole("ADMIN")
+                .antMatchers("/users/user-dashboard").hasRole("Farmer")
                 .antMatchers("/users/admin/outlet-dashboard").hasRole("OUTLET")
                 .antMatchers("/users/admin/godown-dashboard").hasRole("GODOWN")
                 
