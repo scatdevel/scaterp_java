@@ -22,14 +22,7 @@ export function Tables() {
     area: ""
   });
 
-  const [homeData, setHomeData] = useState({
-    homeStreet: "",
-    homeVillage: "",
-    homeDistrict: "",
-    homeState: "",
-    homePincode: "",
-    homeLocateonmap: "",
-  });
+  
 
   const [isFieldsDisabled, setIsFieldsDisabled] = useState(false);
   const [error, setError] = useState(null);
@@ -64,14 +57,7 @@ export function Tables() {
     }
   };
 
-  const handleHomeInputChange = (e) => {
-    const { name, value } = e.target;
-    setHomeData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
+  
   const handleFocus = () => {
     setShowDropdown(true);
   };
@@ -126,20 +112,20 @@ export function Tables() {
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
       setIsFetchingLocation(true);
-      setError(null);
+      setError(null); // Reset any previous errors
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
+
           setFormData((prevState) => ({
             ...prevState,
             locateonmap: `${lat},${lng}`,
           }));
 
-
           try {
             const geocodeResponse = await axios.get(
-               `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBlvXBISfsHw8e6zLp-RGqI6xhKSw2KmuM`
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBlvXBISfsHw8e6zLp-RGqI6xhKSw2KmuM`
             );
             if (geocodeResponse.data && geocodeResponse.data.results[0]) {
               const result = geocodeResponse.data.results[0];
@@ -150,29 +136,30 @@ export function Tables() {
               }));
               setError(null);
             } else {
-              setError("Unable to retrieve address from location. Please try again.");
+              setError('Unable to retrieve address from location. Please try again.');
               setFormData((prevState) => ({
                 ...prevState,
                 address: "",
               }));
             }
           } catch (error) {
-            console.error("Error reverse geocoding location:", error);
-            setError("Failed to retrieve address from location. Please check your network connection.");
+            console.error('Error reverse geocoding location:', error);
+            setError('Failed to retrieve address from location. Please check your network connection.');
           } finally {
             setIsFetchingLocation(false);
           }
         },
         (error) => {
-          console.error("Error getting current location:", error);
-          setError("Failed to get current location. Please allow location access.");
+          console.error('Error getting current location:', error);
+          setError('Failed to get current location. Please allow location access.');
           setIsFetchingLocation(false);
         }
       );
     } else {
-      setError("Geolocation is not supported by this browser.");
+      setError('Geolocation is not supported by this browser.');
     }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -190,29 +177,6 @@ export function Tables() {
       return;
     }
 
-    const landDetailsReq = [{
-      village: formData.village,
-      district: formData.district,
-      state: formData.state,
-      address: formData.address,
-      pincode: formData.pincode,
-      street: formData.street,
-      locateonmap: formData.locateonmap,
-      cultivationType: formData.cultivationType,
-      landOwnership: formData.landOwnership,
-      width: formData.width,
-      breadth: formData.breadth,
-      area: formData.area,
-    }];
-    
-    const homeAddressReq = {
-      homeStreet: homeData.homeStreet,
-      homeVillage: homeData.homeVillage,
-      homeDistrict: homeData.homeDistrict,
-      homeState: homeData.homeState,
-      homePincode: homeData.homePincode,
-      homeLocateonmap: homeData.homeLocateonmap,
-    };
 
     try {
       const response = await axios.post(
@@ -229,7 +193,7 @@ export function Tables() {
       if (response.status === 200) {
         setSuccessMessage("Form submitted successfully!");
         setError(null);
-        navigate('/dashboard/address', { state: { landDetails: formData, homeDetails: homeData } });
+        navigate('/dashboard/address', { state: { landDetails: formData} });
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -245,8 +209,9 @@ export function Tables() {
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
-return (
-<div className="relative mt-12 mb-8 flex flex-col gap-12 p-6 bg-gray-20 rounded-lg shadow-lg min-h-screen overflow-auto">
+  return (
+    <div className="relative mt-12 mb-8 flex flex-col gap-12 p-6 bg-gray-20 rounded-lg shadow-lg h-screen">
+
 <div className="absolute top-1 right-14 flex space-x-2 z-20">
         <img
           src="/img/en-flag.png"
@@ -263,99 +228,45 @@ return (
       </div>
       <CardBody className="px-6 py-4">
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-            {/* Home Address Fields */}
-          <div className="space-y-4 mb-8">
-            <h3 className="text-2xl font-semibold">Home Address</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+            {/* Address field */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="address" className="text-gray-700">{t('address')}</label>
+              <div className="relative flex items-center border border-gray-300 rounded-lg shadow-sm">
+                <i className="text-gray-500 p-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="#FF7E8B" width="40" height="20" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" className="iRDDBk">
+                    <title>location-fill</title>
+                    <path d="M10.2 0.42c-4.5 0-8.2 3.7-8.2 8.3 0 6.2 7.5 11.3 7.8 11.6 0.2 0.1 0.3 0.1 0.4 0.1s0.3 0 0.4-0.1c0.3-0.2 7.8-5.3 7.8-11.6 0.1-4.6-3.6-8.3-8.2-8.3zM10.2 11.42c-1.7 0-3-1.3-3-3s1.3-3 3-3c1.7 0 3 1.3 3 3s-1.3 3-3 3z"></path>
+                  </svg>
+                </i>
                 <input
                   type="text"
-                  name="homeStreet"
-                  placeholder="Home Street"
-                  value={homeData.homeStreet}
-                  onChange={handleHomeInputChange}
-                  className="border px-4 py-2 rounded-lg w-full"
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                  className="p-3 border-0 bg-white text-gray-800 placeholder-gray-500 flex-1 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                  placeholder={t('enterAddress')}
+                 
                 />
-                <input
-                  type="text"
-                  name="homeVillage"
-                  placeholder="Home Village"
-                  value={homeData.homeVillage}
-                  onChange={handleHomeInputChange}
-                  className="border px-4 py-2 rounded-lg w-full"
-                />
-                <input
-                  type="text"
-                  name="homeDistrict"
-                  placeholder="Home District"
-                  value={homeData.homeDistrict}
-                  onChange={handleHomeInputChange}
-                  className="border px-4 py-2 rounded-lg w-full"
-                />
-                <input
-                  type="text"
-                  name="homeState"
-                  placeholder="Home State"
-                  value={homeData.homeState}
-                  onChange={handleHomeInputChange}
-                  className="border px-4 py-2 rounded-lg w-full"
-                />
-                <input
-                  type="text"
-                  name="homePincode"
-                  placeholder="Home Pincode"
-                  value={homeData.homePincode}
-                  onChange={handleHomeInputChange}
-                  className="border px-4 py-2 rounded-lg w-full"
-                />
+                {showDropdown && (
+                  <div className="absolute top-full right-0 mt-2 w-auto bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                    <div className="p-2 cursor-pointer flex items-center text-xs" onClick={getCurrentLocation}>
+                      <i className="text-red-500 mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="#EF4F5F" width="12" height="12" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" className="kyPUnV">
+                          <title>current-location</title>
+                          <path d="M13.58 10c0 1.977-1.603 3.58-3.58 3.58s-3.58-1.603-3.58-3.58c0-1.977 1.603-3.58 3.58-3.58v0c1.977 0 3.58 1.603 3.58 3.58v0zM10 0.425c-5.286 0-9.575 4.289-9.575 9.575s4.289 9.575 9.575 9.575c5.286 0 9.575-4.289 9.575-9.575v0c0-5.286-4.289-9.575-9.575-9.575v0zM16.633 10.833c-0.375 3.044-2.856 5.524-5.9 5.899v2.018h-1.467v-2.018c-3.044-0.375-5.524-2.856-5.899-5.9h-2.018v-1.467h2.018c0.375-3.044 2.856-5.524 5.9-5.899v-2.018h1.467v2.018c3.044 0.375 5.524 2.856 5.899 5.9h2.018v1.467h-2.018z"></path>
+                        </svg>
+                      </i>
+                      {isFetchingLocation ? t('fetching') : t('locateOnMap')}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-       
-           {/* Land Details Section */}
-           <div className="flex flex-col gap-2"></div>
-      <h3 className="text-2xl font-semibold">Land Details</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        {/* Address Field */}
-        <div className="flex flex-col gap-2">
-          <label htmlFor="address" className="text-gray-700">{t('address')}</label>
-          <div className="relative flex items-center border border-gray-300 rounded-lg shadow-sm">
-            <i className="text-gray-500 p-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="#FF7E8B" width="40" height="20" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" className="iRDDBk">
-                <title>location-fill</title>
-                <path d="M10.2 0.42c-4.5 0-8.2 3.7-8.2 8.3 0 6.2 7.5 11.3 7.8 11.6 0.2 0.1 0.3 0.1 0.4 0.1s0.3 0 0.4-0.1c0.3-0.2 7.8-5.3 7.8-11.6 0.1-4.6-3.6-8.3-8.2-8.3zM10.2 11.42c-1.7 0-3-1.3-3-3s1.3-3 3-3c1.7 0 3 1.3 3 3s-1.3 3-3 3z"></path>
-              </svg>
-            </i>
-            
-            <input
-              type="text"
-              id="address"
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={t('enterAddress')}
-            />
-            {showDropdown && (
-              <div className="absolute top-full right-0 mt-2 w-auto bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-                <div className="p-2 cursor-pointer flex items-center text-xs" onClick={getCurrentLocation}>
-                  <i className="text-red-500 mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="#EF4F5F" width="12" height="12" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" className="kyPUnV">
-                      <title>current-location</title>
-                      <path d="M13.58 10c0 1.977-1.603 3.58-3.58 3.58s-3.58-1.603-3.58-3.58c0-1.977 1.603-3.58 3.58-3.58v0c1.977 0 3.58 1.603 3.58 3.58v0zM10 0.425c-5.286 0-9.575 4.289-9.575 9.575s4.289 9.575 9.575 9.575c5.286 0 9.575-4.289 9.575-9.575v0c0-5.286-4.289-9.575-9.575-9.575v0zM16.633 10.833c-0.375 3.044-2.856 5.524-5.9 5.899v2.018h-1.467v-2.018c-3.044-0.375-5.524-2.856-5.899-5.9h-2.018v-1.467h2.018c0.375-3.044 2.856-5.524 5.9-5.899v-2.018h1.467v2.018c3.044 0.375 5.524 2.856 5.899 5.9h2.018v1.467h-2.018z"></path>
-                    </svg>
-                  </i>
-                  {isFetchingLocation ? t('fetching') : t('locateOnMap')}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-</div>
+
             {/* Village field */}
             <div className="flex flex-col gap-2">
               <label htmlFor="village" className="text-gray-700">{t('village')}</label>
@@ -525,3 +436,4 @@ return (
 }
 
 export default Tables;
+

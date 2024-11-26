@@ -61,7 +61,8 @@ const PhotoUpload = ({ onFileChange, previewUrl }) => {
         />
       </Box>
       <Box className="flex space-x-2 mb-4">
-        <MUIButton variant="outlined" color="primary" onClick={() => onFileChange(null)}>{t('delete')}</MUIButton>
+      <MUIButton variant="outlined" color="primary" onClick={() => handleFileChange(null)}>{t('delete')}</MUIButton>
+
         <MUIButton variant="contained" color="primary" onClick={() => document.getElementById('fileInput').click()}>{t('update')}</MUIButton>
       </Box>
       <input
@@ -87,7 +88,17 @@ export function Profile() {
     email: '',
     username: '',
     bio: '',
-    dob: ''
+    dob: '',
+    gender: '',
+    houseNumber: '',
+    street: '',
+    landmark: '',
+    locality: '',
+    city: '',
+    state: '',
+    pinCode: '',
+    country: ''
+
   });
   
   const [alert, setAlert] = useState({ message: '', type: '' });
@@ -157,19 +168,39 @@ export function Profile() {
       hasError = true;
     }
 
+    if (!isValidDate(dob)) {
+      setAlert({ message: 'Please enter a valid date of birth', type: 'error' });
+      hasError = true;
+    } else {
+      const age = calculateAge(new Date(dob)); // Calculate age from DOB
+      if (age < 18) {
+        newErrors.age = 'You must be at least 18 years old.';
+        hasError = true;
+      }
+    }
+    
+    if (!formData.houseNumber || !formData.street || !formData.city || !formData.state || !formData.pinCode || !formData.country) {
+      setAlert({ message: 'Please fill in all address fields', type: 'error' });
+      hasError = true;
+    }
+    
+
+
+
     setErrors(newErrors);
     return !hasError;
   };
 
   const handleSave = async () => {
     if (!validateFields()) return;
-
+  
     try {
       const { fullName, phoneNumber, email, username, bio, dob } = formData;
       const formDataToSend = new FormData();
       formDataToSend.append('phoneNumber', phoneNumber);
       formDataToSend.append('email', email);
       formDataToSend.append('username', username);
+
         formDataToSend.append('fullName', fullName);
       formDataToSend.append('bio', bio);
       formDataToSend.append('dob', dob);
@@ -178,25 +209,36 @@ export function Profile() {
       }
 
       await axios.put(`http://localhost:8080/users/${username}`, formDataToSend, {
+
+      formDataToSend.append('fullName', `${prefix} ${fullName}`);
+      formDataToSend.append('bio', bio);
+      formDataToSend.append('dob', dob);
+      formDataToSend.append('gender', gender);
+      formDataToSend.append('houseNumber', formData.houseNumber);
+      formDataToSend.append('street', formData.street);
+      formDataToSend.append('landmark', formData.landmark);
+      formDataToSend.append('locality', formData.locality);
+      formDataToSend.append('city', formData.city);
+      formDataToSend.append('state', formData.state);
+      formDataToSend.append('pinCode', formData.pinCode);
+      formDataToSend.append('country', formData.country);
+  
+      await axios.put(`${BASE_URL}/users/${username}`, formDataToSend, {
+
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-
+  
       if (fileState.selectedFile) {
-        const fileFormData = new FormData();
-        fileFormData.append('file', fileState.selectedFile);
-        fileFormData.append('username', username);
-        const token = localStorage.getItem('token');
-        const uploadUrl = `http://localhost:8080/users/uploadProfilePicture`;
-        const headers = { 'Content-Type': 'multipart/form-data', ...(token && { 'Authorization': `Bearer ${token}` }) };
-        await axios.post(uploadUrl, fileFormData, { headers });
+        await uploadImage(fileState.selectedFile, username);
       }
-
+  
       setAlert({ message: 'Profile updated successfully', type: 'success' });
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Error saving profile';
       setAlert({ message: `Error: ${errorMessage}`, type: 'error' });
     }
   };
+  
 
   const handleCancel = () => {
     setFormData({
@@ -262,15 +304,17 @@ export function Profile() {
         <Typography variant="h5" className="mb-6">{t('settingsPage')}</Typography>
         {alert.message && (
           <div className={`alert ${alert.type === 'success' ? 'alert-success' : 'alert-error'}`}>
-            <Typography variant="body1" color={alert.type === 'success' ? 'green' : 'red'}>
-              {alert.message}
-            </Typography>
-          </div>
+          <Typography variant="body1" color={alert.type === 'success' ? 'green' : 'red'}>
+            {alert.message}
+          </Typography>
+        </div>
+        
         )}
         <Box className="mb-4">
           <Typography variant="h6" className="mb-2">{t('personal Information')}</Typography>
           <Grid container spacing={3}>
             {Object.keys(formData).map((key) => (
+
               <Grid item xs={12} sm={6} key={key}>
                 <TextField
                   fullWidth
@@ -279,6 +323,47 @@ export function Profile() {
                   variant="outlined"
                   className="my-2"
                   value={formData[key]}
+                  
+  key !== 'prefix' && key !== 'gender' && (
+    <Grid item xs={12} sm={6} key={key}>
+      <TextField
+        fullWidth
+        label={t(key)}
+        name={key}
+        variant="outlined"
+        className="my-2"
+        value={formData[key]}
+        onChange={handleInputChange}
+        error={Boolean(errors[key])}
+        helperText={errors[key]}
+        InputProps={{
+          startAdornment: (
+            <Box sx={{ mr: 1 }}>
+              {key === 'username' || key === 'fullName' ? <UserIcon /> :
+               key === 'email' ? <EmailIcon /> :
+               key === 'phoneNumber' ? <PhoneIcon /> :
+               key === 'dob' ? <CalendarTodayIcon /> :
+               <InfoIcon />}
+            </Box>
+          ),
+        }}
+        type={key === 'dob' ? 'date' : 'text'}
+        multiline={key === 'bio'}
+        rows={key === 'bio' ? 4 : 1}
+      />
+    </Grid>
+  )
+))}
+
+
+
+              {/* Gender Dropdown */}
+              <Grid item xs={12} sm={6}>
+              <FormControl fullWidth variant="outlined" className="my-2">
+                <InputLabel>{t('Gender')}</InputLabel>
+                <Select
+                  value={formData.gender}
+
                   onChange={handleInputChange}
                   error={Boolean(errors[key])}
                   helperText={errors[key]}
