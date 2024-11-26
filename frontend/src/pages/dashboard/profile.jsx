@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux'; // Import useSelector
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar, Grid, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import axios from 'axios';
 import UserIcon from '@mui/icons-material/Person';
@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
     fontWeight: '500',
     color: '#000',
     '&:focus': {
-      borderColor: '#3f51b5',
+      borderColor: '#3f51b5' ,
     },
     '&::placeholder': {
       color: '#000',
@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
 
 const PhotoUpload = ({ onFileChange, previewUrl }) => {
   const { t } = useTranslation();
-
+  
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -61,7 +61,7 @@ const PhotoUpload = ({ onFileChange, previewUrl }) => {
         />
       </Box>
       <Box className="flex space-x-2 mb-4">
-        <MUIButton variant="outlined" color="primary" onClick={() => handleFileChange(null)}>{t('delete')}</MUIButton>
+        <MUIButton variant="outlined" color="primary" onClick={() => onFileChange(null)}>{t('delete')}</MUIButton>
         <MUIButton variant="contained" color="primary" onClick={() => document.getElementById('fileInput').click()}>{t('update')}</MUIButton>
       </Box>
       <input
@@ -75,7 +75,8 @@ const PhotoUpload = ({ onFileChange, previewUrl }) => {
   );
 };
 
-export function Profile() {
+
+export function Profile() { 
   const { t, i18n } = useTranslation();
   const classes = useStyles();
   const userId = useSelector((state) => state.auth.userId); // Access user ID from Redux
@@ -86,18 +87,9 @@ export function Profile() {
     email: '',
     username: '',
     bio: '',
-    dob: '',
-    gender: '',
-    houseNumber: '',
-    street: '',
-    landmark: '',
-    locality: '',
-    city: '',
-    state: '',
-    pinCode: '',
-    country: ''
+    dob: ''
   });
-
+  
   const [alert, setAlert] = useState({ message: '', type: '' });
   const [fileState, setFileState] = useState({ selectedFile: null, previewUrl: null });
   const [errors, setErrors] = useState({ email: '', phoneNumber: '' });
@@ -113,10 +105,9 @@ export function Profile() {
         email: userData.email,
         phoneNumber: userData.phoneNumber,
         bio: userData.bio,
-        dob: userData.dob,
-        gender: userData.gender || '', // Assuming gender is in user data
+        dob: userData.dob
       });
-      setFileState({ selectedFile: null, previewUrl: `http://localhost:8080/users/image/${userData.username}` });
+      setFileState({ selectedFile: null, previewUrl: `http://localhost:8080/users/image/${userData.username}` }); 
     } catch (error) {
       setAlert({ message: 'Error fetching user profile', type: 'error' });
     }
@@ -138,7 +129,7 @@ export function Profile() {
   };
 
   const handleFileChange = (file) => {
-    setFileState({
+    setFileState({ 
       selectedFile: file,
       previewUrl: file ? URL.createObjectURL(file) : null
     });
@@ -166,22 +157,6 @@ export function Profile() {
       hasError = true;
     }
 
-    if (!isValidDate(dob)) {
-      setAlert({ message: 'Please enter a valid date of birth', type: 'error' });
-      hasError = true;
-    } else {
-      const age = calculateAge(new Date(dob)); // Calculate age from DOB
-      if (age < 18) {
-        newErrors.age = 'You must be at least 18 years old.';
-        hasError = true;
-      }
-    }
-
-    if (!formData.houseNumber || !formData.street || !formData.city || !formData.state || !formData.pinCode || !formData.country) {
-      setAlert({ message: 'Please fill in all address fields', type: 'error' });
-      hasError = true;
-    }
-
     setErrors(newErrors);
     return !hasError;
   };
@@ -190,15 +165,14 @@ export function Profile() {
     if (!validateFields()) return;
 
     try {
-      const { fullName, phoneNumber, email, username, bio, dob, gender } = formData;
+      const { fullName, phoneNumber, email, username, bio, dob } = formData;
       const formDataToSend = new FormData();
       formDataToSend.append('phoneNumber', phoneNumber);
       formDataToSend.append('email', email);
       formDataToSend.append('username', username);
-      formDataToSend.append('fullName', fullName);
+        formDataToSend.append('fullName', fullName);
       formDataToSend.append('bio', bio);
       formDataToSend.append('dob', dob);
-      formDataToSend.append('gender', gender);
       if (fileState.selectedFile) {
         formDataToSend.append('image', fileState.selectedFile);
       }
@@ -206,6 +180,16 @@ export function Profile() {
       await axios.put(`http://localhost:8080/users/${username}`, formDataToSend, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+
+      if (fileState.selectedFile) {
+        const fileFormData = new FormData();
+        fileFormData.append('file', fileState.selectedFile);
+        fileFormData.append('username', username);
+        const token = localStorage.getItem('token');
+        const uploadUrl = `http://localhost:8080/users/uploadProfilePicture`;
+        const headers = { 'Content-Type': 'multipart/form-data', ...(token && { 'Authorization': `Bearer ${token}` }) };
+        await axios.post(uploadUrl, fileFormData, { headers });
+      }
 
       setAlert({ message: 'Profile updated successfully', type: 'success' });
     } catch (error) {
@@ -229,90 +213,102 @@ export function Profile() {
   };
 
   useEffect(() => {
-    fetchUserProfile(userId);
-  }, [userId]);
+    if (alert.message) {
+      const timer = setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [alert]);
+
+  const handleLanguageChange = (lng) => {
+    i18n.changeLanguage(lng);
+  };
 
   return (
-    <div>
-      <Card>
-        <CardBody>
-          <Typography variant="h5" gutterBottom>{t('profile')}</Typography>
-          <form>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+    <>
+      <div className="relative mt-6">
+        <div className="absolute inset-0 h-full w-full bg-gray-700/75 flex items-center justify-center">
+          <div className="absolute top-1 right-14 flex space-x-2 z-20">
+            <img
+              src="/img/en-flag.png"
+              alt="English"
+              className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+              onClick={() => handleLanguageChange('en')}
+            />
+            <img
+              src="/img/ta-flag.png"
+              alt="Tamil"
+              className="w-8 h-8 cursor-pointer border border-gray-300 rounded-full shadow-sm"
+              onClick={() => handleLanguageChange('ta')}
+            />
+          </div>
+          <Typography variant="h3" className="text-white"></Typography>
+        </div>
+      </div>
+
+      <div className="flex justify-center py-4">
+        <Card className="mx-1 mb-1 lg:mx-1 shadow-lg w-64 bg-blue-50 border border-blue-200 rounded-lg overflow-hidden transition-transform hover:scale-105">
+          <CardBody className="p-4">
+            <div className="mb-4 flex items-center justify-center">
+              <PhotoUpload 
+                onFileChange={handleFileChange} 
+                previewUrl={fileState.previewUrl} 
+              />
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+
+      <Box className="p-2">
+        <Typography variant="h5" className="mb-6">{t('settingsPage')}</Typography>
+        {alert.message && (
+          <div className={`alert ${alert.type === 'success' ? 'alert-success' : 'alert-error'}`}>
+            <Typography variant="body1" color={alert.type === 'success' ? 'green' : 'red'}>
+              {alert.message}
+            </Typography>
+          </div>
+        )}
+        <Box className="mb-4">
+          <Typography variant="h6" className="mb-2">{t('personal Information')}</Typography>
+          <Grid container spacing={3}>
+            {Object.keys(formData).map((key) => (
+              <Grid item xs={12} sm={6} key={key}>
                 <TextField
-                  name="fullName"
-                  label={t('fullName')}
-                  value={formData.fullName}
-                  onChange={handleInputChange}
                   fullWidth
+                  label={t(key)}
+                  name={key}
+                  variant="outlined"
+                  className="my-2"
+                  value={formData[key]}
+                  onChange={handleInputChange}
+                  error={Boolean(errors[key])}
+                  helperText={errors[key]}
+                  InputProps={{
+                    startAdornment: (
+                      <Box sx={{ mr: 1 }}>
+                        {key === 'username' || key === 'fullName' ? <UserIcon /> :
+                         key === 'email' ? <EmailIcon /> :
+                         key === 'phoneNumber' ? <PhoneIcon /> :
+                         key === 'dob' ? <CalendarTodayIcon /> :
+                         <InfoIcon />}
+                      </Box>
+                    ),
+                  }}
+                  type={key === 'dob' ? 'date' : 'text'}
+                  multiline={key === 'bio'}
+                  rows={key === 'bio' ? 4 : 1}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="phoneNumber"
-                  label={t('phoneNumber')}
-                  value={formData.phoneNumber}
-                  onChange={handleInputChange}
-                  fullWidth
-                  error={Boolean(errors.phoneNumber)}
-                  helperText={errors.phoneNumber}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="email"
-                  label={t('email')}
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  fullWidth
-                  error={Boolean(errors.email)}
-                  helperText={errors.email}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  name="username"
-                  label={t('username')}
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  name="bio"
-                  label={t('bio')}
-                  value={formData.bio}
-                  onChange={handleInputChange}
-                  fullWidth
-                  multiline
-                  rows={4}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>{t('gender')}</InputLabel>
-                  <Select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleInputChange}
-                    fullWidth
-                  >
-                    <MenuItem value="male">{t('male')}</MenuItem>
-                    <MenuItem value="female">{t('female')}</MenuItem>
-                    <MenuItem value="other">{t('other')}</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-            <Box mt={3} className="flex justify-between">
-              <MUIButton onClick={handleCancel} variant="outlined">{t('cancel')}</MUIButton>
-              <MUIButton color="primary" onClick={handleSave} variant="contained">{t('save')}</MUIButton>
-            </Box>
-          </form>
-        </CardBody>
-      </Card>
-    </div>
+            ))}
+          </Grid>
+        </Box>
+        <Box className="flex justify-end space-x-4">
+          <MUIButton variant="outlined" color="primary" onClick={handleCancel}>{t('cancel')}</MUIButton>
+          <MUIButton variant="contained" color="primary" onClick={handleSave}>{t('save')}</MUIButton>
+        </Box>
+      </Box>
+    </>
   );
 }
+
+export default Profile;
+

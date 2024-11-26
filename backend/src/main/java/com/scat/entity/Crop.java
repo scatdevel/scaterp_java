@@ -39,7 +39,6 @@ public class Crop {
 	@Lob
 	private byte[] image;
 
-	private String actualProductionUnit;
 
 	private String projectedProductionUnit;
 
@@ -103,8 +102,6 @@ public class Crop {
 		return actualProduction;
 	}
 
-
-	public String getActualProductionUnit() 
 
 	public String getActualProductionUnit() {
 		return actualProductionUnit;
