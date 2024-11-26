@@ -151,6 +151,7 @@ public class AdminServiceImpl implements AdminService {
       
       user.setRole(null);
       userRepository.save(user);
+      
   }
 
     private void initializeDefaultRoles() {

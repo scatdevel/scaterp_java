@@ -52,6 +52,22 @@ public class UserEntity implements Serializable {
 	@Column(name = "reset_token_expiration")
 	private Long resetTokenExpiration;
 	
+	private String houseNumber;
+	
+	private String street;
+	
+	private String landmark;
+	
+	private String locality;
+	
+	private String city;
+	
+	private String state;
+	
+	private Long pincode;
+	
+	private String country;
+	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private Set<LandDetails> land = new HashSet<LandDetails>();
@@ -71,6 +87,70 @@ public class UserEntity implements Serializable {
 		this.username = username;
 	}
 	
+
+	public String getHouseNumber() {
+		return houseNumber;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getLandmark() {
+		return landmark;
+	}
+
+	public void setLandmark(String landmark) {
+		this.landmark = landmark;
+	}
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public Long getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(Long pincode) {
+		this.pincode = pincode;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
 	public Set<LandDetails> getLand() {
 		return land;

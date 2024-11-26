@@ -54,6 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/crops/save", "/users/crops/get/{id}", "/users/land-details/all","/users/land-details/submit").permitAll()
                 
                 .antMatchers("/users/admin/admin-dashboard").hasRole("ADMIN")
+                .antMatchers("/users/user-dashboard").hasRole("Farmer")
                 .antMatchers("/users/admin/outlet-dashboard").hasRole("OUTLET")
                 .antMatchers("/users/admin/godown-dashboard").hasRole("GODOWN")
                 
@@ -64,7 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/admin/create", "/users/profile").permitAll()
                 .antMatchers("/users/admin/**/**").permitAll()
                 .antMatchers("/roles/all").permitAll()
-                .antMatchers("/users/login", "/users/all").permitAll()
+                .antMatchers("/users/login", "/users/all", "/users/{username}", "/users/image/{username}").permitAll()
                 .antMatchers("/users/api/{email}").permitAll()
                 .antMatchers("/users/get/{id}", "/users/crops/all").permitAll() // Ensure this line is accessible
                 .anyRequest().authenticated() // Any other requests require authentication
