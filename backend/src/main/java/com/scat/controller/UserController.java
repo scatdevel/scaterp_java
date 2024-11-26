@@ -69,7 +69,13 @@ public class UserController {
 	public ResponseEntity<?> updateUser(@PathVariable String username, @RequestParam("fullName") String fullName,
 			@RequestParam("phoneNumber") Long phoneNumber, @RequestParam("email") String email,
 			@RequestParam("bio") String bio, @RequestParam("dob") Date dob,
-			@RequestParam(value = "image", required = false) MultipartFile profilePictureUrl) {
+			@RequestParam(value = "houseNumber") String houseNumber, @RequestParam(value = "street") String street,
+			@RequestParam(value = "landmark") String landmark, @RequestParam(value = "locality") String locality,
+			@RequestParam(value = "city") String city, @RequestParam(value = "state") String state,
+			@RequestParam(value = "pincode") Long pincode, @RequestParam(value = "country") String country,
+			@RequestParam(value = "image", required = false) MultipartFile profilePictureUrl) 
+
+			{
 
 		try {
 			// Prepare UserDTO
@@ -80,7 +86,16 @@ public class UserController {
 			userDTO.setEmail(email);
 			userDTO.setBio(bio);
 			userDTO.setDob(dob);
-
+			userDTO.setHouseNumber(houseNumber);
+			userDTO.setStreet(street);
+			userDTO.setLandmark(landmark);
+			userDTO.setLocality(locality);
+			userDTO.setCity(city);
+			userDTO.setState(state);
+			userDTO.setPincode(pincode);
+			userDTO.setCountry(country);
+			
+			
             // Handle file upload if present
             if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
                 String originalFilename = profilePictureUrl.getOriginalFilename();
@@ -118,14 +133,6 @@ public class UserController {
 	}
 
 
-//	@GetMapping("/image/{username}")
-//	public ResponseEntity<Resource> getProfileImage(@PathVariable String username) throws IOException {
-//		UserDTO user = userService.getUserByUsername(username);
-//		Path imagePath = Paths.get(baseDirectory, user.getProfilePictureUrl());
-//		org.springframework.core.io.Resource resource = new FileSystemResource(imagePath.toFile());
-//		String contentType = Files.probeContentType(imagePath);
-//		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(resource);
-//	}
 	@GetMapping("/image/{username}")
 	public ResponseEntity<Resource> getProfileImage(@PathVariable String username) throws IOException {
 	    UserDTO user = userService.getUserByUsername(username);

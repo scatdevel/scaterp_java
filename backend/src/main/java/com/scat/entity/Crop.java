@@ -39,6 +39,8 @@ public class Crop {
 	@Lob
 	private byte[] image;
 
+	private String actualProductionUnit;
+
 	private String projectedProductionUnit;
 
 	@ManyToOne
@@ -102,14 +104,18 @@ public class Crop {
 	}
 
 
+	public String getActualProductionUnit() 
+
 	public String getActualProductionUnit() {
 		return actualProductionUnit;
 	}
 
+	
 	public void setActualProductionUnit(String actualProductionUnit) {
 		this.actualProductionUnit = actualProductionUnit;
 	}
 
+	
 	public String getProjectedProductionUnit() {
 		return projectedProductionUnit;
 	}

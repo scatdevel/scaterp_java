@@ -44,6 +44,18 @@ i18n
             "yourPhoto": "Your Photo",
             "delete": "Delete",
             "update": "Update",
+
+            "dob": "Date of Birth",
+"gender": "Gender",
+"houseNumber": "House Number",
+"street": "Street",
+"landmark": "Landmark",
+"locality": "Locality",
+"city": "City",
+"state": "State",
+"pinCode": "Pin Code",
+"country": "Country",
+
           //land details
 
           "Edit": "Edit",
@@ -64,7 +76,8 @@ i18n
           "street": "Street",
           "enterStreetName": "Enter street name",
           "cultivationType": "Cultivation Type",
-          "selectCultivationType": "Select Cultivation Type",
+          "selectCultivationType": "Select"
+,
           "organic": "Organic",
           "conventional": "Conventional",
           "hydroponic": "Hydroponic",
@@ -162,7 +175,17 @@ noImageAvailable: "No Image Available"
             "yourPhoto": "உங்கள் படம்",
             "delete": "அழிக்கவும்",
             "update": "மேம்படுத்தவும்",
-          
+          "dob": "பிறந்த தேதி",
+"gender": "பாலினம்",
+"houseNumber": "வீட்டு எண்",
+"street": "தெரு",
+"landmark": "முக்கிய இடம்",
+"locality": "இப்பகுதி",
+"city": "நகரம்",
+"state": "மாநிலம்",
+"pinCode": "பின்கோடு",
+"country": "நாடு",
+
           //land details form
 
           "address": "முகவரி",
@@ -178,12 +201,13 @@ noImageAvailable: "No Image Available"
   "street": "தெரு",
   "enterStreetName": "தெரு பெயரை உள்ளிடவும்",
   "cultivationType": "விவசாய வகை",
-  "selectCultivationType": "விவசாய வகையைத் தேர்வுசெய்க",
+  "selectCultivationType": "தேர்வுகொள்ளவும்"
+,
   "organic": "ஆர்கானிக்",
   "conventional": "அதிகார முறை",
   "hydroponic": "ஹைட்ரோபோனிக்",
   "landOwnership": "நில உரிமை",
-  "selectLandOwnership": "நில உரிமையைத் தேர்வுசெய்க",
+  "select": "நில உரிமையைத் தேர்வுசெய்க",
   "owned": "உரிமையுள்ள",
   "leased": "குத்தகைக்கு",
   "rented": "வாடைகைக்கு",

@@ -34,7 +34,17 @@ public class AdminServiceImpl implements AdminService {
         return passwordEncoder.matches(password, adminUser.getEncryptedPassword());
     }
     
-    
+    // A method to get roles of an admin (if needed)
+    public List<RoleEntity> getRolesForAdmin(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Admin user not found"));
+        
+        if (user.getRole() == null) {
+            throw new RuntimeException("Admin user has no assigned roles");
+        }
+        return List.of(user.getRole());
+    }
+
     @Override
   public void createAdmin(String email, String password, String username, List<String> roleNames) {
       if (userRepository.findByEmail(email).isPresent()) {
@@ -141,6 +151,7 @@ public class AdminServiceImpl implements AdminService {
       
       user.setRole(null);
       userRepository.save(user);
+      
   }
 
     private void initializeDefaultRoles() {

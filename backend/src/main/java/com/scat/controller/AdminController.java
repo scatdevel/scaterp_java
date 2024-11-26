@@ -47,7 +47,13 @@ public class AdminController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createAdmin(@RequestBody CreateAdmin createAdmin) {
-        try {
+       
+    	String email = createAdmin.getEmail();
+    	if(!email.contains("@admin")) {
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not valid email for admin");
+    	}
+    	
+    	try {
             adminService.createAdmin(createAdmin.getEmail(), 
                                       createAdmin.getPassword(), 
                                       createAdmin.getUsername(), 
@@ -74,7 +80,6 @@ public class AdminController {
     }
 
 
-
      @GetMapping("/user/{email}")
     public ResponseEntity<UserEntity> getUserByEmail(@PathVariable String email) {
         try {
@@ -85,6 +90,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+     
     @GetMapping("/fetch/all")
     public ResponseEntity<List<UserEntity>> getAllUsers() {
         try {
