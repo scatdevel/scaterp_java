@@ -24,7 +24,6 @@ import OutletDashboard from './pages/dashboard/OutletDashboard';
 import Inventory from './pages/dashboard/Inventory'; // Import Inventory page
 import Orders from './pages/dashboard/Orders'; // Import Orders page
 import Customers from './pages/dashboard/Customers'; // Import Customers page
-import Pricing from './pages/dashboard/Pricing'; // Correct import (capitalize 'Pricing')
 import GoDownDashboard from './pages/dashboard/GoDownDashboard';
 
 const App = () => {
@@ -109,8 +108,7 @@ const App = () => {
          <Route path="inventory" element={<Inventory />} />
         <Route path="orders" element={<Orders />} />
         <Route path="customers" element={<Customers />} />
-        <Route path="pricing" element={<Pricing />} /> // Capitalize 'Pricing' when using it in JSX
-
+       
         {/* Add more outlet-specific routes here */}
       </Route>
       

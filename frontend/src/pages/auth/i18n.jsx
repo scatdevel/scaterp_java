@@ -126,7 +126,17 @@ i18n
           "cropDetailsFormError": "Error saving crop details. Please try again.",
           "acres": "Acres",
           "hectares": "Hectares",
-
+          "weatherData": "Weather Data",
+          "selectWeatherData": "Select Weather Data",
+          "rainy": "Rainy",
+          "sunny": "Sunny",
+          "cloudy": "Cloudy",
+          "soilType": "Soil Type",
+          "selectSoilType": "Select Soil Type",
+          "loamy": "Loamy",
+          "sandy": "Sandy",
+          "clayey": "Clayey",
+          "harvestDate": "Harvest Date",
 //crop over view
 cropOverview: "Crop Overview",
 loading: "Loading...",
@@ -260,8 +270,20 @@ noImageAvailable: "No Image Available"
   
   "cropDetailsFormSuccess": "விவசாயத் தகவல்கள் வெற்றிகரமாக சேமிக்கப்பட்டன!",
   "cropDetailsFormError": "விவசாயத் தகவல்களைச் சேமிக்க பிழை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.",
-
+  "selectWeatherData": "வானிலை தரவைக் கொள்ளவும்",
+  "rainy": "மழைக்காலம்",
+  "sunny": "சூரியன்",
+  "cloudy": "மேகமானது",
+  "soilType": "மண் வகை",
+  "selectSoilType": "மண் வகையை தேர்ந்தெடுக்கவும்",
+  "loamy": "நீர் உறிஞ்சும்",
+  "sandy": "விழுந்த மண்",
+  "clayey": "சேமிக்கப்பட்ட மண்",
+  "harvestDate": "சரிவு தேதி",
 //crop over view
+
+  "weatherData": "வானிலை தரவு",
+
 
 
 cropOverview: "வளையத்திட்டம் மேலோட்டம்",
