@@ -28,4 +28,6 @@ public interface AdminService {
 	void editRole(String email, String oldRoleName, String newRoleName);
 
 	void deleteRoleFromUser(String email);
+
+	String getUserRole(String email);
 }
