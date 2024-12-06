@@ -50,6 +50,29 @@ export const loginAdmin = async (credentials) => {
   }
 };
 
+export const loginOutlet = async (credentials) => {
+  try {
+    const response = await axios.post(`${API_URL}/outlet/login`, credentials, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+    });
+
+    if (response.data && response.data.token) {
+      return {
+        token: response.data.token,
+        role: response.data.role || 'outlet',
+      };
+    } else {
+      throw new Error('Token not found in the response');
+    }
+  } catch (error) {
+    console.error(`Login error: ${error.response?.status} - ${error.response?.data?.message || error.message}`);
+    throw error;
+  }
+};
+
 export const fetchRoles = async () => {
   try {
     const response = await axios.get(`${API_URL}/admin/roles`, {

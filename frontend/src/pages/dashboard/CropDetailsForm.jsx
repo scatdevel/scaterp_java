@@ -12,20 +12,20 @@ const CropDetailsForm = () => {
   const [crops, setCrops] = useState([{
     id: Date.now(),
     cropName: '',
-    actualProduction: '',
-    projectedProduction: '',
+    production: '',
     cultivationLandValue: '',
     landValueUnit: '',
     cost: '',
-    projectCost: '',
     // image: null,
     imagePreview: '',
     imageUrl: '',
     projectionTimelineType: '',
     projectionTimelineValue: '',
     // categoryId: ''
-    actualProductionUnit: '',
-    projectedProductionUnit: '',
+    productionUnit: 'kg',
+    weatherData: '', // New field for weather data
+    soilType: '', // New field for soil type
+    harvestDate: '' // New field for harvest date
   }]);
   const [categories, setCategories] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
@@ -80,20 +80,20 @@ const CropDetailsForm = () => {
     setCrops([...crops, {
       id: Date.now(),
       cropName: '',
-      actualProduction: '',
-      projectedProduction: '',
+      production: '',
       cultivationLandValue: '',
       landValueUnit: '',
       cost: '',
-      projectCost: '',
       image: null,
       imagePreview: '',
       imageUrl: '',
       projectionTimelineType: '',
       projectionTimelineValue: '',
-      actualProductionUnit: '',
-      projectedProductionUnit: '',
-      categoryId: ''
+      productionUnit: 'kg',
+      categoryId: '',
+      weatherData: '', // New field for weather data
+      soilType: '', // New field for soil type
+      harvestDate: '' // New field for harvest date
     }]);
     setShowAddCropButton(true);
   };
@@ -104,20 +104,22 @@ const CropDetailsForm = () => {
       for (const crop of crops) {
         const formData = new FormData();
         formData.append('cropName', crop.cropName);
-        formData.append('actualProduction', crop.actualProduction);
-        formData.append('actualProductionUnit', crop.actualProductionUnit); 
-        formData.append('projectedProduction', crop.projectedProduction);
-        formData.append('projectedProductionUnit', crop.projectedProductionUnit); 
+        formData.append('production', crop.production);
+        formData.append('productionUnit', crop.productionUnit); 
         formData.append('cultivationLandValue', crop.cultivationLandValue);
         formData.append('landValueUnit', crop.landValueUnit);
         formData.append('cost', crop.cost);
-        formData.append('projectCost', crop.projectCost);
         formData.append('projectionTimelineType', crop.projectionTimelineType);
         formData.append('projectionTimelineValue', crop.projectionTimelineValue);
         formData.append('categoryId', crop.categoryId); // Include category ID
    
+
+
           formData.append('image', crop.image);
-        
+         // Adding the new fields
+      formData.append('weatherData', crop.weatherData);
+      formData.append('soilType', crop.soilType);
+      formData.append('harvestDate', crop.harvestDate);
 
         await axios.post('http://localhost:8080/users/crops/save', formData, {
           headers: {
@@ -155,15 +157,14 @@ const CropDetailsForm = () => {
   const formatCurrency = (value) => {
     const number = parseFloat(value);
     if (!isNaN(number)) {
-      return new Intl.NumberFormat('en-US', {
+      return new Intl.NumberFormat('en-IN', {
         style: 'currency',
-        currency: 'USD', // You can change the currency type as needed, like 'INR' or 'EUR'
+        currency: 'INR', // Change to Indian Rupees (INR)
       }).format(number);
     }
     return value;
   };
   
-
   return (
     <div className="bg-gray-100 min-h-screen py-12 flex items-center justify-center">
       <div className="absolute top-1 right-14 flex space-x-2 z-20">
@@ -181,12 +182,14 @@ const CropDetailsForm = () => {
         />
       </div>
 
-      <Card className="w-full max-w-4xl bg-white shadow-lg rounded-lg border border-gray-300">
+      <Card className="w-full h-screen bg-white shadow-lg rounded-lg border border-gray-300">
+
         <CardHeader className="bg-gradient-to-r from-green-600 to-green-500 text-white text-center py-5 rounded-t-lg">
           <Typography variant="h4" className="font-bold">{t('cropDetailsForm')}</Typography>
         </CardHeader>
 
-        <CardBody className="p-6">
+        <CardBody className="p-6 h-full overflow-auto">
+
           <form onSubmit={handleSubmitDetails} className="space-y-8">
             {crops.map((crop) => (
               <div key={crop.id} className="bg-white shadow-md rounded-lg p-6 border border-gray-300 relative">
@@ -239,59 +242,78 @@ const CropDetailsForm = () => {
                     )}
                   </div>
 
+                   {/* Production Unit */}
+                   <div className="flex flex-col space-y-2">
+                    <label className="text-sm font-medium text-gray-700">{t('production')}</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <input
+                        type="number"
+                        name="production"
+                        value={crop.production}
+                        onChange={(e) => handleChange(e, crop.id)}
+                        placeholder={t('production')}
+                        className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+                      />
+                      <select
+                        name="productionUnit"
+                        value={crop.productionUnit}
+                        onChange={(e) => handleChange(e, crop.id)}
+                        className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+                      >
+                        <option value="kg">{t('kg')}</option>
+                        <option value="tons">{t('tons')}</option>
+                        <option value="pounds">{t('pounds')}</option>
+                      </select>
+                    </div>
+                  </div>
+
+
+  {/* Weather Data */}
+  <div className="flex flex-col space-y-2">
+                    <label className="text-sm font-medium text-gray-700">{t('weatherData')}</label>
+                    <select
+                      name="weatherData"
+                      value={crop.weatherData}
+                      onChange={(e) => handleChange(e, crop.id)}
+                      className="p-3 text-base border border-gray-300 rounded-md focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+                    >
+                      <option value="">{t('selectWeatherData')}</option>
+                      <option value="Rainy">{t('rainy')}</option>
+                      <option value="Sunny">{t('sunny')}</option>
+                      <option value="Cloudy">{t('cloudy')}</option>
+                    </select>
+                  </div>
+
+                  {/* Soil Type */}
                   <div className="flex flex-col space-y-2">
-  <label className="text-sm font-medium text-gray-700">{t('actualProduction')}</label>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <input
-      type="number"
-      name="actualProduction"
-      value={crop.actualProduction}
-      onChange={(e) => handleChange(e, crop.id)}
-      placeholder={t('enterActualProduction')}
-      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-      required
-    />
-    <select
-      name="actualProductionUnit"
-      value={crop.actualProductionUnit}
-      onChange={(e) => handleChange(e, crop.id)}
-      className="p-1 text-xs border border-gray-300 rounded-md w-30 h-8 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-    >
-      <option value="kg">{t('kgs')}</option>
-      <option value="ton">{t('tons')}</option>
-      {/* Add more units as needed */}
-    </select>
-  </div>
-</div>
+                    <label className="text-sm font-medium text-gray-700">{t('soilType')}</label>
+                    <select
+                      name="soilType"
+                      value={crop.soilType}
+                      onChange={(e) => handleChange(e, crop.id)}
+                      className="p-3 text-base border border-gray-300 rounded-md focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+                    >
+                      <option value="">{t('selectSoilType')}</option>
+                      <option value="Loamy">{t('loamy')}</option>
+                      <option value="Sandy">{t('sandy')}</option>
+                      <option value="Clayey">{t('clayey')}</option>
+                    </select>
+                  </div>
 
+                  
 
-<div className="flex flex-col space-y-2">
-  <label className="text-sm font-medium text-gray-700">{t('projectedProduction')}</label>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <input
-      type="number"
-      name="projectedProduction"
-      value={crop.projectedProduction}
-      onChange={(e) => handleChange(e, crop.id)}
-      placeholder={t('enterProjectedProduction')}
-      className="p-3 border border-gray-300 rounded-md text-base focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-      required
-    />
-    <select
-      name="projectedProductionUnit"
-      value={crop.projectedProductionUnit}
-      onChange={(e) => handleChange(e, crop.id)}
-      className="p-1 text-xs border border-gray-300 rounded-md w-30 h-8 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-    >
-      <option value="kg">{t('kgs')}</option>
-      <option value="ton">{t('tons')}</option>
-      {/* Add more units as needed */}
-    </select>
-  </div>
-</div>
-
-
-
+                  {/* Harvest Date */}
+                  <div className="flex flex-col space-y-2">
+                    <label className="text-sm font-medium text-gray-700">{t('harvestDate')}</label>
+                    <input
+                      type="date"
+                      name="harvestDate"
+                      value={crop.harvestDate}
+                      onChange={(e) => handleChange(e, crop.id)}
+                      className="p-3 text-base border border-gray-300 rounded-md focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
+                    />
+                  </div>
+                
                   <div className="flex flex-col space-y-2">
                     <label className="text-sm font-medium text-gray-700">{t('landValueUnit')} & {t('cultivationLandValue')}</label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -338,24 +360,9 @@ const CropDetailsForm = () => {
         </span>
       )}
     </div>
-    <div className="flex-1">
-      <label className="text-sm font-medium text-gray-700">{t('projectCost')}</label>
-      <input
-        type="number"
-        name="projectCost"
-        value={crop.projectCost}
-        onChange={(e) => handleChange(e, crop.id)}
-        placeholder={t('Enter Project Cost')}
-        className="p-3 border border-gray-300 rounded-md text-base w-full focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition duration-300 ease-in-out"
-        required
-      />
-      {/* Display the formatted currency value */}
-      {crop.projectCost && (
-        <span className="text-gray-500 mt-1 block">
-          {formatCurrency(crop.projectCost)}
-        </span>
-      )}
-    </div>
+
+
+    
   </div>
 </div>
 

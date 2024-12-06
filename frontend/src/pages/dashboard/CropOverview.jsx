@@ -15,7 +15,9 @@ const CropOverview = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
    // Function to format currency
-   const formatCurrency = (value) => {
+
+  // Function to format currency to INR
+  const formatCurrency = (value) => {
     if (!value) return '';
     return `₹ ${parseFloat(value).toLocaleString()}`;
   };
@@ -120,28 +122,28 @@ const CropOverview = () => {
                   <Typography variant="subtitle2" className="font-semibold mb-2 text-center text-sm">
                     {crop.cropName}
                   </Typography>
-                  <div className="flex flex-col space-y-2 text-xs">
-                  <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">{t('actualProduction')}:</span> 
-                      {crop.actualProduction} {crop.actualProductionUnit || ''}
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">{t('projectedProduction')}:</span> 
-                      {crop.projectedProduction} {crop.projectedProductionUnit || ''}
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">{t('cultivationLandValue')}:</span> {crop.cultivationLandValue} {crop.landValueUnit}
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">{t('cost')}:</span> ${crop.cost}
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">{t('projectCost')}:</span> ${crop.projectCost}
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-700">
-                      <span className="font-semibold">{t('projectionTimeline')}:</span> {crop.projectionTimelineValue} {crop.projectionTimelineType}
-                    </Typography>
-                  </div>
+          
+<div className="flex flex-col space-y-2 text-xs">
+  <Typography variant="body2" className="text-gray-700">
+    <span className="font-semibold">{t('production')}:</span> 
+    {crop.production} {crop.productionUnit || ''} {/* Corrected unit display */}
+  </Typography>
+
+  <Typography variant="body2" className="text-gray-700">
+    <span className="font-semibold">{t('cultivationLandValue')}:</span> 
+    {crop.cultivationLandValue} {crop.landValueUnit}
+  </Typography>
+
+  <Typography variant="body2" className="text-gray-700">
+    <span className="font-semibold">{t('cost')}:</span> {formatCurrency(crop.cost)} {/* Formatting as INR */}
+  </Typography>
+
+  <Typography variant="body2" className="text-gray-700">
+    <span className="font-semibold">{t('projectionTimeline')}:</span> 
+    {crop.projectionTimelineValue} {crop.projectionTimelineType}
+  </Typography>
+</div>
+
                 </CardBody>
               </Card>
             ))}
