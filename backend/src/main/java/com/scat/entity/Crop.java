@@ -35,6 +35,7 @@ public class Crop {
 	  private String projectionTimelineType;
 		private int projectionTimelineValue;
 
+<<<<<<< HEAD
 	
 	
 
@@ -45,6 +46,15 @@ public class Crop {
 		
 		private String weatherData; // New field for weather data
 
+=======
+		@Lob
+		private byte[] image;
+
+		private String productionUnit;
+		
+		private String weatherData; // New field for weather data
+
+>>>>>>> e6958e21923b7b8b648845e40587073e9d29c5f6
 	    private String soilType; // New field for soil type
 
 	    private Date harvestDate; // New field for harvest date
