@@ -1,25 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+
 const UserDetails = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
-    const [createRoleDialogOpen, setCreateRoleDialogOpen] = useState(false);
     const [assignRoleDialogOpen, setAssignRoleDialogOpen] = useState(false);
     const [deleteRoleDialogOpen, setDeleteRoleDialogOpen] = useState(false);
     const [dialogType, setDialogType] = useState('');
     const [dialogUserId, setDialogUserId] = useState(null);
     const [dialogOldRole, setDialogOldRole] = useState('');
     const [roleInput, setRoleInput] = useState('');
-    const [createRoleButtonVisible, setCreateRoleButtonVisible] = useState(true);
     const [dialogRoleId, setDialogRoleId] = useState(null);
+    const [newUserEmail, setNewUserEmail] = useState('');
+    const [newUserPassword, setNewUserPassword] = useState('');
+    const [newUserUsername, setNewUserUsername] = useState('');
+    const [newUserRole, setNewUserRole] = useState('');
+    const [createUserDialogOpen, setCreateUserDialogOpen] = useState(false);
+    const [emailError, setEmailError] = useState('');
+const [passwordError, setPasswordError] = useState('');
+
+    
 
     useEffect(() => {
         fetchUsers();
     }, []);
-    
+
     useEffect(() => {
         if (successMessage) {
             const timer = setTimeout(() => {
@@ -29,7 +37,7 @@ const UserDetails = () => {
             return () => clearTimeout(timer); // Clear timeout on component unmount
         }
     }, [successMessage]);
-    
+
     const fetchUsers = async () => {
         setLoading(true);
         setError(null);
@@ -53,29 +61,73 @@ const UserDetails = () => {
         }
     };
 
-    const handleCreateRole = async () => {
-        if (roleInput) {
-            try {
-                await axios.post('http://localhost:8080/users/admin/roles/create', {
-                    roleName: roleInput
-                });
-                setSuccessMessage('Role created successfully!');
-                setRoleInput('');
-                setCreateRoleDialogOpen(false);
-                fetchUsers();
-            } catch (err) {
-                setError(err.response?.data?.error || 'Failed to create role');
-            }
+    // Email validation
+    const validateEmail = (email) => {
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        return emailRegex.test(email);
+    };
+
+    // Password validation
+    const validatePassword = (password) => {
+        // Password must be at least 6 characters, include at least one lowercase, one uppercase, and one number
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+        return passwordRegex.test(password);
+    };
+
+    const handleCreateUser = async () => {
+        if (!newUserEmail || !newUserUsername || !newUserRole ||  !newUserPassword) {
+            setError('All fields are required.');
+            return;
+        }
+
+
+        if (!newUserEmail || !validateEmail(newUserEmail)) {
+            setEmailError('Please enter a valid email.');
+            return;
         } else {
-            setError('Role name cannot be empty.');
+            setEmailError('');
+        }
+
+        // Validate password
+        if (!newUserPassword || !validatePassword(newUserPassword)) {
+            setPasswordError('Password must be at least 6 characters long, include one uppercase, one lowercase, and one number.');
+            return;
+        } else {
+            setPasswordError('');
+        }
+
+        // Ensure other fields are filled
+        if (!newUserUsername || !newUserRole) {
+            setError('Username and role are required.');
+            return;
+        }
+
+        try {
+            await axios.post('http://localhost:8080/users/admin/create', {
+                email: newUserEmail,
+                password: newUserPassword,
+                username: newUserUsername,
+                roleName: newUserRole,
+            });
+            setSuccessMessage('User created successfully!');
+            setNewUserEmail('');
+            setNewUserPassword('');
+            setNewUserUsername('');
+            setNewUserRole('');
+            setCreateUserDialogOpen(false);
+            fetchUsers(); // Refresh the user list
+        } catch (err) {
+            setError(err.response?.data?.error || 'Failed to create user');
         }
     };
+
+
     const handleEdit = async () => {
         if (!roleInput || !dialogUserId) {
             setError('Role name and user ID are required.');
             return;
         }
-    
+
         // Check if the old role is "No Role Assigned"
         if (dialogOldRole === 'No Role Assigned') {
             try {
@@ -110,7 +162,7 @@ const UserDetails = () => {
             }
         }
     };
-    
+
     const handleDelete = async () => {
         if (!dialogRoleId) {
             setError('Role ID is not defined.');
@@ -127,17 +179,6 @@ const UserDetails = () => {
         }
     };
 
-    const openCreateRoleDialog = () => {
-        setCreateRoleDialogOpen(true);
-        setCreateRoleButtonVisible(false);
-    };
-
-    const closeCreateRoleDialog = () => {
-        setCreateRoleDialogOpen(false);
-        setRoleInput('');
-        setCreateRoleButtonVisible(true);
-    };
-
     const openAssignRoleDialog = (user, oldRole = '', type = 'assign') => {
         if (user && user.email) {
             setDialogUserId(user.email);
@@ -148,13 +189,11 @@ const UserDetails = () => {
         setDialogType(type);
         setRoleInput(type === 'edit' ? oldRole : '');
         setAssignRoleDialogOpen(true);
-        setCreateRoleButtonVisible(false);
     };
 
     const closeAssignRoleDialog = () => {
         setAssignRoleDialogOpen(false);
         setRoleInput('');
-        setCreateRoleButtonVisible(true);
         setDialogUserId(null);
     };
 
@@ -169,24 +208,36 @@ const UserDetails = () => {
         setDialogRoleId(null);
     };
 
-    const isValidEmail = (email) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
+    const openCreateUserDialog = () => {
+        setCreateUserDialogOpen(true);
     };
+    
+    const closeCreateUserDialog = () => {
+        setCreateUserDialogOpen(false);
+        setNewUserEmail('');
+        setNewUserPassword('');
+        setNewUserUsername('');
+        setNewUserRole('');
+    };
+    
 
     return (
         <div style={styles.container}>
             <h1 style={styles.heading}>User Details</h1>
+
+
+             {/* Create User Button */}
+        <button 
+            style={styles.createUserButton} 
+            onClick={openCreateUserDialog}
+        >
+            Create User
+        </button>
+
             {loading && <p style={styles.loading}>Loading users...</p>}
             {error && <p style={styles.error}>{error}</p>}
             {successMessage && <p style={styles.success}>{successMessage}</p>}
-            {!createRoleDialogOpen && !assignRoleDialogOpen && !deleteRoleDialogOpen && (
-                <div style={styles.addRoleContainer}>
-                    <button style={styles.addButton} onClick={openCreateRoleDialog}>
-                        Create Role
-                    </button>
-                </div>
-            )}
+
             <table style={styles.table}>
                 <thead>
                     <tr>
@@ -230,23 +281,49 @@ const UserDetails = () => {
                 </tbody>
             </table>
 
-            {/* Create Role Dialog */}
-            {createRoleDialogOpen && (
-                <div style={styles.dialogOverlay}>
-                    <div style={styles.dialog}>
-                        <h2>Create Role</h2>
-                        <input
-                            type="text"
-                            value={roleInput}
-                            onChange={(e) => setRoleInput(e.target.value)}
-                            placeholder="Enter role name"
+
+            {createUserDialogOpen && (
+    <div style={styles.dialogOverlay}>
+        <div style={styles.dialog}>
+            <h2>Create User</h2>
+            <input
+                type="email"
+                value={newUserEmail}
+                onChange={(e) => setNewUserEmail(e.target.value)}
+                placeholder="Enter email"
+                style={styles.input}
+            />
+{emailError && <p style={styles.error}>{emailError}</p>}
+            
+            <input
+                type="text"
+                value={newUserUsername}
+                onChange={(e) => setNewUserUsername(e.target.value)}
+                placeholder="Enter username"
+                style={styles.input}
+            />
+            <input
+                type="text"
+                value={newUserRole}
+                onChange={(e) => setNewUserRole(e.target.value)}
+                placeholder="Enter role"
+                style={styles.input}
+            />
+
+<input
+                            type="password"
+                            value={newUserPassword}
+                            onChange={(e) => setNewUserPassword(e.target.value)}
+                            placeholder="Enter password"
                             style={styles.input}
                         />
-                        <button onClick={handleCreateRole} style={styles.dialogButton}>Create</button>
-                        <button onClick={closeCreateRoleDialog} style={styles.dialogButton}>Cancel</button>
-                    </div>
-                </div>
-            )}
+                        {passwordError && <p style={styles.error}>{passwordError}</p>}
+            <button onClick={handleCreateUser} style={styles.dialogButton}>Create</button>
+            <button onClick={closeCreateUserDialog} style={styles.dialogButton}>Cancel</button>
+        </div>
+    </div>
+)}
+
 
             {/* Assign Role Dialog */}
             {assignRoleDialogOpen && (
@@ -309,25 +386,23 @@ const styles = {
         color: '#28a745',
         fontWeight: 'bold',
     },
-    addRoleContainer: {
-        marginBottom: '20px',
-    },
-    addButton: {
-        backgroundColor: '#007bff',
-        color: 'white',
-        border: 'none',
-        padding: '12px 24px',
-        fontSize: '16px',
-        cursor: 'pointer',
-        borderRadius: '6px',
-        transition: 'background-color 0.3s',
-    },
-    addButtonHover: {
-        backgroundColor: '#0056b3',
-    },
     table: {
         width: '100%',
         borderCollapse: 'collapse',
+    },
+
+
+     // ... other styles
+     createUserButton: {
+        backgroundColor: '#28a745',
+        color: 'white',
+        border: 'none',
+        padding: '10px 20px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        borderRadius: '6px',
+        marginBottom: '20px',
+        transition: 'background-color 0.3s',
     },
     tableHeader: {
         borderBottom: '2px solid #dee2e6',
@@ -364,9 +439,6 @@ const styles = {
         borderRadius: '6px',
         marginRight: '10px',
         transition: 'background-color 0.3s',
-    },
-    actionButtonHover: {
-        backgroundColor: '#0056b3',
     },
     dialogOverlay: {
         position: 'fixed',
@@ -405,10 +477,6 @@ const styles = {
         margin: '5px',
         transition: 'background-color 0.3s',
     },
-    dialogButtonHover: {
-        backgroundColor: '#0056b3',
-    },
-
 };
 
 export default UserDetails;
