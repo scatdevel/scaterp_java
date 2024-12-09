@@ -1,5 +1,6 @@
 package com.scat.service;
 
+import com.scat.dto.UserDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
 
@@ -30,4 +31,6 @@ public interface AdminService {
 	void deleteRoleFromUser(String email);
 
 	String getUserRole(String email);
+
+	UserDTO createUserByAdmin(UserDTO userDto);
 }
