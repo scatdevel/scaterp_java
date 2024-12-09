@@ -1,7 +1,9 @@
 
 package com.scat.entity;
 
+import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Base64;
 
 import javax.persistence.Column;
@@ -24,21 +26,79 @@ public class Crop {
 	private Long id;
 
 	private String cropName;
-	private double actualProduction;
-	private double projectedProduction;
+	private double production;
 	private double cultivationLandValue;
 	private String landValueUnit;
-	private double cost;
-	private double projectCost;
-	private String projectionTimelineType;
-	private int projectionTimelineValue;
+	  @Column(precision = 15, scale = 2)  // Use BigDecimal for cost
+	    private BigDecimal cost;
+	  
+	  private String projectionTimelineType;
+		private int projectionTimelineValue;
 
-	@Lob
-	private byte[] image;
+		@Lob
+		private byte[] image;
 
-	private String actualProductionUnit;
+		private String productionUnit;
+		
+		private String weatherData; // New field for weather data
 
-	private String projectedProductionUnit;
+	    private String soilType; // New field for soil type
+
+	    private Date harvestDate; // New field for harvest date
+
+
+	    public String getWeatherData() {
+			return weatherData;
+		}
+
+		public void setWeatherData(String weatherData) {
+			this.weatherData = weatherData;
+		}
+
+		public String getSoilType() {
+			return soilType;
+		}
+
+		public void setSoilType(String soilType) {
+			this.soilType = soilType;
+		}
+
+		public Date getHarvestDate() {
+			return harvestDate;
+		}
+
+		public void setHarvestDate(Date harvestDate) {
+			this.harvestDate = harvestDate;
+		}
+
+		public BigDecimal getCost() {
+			return cost;
+		}
+
+	
+
+	public void setCost(BigDecimal cost) {
+		this.cost = cost;
+	}
+
+	public double getProduction() {
+		return production;
+	}
+
+	public void setProduction(double production) {
+		this.production = production;
+	}
+
+	
+
+
+	public String getProductionUnit() {
+		return productionUnit;
+	}
+
+	public void setProductionUnit(String productionUnit) {
+		this.productionUnit = productionUnit;
+	}
 
 	@ManyToOne
 	@JoinColumn(name = "user_Id", nullable = false)
@@ -50,8 +110,7 @@ public class Crop {
 	@JsonBackReference
 	private CropCategory category;
 
-	private Date createdAt;
-
+	  private LocalDate createdAt; 
 	//gets and sets
 	public CropCategory getCategory() {
 		return category;
@@ -93,39 +152,6 @@ public class Crop {
 		this.cropName = cropName;
 	}
 
-	public double getActualProduction() {
-		return actualProduction;
-	}
-
-
-	public String getActualProductionUnit() {
-		return actualProductionUnit;
-	}
-
-	public void setActualProductionUnit(String actualProductionUnit) {
-		this.actualProductionUnit = actualProductionUnit;
-	}
-
-	public String getProjectedProductionUnit() {
-		return projectedProductionUnit;
-	}
-
-	public void setProjectedProductionUnit(String projectedProductionUnit) {
-		this.projectedProductionUnit = projectedProductionUnit;
-	}
-
-	public void setActualProduction(double actualProduction) {
-		this.actualProduction = actualProduction;
-	}
-
-	public double getProjectedProduction() {
-		return projectedProduction;
-	}
-
-	public void setProjectedProduction(double projectedProduction) {
-		this.projectedProduction = projectedProduction;
-	}
-
 	public double getCultivationLandValue() {
 		return cultivationLandValue;
 	}
@@ -140,22 +166,6 @@ public class Crop {
 
 	public void setLandValueUnit(String landValueUnit) {
 		this.landValueUnit = landValueUnit;
-	}
-
-	public double getCost() {
-		return cost;
-	}
-
-	public void setCost(double cost) {
-		this.cost = cost;
-	}
-
-	public double getProjectCost() {
-		return projectCost;
-	}
-
-	public void setProjectCost(double projectCost) {
-		this.projectCost = projectCost;
 	}
 
 	public String getProjectionTimelineType() {
@@ -174,15 +184,17 @@ public class Crop {
 		this.projectionTimelineValue = projectionTimelineValue;
 	}
 
-	public Date getCreatedAt() {
+	
+
+	   public LocalDate getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(LocalDate createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	   public String getImageUrl() {
+	public String getImageUrl() {
 	        if (image != null) {
 	            return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(image);
 	        }

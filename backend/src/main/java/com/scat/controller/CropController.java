@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -38,31 +40,33 @@ public class CropController {
     @PostMapping("/save")
     public Crop saveCrop(@RequestHeader("Authorization") String jwt,
     		@RequestParam("cropName") String cropName,
-                         @RequestParam("actualProduction") double actualProduction,
+                         @RequestParam("production") double production,
                          @RequestParam Long  categoryId,
-                         @RequestParam("projectedProduction") double projectedProduction,
                          @RequestParam("cultivationLandValue") double cultivationLandValue,
                          @RequestParam("landValueUnit") String landValueUnit,
                          @RequestParam("cost") double cost,
-                         @RequestParam("actualProductionUnit") String actualProductionUnit,
-                         @RequestParam("projectedProductionUnit") String projectedProductionUnit,
-                         @RequestParam("projectCost") double projectCost,
+                         @RequestParam("weatherData") String weatherData,
+                         @RequestParam("soilType") String soilType,
+                         @RequestParam("productionUnit") String productionUnit,
+                         @RequestParam("harvestDate") String harvestDate,
                          @RequestParam("projectionTimelineType") String projectionTimelineType,
                          @RequestParam("projectionTimelineValue") int projectionTimelineValue,
                          @RequestParam("image") MultipartFile image) throws IOException {
         Crop crop = new Crop();
         crop.setCropName(cropName);
-        crop.setActualProduction(actualProduction);
-        crop.setProjectedProduction(projectedProduction);
+        crop.setProduction(production);
         crop.setCultivationLandValue(cultivationLandValue);
         crop.setLandValueUnit(landValueUnit);
-        crop.setCost(cost);
-        crop.setProjectCost(projectCost);
+        crop.setCost(BigDecimal.valueOf(cost));
         crop.setProjectionTimelineType(projectionTimelineType);
         crop.setProjectionTimelineValue(projectionTimelineValue);
-        crop.setActualProductionUnit(actualProductionUnit);
-        crop.setProjectedProductionUnit(projectedProductionUnit);
+        crop.setProductionUnit(productionUnit);
+
         crop.setImage(image.getBytes());  
+        
+        // Set createdAt as the current date
+        crop.setCreatedAt(LocalDate.now()); // Automatically set the current date
+        
         
         UserEntity user = service.getUserByJwtToken(jwt);
         
