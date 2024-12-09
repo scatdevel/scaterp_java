@@ -19,7 +19,6 @@ public interface UserService extends UserDetailsService {
     boolean resetPassword(String token, String newPassword);
 	void deleteUserByUsername(String username);
 	Optional<UserEntity> getUserById(Long id);
-	
 	public UserEntity getUserByJwtToken(String jwtToken);// Get user by Token
 	
 }

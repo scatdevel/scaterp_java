@@ -4,6 +4,9 @@ import axios from 'axios';
 
 const UserDetails = () => {
     const [users, setUsers] = useState([]);
+    const [roles, setRoles] = useState([]);
+const [selectedRole, setSelectedRole] = useState('');
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
@@ -26,6 +29,7 @@ const [passwordError, setPasswordError] = useState('');
 
     useEffect(() => {
         fetchUsers();
+        fetchRoles();
     }, []);
 
     useEffect(() => {
@@ -60,6 +64,30 @@ const [passwordError, setPasswordError] = useState('');
             setLoading(false);
         }
     };
+
+    const fetchRoles = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get('http://localhost:8080/users/admin/roles');
+            if (Array.isArray(response.data)) {
+                setRoles(response.data);
+            } else {
+                setError('Unexpected response format');
+            }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const filteredUsers = selectedRole
+    ? users.filter(user => {
+        console.log('User role:', user.role?.name, 'Selected role:', selectedRole); // Debugging log
+        return user.role?.name === selectedRole;
+    })
+    : users;
+
 
     // Email validation
     const validateEmail = (email) => {
@@ -234,6 +262,30 @@ const [passwordError, setPasswordError] = useState('');
             Create User
         </button>
 
+
+
+
+        <div style={styles.filterContainer}>
+                <label htmlFor="roleFilter">Filter by Role: </label>
+                <select
+    id="roleFilter"
+    value={selectedRole}
+    onChange={(e) => {
+        setSelectedRole(e.target.value);
+        console.log('Selected role updated:', e.target.value); // Debugging log
+    }}
+    style={styles.filterSelect}
+>
+    <option value="">All Roles</option>
+    {roles.map((role) => (
+        <option key={role.id} value={role.name}>
+            {role.name}
+        </option>
+    ))}
+</select>
+
+            </div>
+
             {loading && <p style={styles.loading}>Loading users...</p>}
             {error && <p style={styles.error}>{error}</p>}
             {successMessage && <p style={styles.success}>{successMessage}</p>}
@@ -248,7 +300,7 @@ const [passwordError, setPasswordError] = useState('');
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, index) => (
+                    {filteredUsers.map((user, index) => (
                         <tr
                             key={user.id}
                             style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}
@@ -362,6 +414,9 @@ const [passwordError, setPasswordError] = useState('');
 
 const styles = {
     container: {
+
+        width: '100vw', // Full width of the viewport
+        height: '100vh', // Full height of the viewport
         padding: '20px',
         fontFamily: 'Arial, sans-serif',
         backgroundColor: '#f4f6f9',
@@ -369,6 +424,9 @@ const styles = {
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         maxWidth: '1200px',
         margin: 'auto',
+
+        minHeight: '100vh', // Full viewport height
+        overflow: 'auto',
     },
     heading: {
         marginBottom: '20px',
@@ -389,8 +447,30 @@ const styles = {
     table: {
         width: '100%',
         borderCollapse: 'collapse',
+        marginTop: '20px',
     },
-
+    dialogOverlay: {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        right: '0',
+        bottom: '0',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)', // Darker overlay
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+    },
+    dialog: {
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '8px',
+        width: '90%', // Adjust width for responsiveness
+        maxWidth: '600px',
+        overflow: 'auto', // Keeps the dialog at a reasonable size on larger screens
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        textAlign: 'center',
+    },
 
      // ... other styles
      createUserButton: {
@@ -455,9 +535,12 @@ const styles = {
         backgroundColor: 'white',
         padding: '20px',
         borderRadius: '8px',
-        width: '400px',
+       // width: '400px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
         textAlign: 'center',
+        width: '90%', // Adjusted width for better responsiveness
+        maxWidth: '600px',
+        overflow: 'auto', // Keeps the dialog at a reasonable size on larger screens
     },
     input: {
         width: '100%',
