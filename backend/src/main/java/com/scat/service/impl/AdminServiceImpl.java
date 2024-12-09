@@ -1,10 +1,13 @@
 package com.scat.service.impl;
 
+import com.scat.dto.UserDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
 import com.scat.repository.RoleRepository;
 import com.scat.repository.UserRepository;
 import com.scat.service.AdminService;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,13 +21,15 @@ public class AdminServiceImpl implements AdminService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final ModelMapper mapper;
 
 	@Autowired
-	public AdminServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
+	public AdminServiceImpl(UserRepository userRepository, ModelMapper mapper, RoleRepository roleRepository,
 			BCryptPasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.mapper = mapper;
 		initializeDefaultRoles();
 	}
 
@@ -62,6 +67,25 @@ public class AdminServiceImpl implements AdminService {
 		}
 
 		userRepository.save(adminUser);
+	}
+	
+	@Override
+	public UserDTO createUserByAdmin(UserDTO userDto) {
+		if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
+			throw new RuntimeException("User With This email already present");
+		}
+
+		UserEntity user = mapper.map(userDto, UserEntity.class);
+		user.setEncryptedPassword(passwordEncoder.encode(userDto.getEncryptedPassword()));
+		
+		if(user.getRole() != null) {
+			RoleEntity  role = roleRepository.findByName(userDto.getRole().getName())
+					.orElseThrow(()-> new RuntimeException("Role Not Found With :" + userDto.getRole().getName()));
+			user.setRole(role);
+		}
+		
+		UserEntity storedUser = userRepository.save(user);
+		return mapper.map(storedUser, UserDTO.class);
 	}
 
 	@Override
