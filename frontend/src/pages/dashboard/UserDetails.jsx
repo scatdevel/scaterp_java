@@ -27,7 +27,7 @@ const [passwordError, setPasswordError] = useState('');
 
 useEffect(() => {
     // Replace this URL with your actual API endpoint for fetching roles
-    fetch('http://localhost:8080/users/admin/roles/create')
+    fetch('http://localhost:8080/users/admin/roles')
       .then((response) => response.json())
       .then((data) => {
         setRoles(data); // Assuming the response is an array of roles

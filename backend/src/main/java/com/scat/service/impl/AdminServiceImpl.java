@@ -69,7 +69,7 @@ public class AdminServiceImpl implements AdminService {
 		userRepository.save(adminUser);
 	}
 	
-	@Override
+	@Override // creating User by Admin 
 	public UserDTO createUserByAdmin(UserDTO userDto) {
 		if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
 			throw new RuntimeException("User With This email already present");
