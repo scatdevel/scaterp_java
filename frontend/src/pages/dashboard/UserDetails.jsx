@@ -27,7 +27,7 @@ const [passwordError, setPasswordError] = useState('');
 
 useEffect(() => {
     // Replace this URL with your actual API endpoint for fetching roles
-    fetch('http://localhost:8080/users/admin/roles/create')
+    fetch('http://localhost:8080/users/admin/roles')
       .then((response) => response.json())
       .then((data) => {
         setRoles(data); // Assuming the response is an array of roles
@@ -86,42 +86,66 @@ useEffect(() => {
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
         return passwordRegex.test(password);
     };
-
+    
     const handleCreateUser = async () => {
-        if (!newUserEmail || !newUserUsername || !newUserRole ||  !newUserPassword) {
+        // Check if all required fields are filled
+        if (!newUserEmail || !newUserUsername || !newUserRole || !newUserPassword) {
             setError('All fields are required.');
             return;
         }
-
-
+    
+        // Validate email format
         if (!newUserEmail || !validateEmail(newUserEmail)) {
             setEmailError('Please enter a valid email.');
             return;
         } else {
             setEmailError('');
         }
-
-        // Validate password
+    
+        // Validate password format
         if (!newUserPassword || !validatePassword(newUserPassword)) {
             setPasswordError('Password must be at least 6 characters long, include one uppercase, one lowercase, and one number.');
             return;
         } else {
             setPasswordError('');
         }
-
+    
         // Ensure other fields are filled
         if (!newUserUsername || !newUserRole) {
             setError('Username and role are required.');
             return;
         }
-
+    
+        // Find the selected role
+        console.log('Selected Role ID:', newUserRole);
+        console.log('Roles Array:', roles);
+    
+        // Ensure roles array is loaded
+        if (!roles || roles.length === 0) {
+            setError('Roles data is missing or not loaded.');
+            return;
+        }
+    
+        const selectedRole = roles.find(role => role.id.toString() === newUserRole.toString()); // Convert both to strings
+        if (!selectedRole) {
+            console.log('Selected Role not found');
+            setError('Invalid role selected.');
+            return;
+        }
+    
+        console.log('Selected Role:', selectedRole); // Log selected role for debugging
+    
+        const payload = {
+            email: newUserEmail,
+            password: newUserPassword,
+            username: newUserUsername,
+            roleName : selectedRole.name
+        };
+    
+        console.log('Payload:', payload); // Log the payload being sent to the backend
+    
         try {
-            await axios.post('http://localhost:8080/users/admin/createuser', {
-                email: newUserEmail,
-                password: newUserPassword,
-                username: newUserUsername,
-                roleName: newUserRole,
-            });
+            await axios.post('http://localhost:8080/users/admin/createuser', payload);
             setSuccessMessage('User created successfully!');
             setNewUserEmail('');
             setNewUserPassword('');
@@ -129,11 +153,20 @@ useEffect(() => {
             setNewUserRole('');
             setCreateUserDialogOpen(false);
             fetchUsers(); // Refresh the user list
-        } catch (err) {
-            setError(err.response?.data?.error || 'Failed to create user');
+        } catch (error) {
+            if (error.response) {
+                console.error("Backend error:", error.response.data);  // Log error from backend
+                setError(`Error: ${error.response.data.message || 'An error occurred'}`);
+            } else if (error.request) {
+                console.error("Network error:", error.request); // Log network error
+                setError('Network error. Please try again later.');
+            } else {
+                console.error("Error:", error.message); // Log general error
+                setError(`Error: ${error.message}`);
+            }
         }
     };
-
+    
 
     const handleEdit = async () => {
         if (!roleInput || !dialogUserId) {
