@@ -8,6 +8,9 @@ const UserDetails = () => {
 const [selectedRole, setSelectedRole] = useState('');
 
     const [loading, setLoading] = useState(true);
+
+    const [roles, setRoles] = useState([]); // For storing the roles
+    // const [newUserRole, setNewUserRole] = useState('');
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [assignRoleDialogOpen, setAssignRoleDialogOpen] = useState(false);
@@ -25,7 +28,19 @@ const [selectedRole, setSelectedRole] = useState('');
     const [emailError, setEmailError] = useState('');
 const [passwordError, setPasswordError] = useState('');
 
-    
+
+useEffect(() => {
+    // Replace this URL with your actual API endpoint for fetching roles
+    fetch('http://localhost:8080/users/admin/roles')
+      .then((response) => response.json())
+      .then((data) => {
+        setRoles(data); // Assuming the response is an array of roles
+      })
+      .catch((error) => {
+        console.error('Error fetching roles:', error);
+      });
+  }, []);
+
 
     useEffect(() => {
         fetchUsers();
@@ -65,28 +80,6 @@ const [passwordError, setPasswordError] = useState('');
         }
     };
 
-    const fetchRoles = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await axios.get('http://localhost:8080/users/admin/roles');
-            if (Array.isArray(response.data)) {
-                setRoles(response.data);
-            } else {
-                setError('Unexpected response format');
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-    const filteredUsers = selectedRole
-    ? users.filter(user => {
-        console.log('User role:', user.role?.name, 'Selected role:', selectedRole); // Debugging log
-        return user.role?.name === selectedRole;
-    })
-    : users;
 
 
     // Email validation
@@ -101,13 +94,15 @@ const [passwordError, setPasswordError] = useState('');
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
         return passwordRegex.test(password);
     };
-
+    
     const handleCreateUser = async () => {
-        if (!newUserEmail || !newUserUsername || !newUserRole ||  !newUserPassword) {
+        // Check if all required fields are filled
+        if (!newUserEmail || !newUserUsername || !newUserRole || !newUserPassword) {
             setError('All fields are required.');
             return;
         }
-
+    
+        // Validate email format
 
         if (!newUserEmail || !validateEmail(newUserEmail)) {
             setEmailError('Please enter a valid email.');
@@ -115,8 +110,9 @@ const [passwordError, setPasswordError] = useState('');
         } else {
             setEmailError('');
         }
+    
+        // Validate password format
 
-        // Validate password
         if (!newUserPassword || !validatePassword(newUserPassword)) {
             setPasswordError('Password must be at least 6 characters long, include one uppercase, one lowercase, and one number.');
             return;
@@ -129,14 +125,38 @@ const [passwordError, setPasswordError] = useState('');
             setError('Username and role are required.');
             return;
         }
-
+    
+        // Find the selected role
+        console.log('Selected Role ID:', newUserRole);
+        console.log('Roles Array:', roles);
+    
+        // Ensure roles array is loaded
+        if (!roles || roles.length === 0) {
+            setError('Roles data is missing or not loaded.');
+            return;
+        }
+    
+        const selectedRole = roles.find(role => role.id.toString() === newUserRole.toString()); // Convert both to strings
+        if (!selectedRole) {
+            console.log('Selected Role not found');
+            setError('Invalid role selected.');
+            return;
+        }
+    
+        console.log('Selected Role:', selectedRole); // Log selected role for debugging
+    
+        const payload = {
+            email: newUserEmail,
+            password: newUserPassword,
+            username: newUserUsername,
+            roleName : selectedRole.name
+        };
+    
+        console.log('Payload:', payload); // Log the payload being sent to the backend
+    
         try {
-            await axios.post('http://localhost:8080/users/admin/create', {
-                email: newUserEmail,
-                password: newUserPassword,
-                username: newUserUsername,
-                roleName: newUserRole,
-            });
+            await axios.post('http://localhost:8080/users/admin/createuser', payload);
+
             setSuccessMessage('User created successfully!');
             setNewUserEmail('');
             setNewUserPassword('');
@@ -144,11 +164,20 @@ const [passwordError, setPasswordError] = useState('');
             setNewUserRole('');
             setCreateUserDialogOpen(false);
             fetchUsers(); // Refresh the user list
-        } catch (err) {
-            setError(err.response?.data?.error || 'Failed to create user');
+        } catch (error) {
+            if (error.response) {
+                console.error("Backend error:", error.response.data);  // Log error from backend
+                setError(`Error: ${error.response.data.message || 'An error occurred'}`);
+            } else if (error.request) {
+                console.error("Network error:", error.request); // Log network error
+                setError('Network error. Please try again later.');
+            } else {
+                console.error("Error:", error.message); // Log general error
+                setError(`Error: ${error.message}`);
+            }
         }
     };
-
+    
 
     const handleEdit = async () => {
         if (!roleInput || !dialogUserId) {
@@ -249,6 +278,7 @@ const [passwordError, setPasswordError] = useState('');
     };
     
 
+
     return (
         <div style={styles.container}>
             <h1 style={styles.heading}>User Details</h1>
@@ -262,29 +292,6 @@ const [passwordError, setPasswordError] = useState('');
             Create User
         </button>
 
-
-
-
-        <div style={styles.filterContainer}>
-                <label htmlFor="roleFilter">Filter by Role: </label>
-                <select
-    id="roleFilter"
-    value={selectedRole}
-    onChange={(e) => {
-        setSelectedRole(e.target.value);
-        console.log('Selected role updated:', e.target.value); // Debugging log
-    }}
-    style={styles.filterSelect}
->
-    <option value="">All Roles</option>
-    {roles.map((role) => (
-        <option key={role.id} value={role.name}>
-            {role.name}
-        </option>
-    ))}
-</select>
-
-            </div>
 
             {loading && <p style={styles.loading}>Loading users...</p>}
             {error && <p style={styles.error}>{error}</p>}
@@ -354,13 +361,28 @@ const [passwordError, setPasswordError] = useState('');
                 placeholder="Enter username"
                 style={styles.input}
             />
-            <input
+            {/* <input
+
                 type="text"
                 value={newUserRole}
                 onChange={(e) => setNewUserRole(e.target.value)}
                 placeholder="Enter role"
                 style={styles.input}
-            />
+            /> */}
+<select
+  value={newUserRole}
+  onChange={(e) => setNewUserRole(e.target.value)}
+  style={styles.input} // You can use the same styles for the dropdown
+>
+  <option value="">Select a role</option>
+  {/* Example of dynamically rendering options */}
+  {roles.map((role) => (
+    <option key={role.id} value={role.id}>
+      {role.name}
+    </option>
+  ))}
+</select>
+
 
 <input
                             type="password"
@@ -447,30 +469,8 @@ const styles = {
     table: {
         width: '100%',
         borderCollapse: 'collapse',
-        marginTop: '20px',
     },
-    dialogOverlay: {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        right: '0',
-        bottom: '0',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)', // Darker overlay
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-    },
-    dialog: {
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        width: '90%', // Adjust width for responsiveness
-        maxWidth: '600px',
-        overflow: 'auto', // Keeps the dialog at a reasonable size on larger screens
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-        textAlign: 'center',
-    },
+
 
      // ... other styles
      createUserButton: {
