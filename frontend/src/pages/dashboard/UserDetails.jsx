@@ -4,7 +4,6 @@ import axios from 'axios';
 
 const UserDetails = () => {
     const [users, setUsers] = useState([]);
-    const [roles, setRoles] = useState([]);
 const [selectedRole, setSelectedRole] = useState('');
 
     const [loading, setLoading] = useState(true);
