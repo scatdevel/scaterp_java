@@ -4,6 +4,9 @@ import axios from 'axios';
 
 const UserDetails = () => {
     const [users, setUsers] = useState([]);
+    const [roles, setRoles] = useState([]);
+const [selectedRole, setSelectedRole] = useState('');
+
     const [loading, setLoading] = useState(true);
 
     const [roles, setRoles] = useState([]); // For storing the roles
@@ -25,6 +28,7 @@ const UserDetails = () => {
     const [emailError, setEmailError] = useState('');
 const [passwordError, setPasswordError] = useState('');
 
+
 useEffect(() => {
     // Replace this URL with your actual API endpoint for fetching roles
     fetch('http://localhost:8080/users/admin/roles')
@@ -37,8 +41,10 @@ useEffect(() => {
       });
   }, []);
 
+
     useEffect(() => {
         fetchUsers();
+        fetchRoles();
     }, []);
 
     useEffect(() => {
@@ -74,6 +80,8 @@ useEffect(() => {
         }
     };
 
+
+
     // Email validation
     const validateEmail = (email) => {
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -95,6 +103,7 @@ useEffect(() => {
         }
     
         // Validate email format
+
         if (!newUserEmail || !validateEmail(newUserEmail)) {
             setEmailError('Please enter a valid email.');
             return;
@@ -103,13 +112,14 @@ useEffect(() => {
         }
     
         // Validate password format
+
         if (!newUserPassword || !validatePassword(newUserPassword)) {
             setPasswordError('Password must be at least 6 characters long, include one uppercase, one lowercase, and one number.');
             return;
         } else {
             setPasswordError('');
         }
-    
+
         // Ensure other fields are filled
         if (!newUserUsername || !newUserRole) {
             setError('Username and role are required.');
@@ -146,6 +156,7 @@ useEffect(() => {
     
         try {
             await axios.post('http://localhost:8080/users/admin/createuser', payload);
+
             setSuccessMessage('User created successfully!');
             setNewUserEmail('');
             setNewUserPassword('');
@@ -267,6 +278,7 @@ useEffect(() => {
     };
     
 
+
     return (
         <div style={styles.container}>
             <h1 style={styles.heading}>User Detailss</h1>
@@ -279,6 +291,7 @@ useEffect(() => {
         >
             Create User
         </button>
+
 
             {loading && <p style={styles.loading}>Loading users...</p>}
             {error && <p style={styles.error}>{error}</p>}
@@ -294,7 +307,7 @@ useEffect(() => {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, index) => (
+                    {filteredUsers.map((user, index) => (
                         <tr
                             key={user.id}
                             style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}
@@ -349,6 +362,7 @@ useEffect(() => {
                 style={styles.input}
             />
             {/* <input
+
                 type="text"
                 value={newUserRole}
                 onChange={(e) => setNewUserRole(e.target.value)}
@@ -368,6 +382,7 @@ useEffect(() => {
     </option>
   ))}
 </select>
+
 
 <input
                             type="password"
@@ -421,6 +436,9 @@ useEffect(() => {
 
 const styles = {
     container: {
+
+        width: '100vw', // Full width of the viewport
+        height: '100vh', // Full height of the viewport
         padding: '20px',
         fontFamily: 'Arial, sans-serif',
         backgroundColor: '#f4f6f9',
@@ -428,6 +446,9 @@ const styles = {
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         maxWidth: '1200px',
         margin: 'auto',
+
+        minHeight: '100vh', // Full viewport height
+        overflow: 'auto',
     },
     heading: {
         marginBottom: '20px',
@@ -514,9 +535,12 @@ const styles = {
         backgroundColor: 'white',
         padding: '20px',
         borderRadius: '8px',
-        width: '400px',
+       // width: '400px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
         textAlign: 'center',
+        width: '90%', // Adjusted width for better responsiveness
+        maxWidth: '600px',
+        overflow: 'auto', // Keeps the dialog at a reasonable size on larger screens
     },
     input: {
         width: '100%',

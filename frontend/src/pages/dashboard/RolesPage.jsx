@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -7,6 +8,8 @@ const RolesPage = () => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [deleteRoleDialogOpen, setDeleteRoleDialogOpen] = useState(false);
+    const [createRoleDialogOpen, setCreateRoleDialogOpen] = useState(false);
+    const [roleInput, setRoleInput] = useState('');
     const [dialogRoleId, setDialogRoleId] = useState(null);
 
     useEffect(() => {
@@ -56,6 +59,24 @@ const RolesPage = () => {
         }
     };
 
+    const handleCreateRole = async () => {
+        if (roleInput) {
+            try {
+                await axios.post('http://localhost:8080/users/admin/roles/create', {
+                    roleName: roleInput
+                });
+                setSuccessMessage('Role created successfully!');
+                setRoleInput('');
+                setCreateRoleDialogOpen(false);
+                fetchRoles(); // Refresh the roles list
+            } catch (err) {
+                setError(err.response?.data?.error || 'Failed to create role');
+            }
+        } else {
+            setError('Role name cannot be empty.');
+        }
+    };
+
     const openDeleteRoleDialog = (roleId) => {
         setDialogRoleId(roleId);
         setDeleteRoleDialogOpen(true);
@@ -66,6 +87,15 @@ const RolesPage = () => {
         setDialogRoleId(null);
     };
 
+    const openCreateRoleDialog = () => {
+        setCreateRoleDialogOpen(true);
+    };
+
+    const closeCreateRoleDialog = () => {
+        setCreateRoleDialogOpen(false);
+        setRoleInput('');
+    };
+
     return (
         <div style={styles.container}>
             <h1 style={styles.heading}>Roles</h1>
@@ -73,8 +103,14 @@ const RolesPage = () => {
             {error && <p style={styles.error}>{error}</p>}
             {successMessage && <p style={styles.success}>{successMessage}</p>}
 
+            {/* Create Role Button */}
+            <div style={styles.addRoleContainer}>
+                <button style={styles.addButton} onClick={openCreateRoleDialog}>
+                    Create Role
+                </button>
+            </div>
+
             {/* Roles Table */}
-            <h2 style={styles.heading}></h2>
             <table style={styles.table}>
                 <thead>
                     <tr>
@@ -115,6 +151,24 @@ const RolesPage = () => {
                     <button style={styles.dialogButton} onClick={closeDeleteRoleDialog}>
                         Cancel
                     </button>
+                </div>
+            )}
+
+            {/* Create Role Dialog */}
+            {createRoleDialogOpen && (
+                <div style={styles.dialogOverlay}>
+                    <div style={styles.dialog}>
+                        <h2>Create Role</h2>
+                        <input
+                            type="text"
+                            value={roleInput}
+                            onChange={(e) => setRoleInput(e.target.value)}
+                            placeholder="Enter role name"
+                            style={styles.input}
+                        />
+                        <button onClick={handleCreateRole} style={styles.dialogButton}>Create</button>
+                        <button onClick={closeCreateRoleDialog} style={styles.dialogButton}>Cancel</button>
+                    </div>
                 </div>
             )}
         </div>
@@ -167,16 +221,44 @@ const styles = {
         cursor: 'pointer',
         marginRight: '5px',
     },
-    dialog: {
+    addRoleContainer: {
+        marginBottom: '20px',
+    },
+    addButton: {
+        backgroundColor: '#007bff',
+        color: 'white',
+        border: 'none',
+        padding: '12px 24px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        borderRadius: '6px',
+        transition: 'background-color 0.3s',
+    },
+    dialogOverlay: {
         position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        padding: '20px',
+        top: '0',
+        left: '0',
+        right: '0',
+        bottom: '0',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    dialog: {
         backgroundColor: 'white',
-        borderRadius: '5px',
-        boxShadow: '0 0 10px rgba(0,0,0,0.2)',
-        zIndex: 1000,
+        padding: '20px',
+        borderRadius: '8px',
+        width: '400px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        textAlign: 'center',
+    },
+    input: {
+        width: '100%',
+        padding: '12px',
+        marginBottom: '12px',
+        border: '1px solid #ced4da',
+        borderRadius: '6px',
     },
     dialogButton: {
         backgroundColor: '#007bff',
