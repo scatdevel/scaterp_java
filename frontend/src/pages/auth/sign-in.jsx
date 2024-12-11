@@ -1,13 +1,119 @@
+// import React, { useState, useEffect } from 'react';
+// import { useNavigate, Link } from 'react-router-dom';
+// import { Input, Checkbox, Button, Typography } from "@material-tailwind/react";
+// import { loginUser, loginAdmin } from '../../components/api';
+// import { useTranslation } from 'react-i18next'; 
+// import { useDispatch } from 'react-redux'; //  Import useDispatch
+// import { login } from '../../redux/userslice'; // Adjust the path as needed
+// import './i18n'; 
+
+// export function SignIn({ setAuthenticated, setIsAdmin }) {
+//   const { t, i18n } = useTranslation();
+//   const [formData, setFormData] = useState({ email: '', password: '' });
+//   const [alertMessage, setAlertMessage] = useState('');
+//   const [emailError, setEmailError] = useState('');
+//   const [error, setError] = useState(null);
+//   const [agree, setAgree] = useState(false);
+//   const [showAlert, setShowAlert] = useState(false);
+//   const [loading, setLoading] = useState(false);
+
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch(); // Initialize dispatch
+
+//   useEffect(() => {
+//     const authToken = localStorage.getItem('jwtToken');
+//     const tokenExpiration = localStorage.getItem('tokenExpiration');
+//     const currentTime = new Date().getTime();
+//     if (authToken && tokenExpiration && currentTime < tokenExpiration) {
+//       const role = localStorage.getItem('userRole');
+//       navigate(role === 'admin' ? '/admin-dashboard/home' : '/dashboard/home');
+//     }
+//   }, [navigate]);
+
+//   const isValid = formData.email.length > 0 && formData.password.length > 0 && agree;
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prevData) => ({
+//       ...prevData,
+//       [name]: value,
+//     }));
+
+//     if (name === 'email') {
+//       setEmailError(validateEmail(value) ? '' : 'Please enter a valid email.');
+//     }
+//   };
+
+//   const handleAgreeChange = () => {
+//     setAgree(!agree);
+//   };
+
+//   const validateEmail = (email) => {
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     return emailRegex.test(email);
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     setShowAlert(false); 
+  
+//     try {
+//       const emailDomain = formData.email.split('@')[1];
+//       let token, role, userId;
+  
+//       if (emailDomain === 'admin.com') {
+//         const response = await loginAdmin(formData);
+//         token = response.token;
+//         role = 'admin';
+//         userId = response.id;
+//         setIsAdmin(true);
+//       } else {
+//         const response = await loginUser(formData);
+//         token = response.token;
+//         role = 'user';
+//         userId = response.id;
+//         setIsAdmin(false);
+//       }
+
+//       localStorage.setItem('jwtToken', token);
+//       localStorage.setItem('userRole', role);
+//       localStorage.setItem('id', userId); 
+//       localStorage.setItem('tokenExpiration', new Date().getTime() + 3600000);
+
+//       // Dispatch the login action
+//       dispatch(login({ userId, role ,token}));
+//       console.log("token :", token);
+      
+
+//       setAuthenticated(true);
+//       setAlertMessage('Login successful!');
+//       setError(null);
+//       setShowAlert(true);
+  
+//       setTimeout(() => {
+//         navigate(role === 'admin' ? '/admin-dashboard/home' : '/dashboard/home');
+//       }, 1500);
+//     } catch (err) {
+//       console.error('Login error:', err.response ? err.response.data : err.message);
+//       setError('Invalid email or password. Please try again.');
+//       setAlertMessage('');
+//       setShowAlert(true);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Input, Checkbox, Button, Typography } from "@material-tailwind/react";
-import { loginUser, loginAdmin, loginOutlet } from '../../components/api';
+import { loginUser, loginAdmin } from '../../components/api';
 import { useTranslation } from 'react-i18next'; 
-import { useDispatch } from 'react-redux'; //  Import useDispatch
+import { useDispatch } from 'react-redux'; // Import useDispatch
 import { login } from '../../redux/userslice'; // Adjust the path as needed
 import './i18n'; 
 
-export function SignIn({ setAuthenticated, setIsAdmin }) {
+export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
   const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [alertMessage, setAlertMessage] = useState('');
@@ -20,15 +126,16 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
   const navigate = useNavigate();
   const dispatch = useDispatch(); // Initialize dispatch
 
-  // useEffect(() => {
-  //   const authToken = localStorage.getItem('jwtToken');
-  //   const tokenExpiration = localStorage.getItem('tokenExpiration');
-  //   const currentTime = new Date().getTime();
-  //   if (authToken && tokenExpiration && currentTime < tokenExpiration) {
-  //     const role = localStorage.getItem('userRole');
-  //     navigate(role === 'admin' ? '/admin-dashboard/home' : '/dashboard/home');
-  //   } 
-  // }, [navigate]);
+  useEffect(() => {
+    const authToken = localStorage.getItem('jwtToken');
+    const tokenExpiration = localStorage.getItem('tokenExpiration');
+    const currentTime = new Date().getTime();
+    if (authToken && tokenExpiration && currentTime < tokenExpiration) {
+      const role = localStorage.getItem('userRole');
+      // Adjust the redirect logic based on the user's role (admin, user, or outlet)
+      navigate(role === 'admin' ? '/admin-dashboard/home' : role === 'outlet' ? '/outlet-dashboard/home' : '/dashboard/home');
+    }
+  }, [navigate]);
 
   const isValid = formData.email.length > 0 && formData.password.length > 0 && agree;
 
@@ -57,55 +164,52 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
     e.preventDefault();
     setLoading(true);
     setShowAlert(false); 
-  
+    
     try {
       const emailDomain = formData.email.split('@')[1];
       let token, role, userId;
-  
+
       if (emailDomain === 'admin.com') {
-        const response = await loginAdmin(formData);
+        const response = await loginAdmin(formData); // Admin login
         token = response.token;
         role = 'admin';
         userId = response.id;
         setIsAdmin(true);
       } else if (emailDomain === 'outlet.com') {
-        const response = await loginOutlet(formData);
+        // Set role to 'outlet' if the email domain is outlet.com
+        const response = await loginUser(formData); // Use the same loginUser API for outlet
         token = response.token;
-        role = response.role;
+        role = 'outlet';
         userId = response.id;
-        setIsAdmin(false);
+        setIsOutlet(true); // Set the outlet flag to true
       } else {
+        // User login for regular users
         const response = await loginUser(formData);
         token = response.token;
-        role = response.role;
+        role = 'user';
         userId = response.id;
         setIsAdmin(false);
+        setIsOutlet(false); // Ensure outlet flag is false for normal users
       }
-  
+
+      // Store the login information in localStorage
       localStorage.setItem('jwtToken', token);
       localStorage.setItem('userRole', role);
       localStorage.setItem('id', userId); 
-      localStorage.setItem('tokenExpiration', new Date().getTime() + 3600000);
-  
-      // Dispatch the login action
+      localStorage.setItem('tokenExpiration', new Date().getTime() + 3600000); // 1 hour expiration
+
+      // Dispatch the login action to Redux
       dispatch(login({ userId, role, token }));
       console.log("token :", token);
-      console.log("role :", role);
-  
+
       setAuthenticated(true);
       setAlertMessage('Login successful!');
       setError(null);
       setShowAlert(true);
-  
+
+      // Redirect the user to the appropriate dashboard based on their role
       setTimeout(() => {
-        // Navigate to the appropriate page based on the role and email domain
-        if (role === 'admin') {
-          navigate('/admin-dashboard/home');
-        } else if (emailDomain === 'outlet.com') {
-          navigate('/outlet-dashboard/home'); // Navigate to outlet page
-        } else {
-          navigate('/dashboard/home');
-        }
+        navigate(role === 'admin' ? '/admin-dashboard/home' : role === 'outlet' ? '/outlet-dashboard/home' : '/dashboard/home');
       }, 1500);
     } catch (err) {
       console.error('Login error:', err.response ? err.response.data : err.message);
@@ -116,12 +220,10 @@ export function SignIn({ setAuthenticated, setIsAdmin }) {
       setLoading(false);
     }
   };
-  
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
-
   return (
     <section className="relative flex flex-col lg:flex-row items-center justify-center min-h-screen bg-gray-100">
       {/* Language Switcher */}
