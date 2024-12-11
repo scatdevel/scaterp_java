@@ -269,7 +269,7 @@ useEffect(() => {
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.heading}>User Details</h1>
+            <h1 style={styles.heading}>User Detailss</h1>
 
 
              {/* Create User Button */}
