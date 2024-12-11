@@ -11,6 +11,7 @@ public class UserDetailsRequestModel {
     private Long phoneNumber;
     private String bio;
     private Date dob;
+    private String roleName;
     private Long roleId;
     public Long getRoleId() {
 		return roleId;
@@ -26,6 +27,15 @@ public class UserDetailsRequestModel {
 
 	public void setDob(Date dob) {
 		this.dob = dob;
+	}
+
+	
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
 	}
 
 	public String getFullName() {

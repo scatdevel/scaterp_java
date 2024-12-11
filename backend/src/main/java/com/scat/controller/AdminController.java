@@ -37,20 +37,14 @@ public class AdminController {
     }
 
     @PostMapping("/createuser")
-    public ResponseEntity<UserDTO> createUSerByAdmin(@RequestBody UserDetailsRequestModel userdt){
-    
-    	UserDTO userDto = new UserDTO();
-    	userDto.setEmail(userdt.getEmail());
-    	userDto.setUsername(userdt.getUsername());
-    	userDto.setEncryptedPassword(userdt.getPassword());
-
-    	if(userdt.getRoleId() != null) {
-    		userDto.setRoleId(userdt.getRoleId());
+    public ResponseEntity<UserEntity> createUser(@RequestBody UserDetailsRequestModel userdt){
+    	try {
+    		UserEntity createdUser = serviceImpl.createUserByAdmin(userdt);
+    		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    	}catch (Exception e) {
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     	}
     	
-    	UserDTO savedUser = serviceImpl.createUserByAdmin(userDto);
-    	
-    	return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
     
     @PostMapping("/login")
