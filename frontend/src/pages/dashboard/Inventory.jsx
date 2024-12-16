@@ -146,7 +146,7 @@ const Inventory = () => {
 
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/users/crops/categories", {
+        const response = await axios.get("http://localhost:8080/crops/categories/get/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCategories(response.data);
