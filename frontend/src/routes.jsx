@@ -27,12 +27,12 @@ export const routes = [
   {
     layout: "dashboard",
     pages: [
-      // {
-      //   icon: <HomeIcon {...icon} />,
-      //   name: "dashboard",
-      //   path: "/home",
-      //   element: <Home />,
-      // },
+      {
+        icon: <HomeIcon {...icon} />,
+        name: "dashboard",
+        path: "/home",
+        element: <Home />,
+      },
       {
         icon: <FontAwesomeIcon icon={faUser} className="h-5 w-5" />, // Updated icon
         name: "Profile",

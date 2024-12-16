@@ -159,11 +159,12 @@ const Inventory = () => {
   const token = useSelector((state) => state.auth.token);
   const userId = useSelector((state) => state.auth.userId);  // Assuming userId is in the store
 
-
   // Fetch crops and categories on load
   useEffect(() => {
     const fetchCrops = async () => {
       try {
+        console.log("Fetching crops from:", "http://localhost:8080/users/crops/all");
+
         const response = await axios.get("http://localhost:8080/users/crops/all", {
           headers: { Authorization: `Bearer ${token}` },
         });

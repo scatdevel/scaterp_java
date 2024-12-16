@@ -70,12 +70,15 @@ public class AdminServiceImpl implements AdminService {
 		userRepository.save(adminUser);
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 	@Override // creating User by Admin 
 	public UserDTO createUserByAdmin(UserDTO userDto) {
 		if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
 			throw new RuntimeException("User With This email already present");
 =======
+=======
+>>>>>>> 8d345d6fd7f4adbc8acd4ce7e6c41881756985ef
 
 	@Override
 	public UserEntity createUserByAdmin(UserDetailsRequestModel userDto) {
@@ -84,7 +87,10 @@ public class AdminServiceImpl implements AdminService {
 
 		if (!roleopt.isEmpty()) {
 			throw new RuntimeException("Role Not Found For :" + roleopt);
+<<<<<<< HEAD
 >>>>>>> cb1c8a179027c854c413401a32ba41ebe77f16ad
+=======
+>>>>>>> 8d345d6fd7f4adbc8acd4ce7e6c41881756985ef
 		}
 
 		RoleEntity role = roleopt.get();
