@@ -11,8 +11,10 @@ public class UserDTO {
 	private String encryptedPassword; // Handle securely
 	private String fullName;
 	private Long phoneNumber;
+	private String gender;
+	private String prefix;
 	private String bio;
-	private RoleDTO role; // Consider if RoleDTO is required or roleId would suffice
+	private String role; // Consider if RoleDTO is required or roleId would suffice
 	private Long roleId; // Optional: Use if needed for role ID references
 	private String profilePictureUrl;
 	private Date dob;
@@ -50,7 +52,23 @@ public class UserDTO {
 	public String getUsername() {
 		return username;
 	}
+
+	public String getGender() {
+		return gender;
+	}
 	
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
 
 	public String getHouseNumber() {
 		return houseNumber;
@@ -152,11 +170,11 @@ public class UserDTO {
 		this.bio = bio;
 	}
 
-	public RoleDTO getRole() {
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(RoleDTO role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 

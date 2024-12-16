@@ -1,6 +1,5 @@
 package com.scat.service.impl;
 
-import com.scat.dto.UserDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
 import com.scat.model.request.UserDetailsRequestModel;
@@ -22,7 +21,6 @@ public class AdminServiceImpl implements AdminService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
-	private final ModelMapper mapper;
 
 	@Autowired
 	public AdminServiceImpl(UserRepository userRepository, ModelMapper mapper, RoleRepository roleRepository,
@@ -30,7 +28,6 @@ public class AdminServiceImpl implements AdminService {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
-		this.mapper = mapper;
 		initializeDefaultRoles();
 	}
 
@@ -75,7 +72,7 @@ public class AdminServiceImpl implements AdminService {
 
 		Optional<RoleEntity> roleopt = roleRepository.findByName(userDto.getRoleName());
 
-		if (!roleopt.isEmpty()) {
+		if (!roleopt.isPresent()) {
 			throw new RuntimeException("Role Not Found For :" + roleopt);
 		}
 
@@ -91,6 +88,7 @@ public class AdminServiceImpl implements AdminService {
 
 		return userRepository.save(user);
 	}
+	
 
 	@Override
 	public UserEntity getAdminByEmail(String email) {

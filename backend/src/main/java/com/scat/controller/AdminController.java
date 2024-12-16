@@ -1,12 +1,11 @@
 
 package com.scat.controller;
-import com.scat.dto.UserDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
 import com.scat.model.request.UserDetailsRequestModel;
 import com.scat.repository.UserRepository;
 import com.scat.service.AdminService;
-import com.scat.service.impl.AdminServiceImpl;
+import com.scat.service.impl.AdminServiceImpl; 
 import com.scat.shared.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

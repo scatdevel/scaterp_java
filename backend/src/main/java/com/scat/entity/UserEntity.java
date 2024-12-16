@@ -27,7 +27,11 @@ public class UserEntity implements Serializable {
 	private String email;
 
 	private String username;
+	
+	private String gender;
 
+	private String prefix;
+	
 	@Column(nullable = false)
 	private String encryptedPassword;
 
@@ -90,6 +94,21 @@ public class UserEntity implements Serializable {
 		this.username = username;
 	}
 	
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
 
 	public Wallet getWallet() {
 		return wallet;

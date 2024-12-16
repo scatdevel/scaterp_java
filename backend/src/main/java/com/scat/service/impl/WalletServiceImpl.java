@@ -22,9 +22,11 @@ public class WalletServiceImpl {
 		UserEntity user = userRepo.findById(userId).
 				orElseThrow(()-> new RuntimeException("User Not Found with :" +userId));
 		
+		
 		if(user.getWallet() != null) {
 			throw new RuntimeException("Wallet Already Exists !");
 		}
+		
 		
 		Wallet wallet = new Wallet();
 		wallet.setBalance(2000);

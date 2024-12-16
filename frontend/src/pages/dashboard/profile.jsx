@@ -89,14 +89,14 @@ export function Profile() {
     username: '',
     bio: '',
     dob: '',
-    gender: '',
+    gender:'',
     houseNumber: '',
     street: '',
     landmark: '',
     locality: '',
     city: '',
     state: '',
-    pinCode: '',
+    pincode: '',
     country: ''
   });
   
@@ -116,6 +116,7 @@ export function Profile() {
         phoneNumber: userData.phoneNumber,
         bio: userData.bio,
         dob: userData.dob,
+        prefix:userData.prefix||"",
         gender: userData.gender || "",
         houseNumber: userData.houseNumber || '',
         street: userData.street || '',
@@ -123,7 +124,7 @@ export function Profile() {
         locality: userData.locality || '',
         city: userData.city || '',
         state: userData.state || '',
-        pinCode: userData.pinCode || '',
+        pincode: userData.pincode || '',
         country: userData.country || ''
       });
       setFileState({ selectedFile: null, previewUrl: `http://localhost:8080/users/image/${userData.username}` }); 
@@ -200,6 +201,8 @@ const validateFields = () => {
     setAlert({ message: 'Gender is required', type: 'error' });
     hasError = true;
   }
+  console.log(gender);
+  
   if (!isValidDate(dob)) {
     setAlert({ message: 'Please enter a valid date of birth', type: 'error' });
     hasError = true;
@@ -240,17 +243,22 @@ const calculateAge = (dob) => {
       formDataToSend.append('username', username);
         formDataToSend.append('fullName', fullName);
       formDataToSend.append('bio', bio);
-      formDataToSend.append('dob', dob);
-      formDataToSend.append('gender', gender);
-    formDataToSend.append('prefix', prefix);
-    formDataToSend.append('houseNumber', houseNumber);
-    formDataToSend.append('street', street);
-    formDataToSend.append('landmark', landmark);
-    formDataToSend.append('locality', locality);
-    formDataToSend.append('city', city);
-    formDataToSend.append('state', state);
-    formDataToSend.append('pinCode', pinCode);
-    formDataToSend.append('country', country); 
+      if (formData.dob) {
+        const formattedDob = new Date(formData.dob).toISOString().split('T')[0];
+        formDataToSend.append('dob', formattedDob);
+      } else {
+        formDataToSend.append('dob', '');  // or send null if required by your backend
+      }
+      formDataToSend.append('gender', formData.gender);
+    formDataToSend.append('prefix', formData.prefix);
+    formDataToSend.append('houseNumber', formData.houseNumber);
+    formDataToSend.append('street', formData.street);
+    formDataToSend.append('landmark', formData.landmark);
+    formDataToSend.append('locality', formData.locality);
+    formDataToSend.append('city', formData.city);
+    formDataToSend.append('state', formData.state);
+    formDataToSend.append('pincode', formData.pincode);
+    formDataToSend.append('country', formData.country); 
       if (fileState.selectedFile) {
         formDataToSend.append('image', fileState.selectedFile);
       }
@@ -270,12 +278,21 @@ const calculateAge = (dob) => {
       }
 
       setAlert({ message: 'Profile updated successfully', type: 'success' });
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error saving profile';
-      setAlert({ message: `Error: ${errorMessage}`, type: 'error' });
+    }  catch (error) {
+      if (error.response) {
+        // Server responded with a status other than 200-299
+        console.error("Backend error:", error.response.data);
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error("Network error:", error.request);
+      } else {
+        // Something else happened
+        console.error("Error:", error.message);
+      }
     }
   };
 
+  
   const handleCancel = () => {
     setFormData({
       prefix: '',

@@ -8,6 +8,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Slider from "@mui/material/Slider";
 import Grid from "@mui/material/Grid";
+import { InputLabel, MenuItem, FormControl, Select, TextField } from "@mui/material";
 
 const styles = {
   container: {
@@ -92,6 +93,9 @@ const styles = {
     fontWeight: "600",
     color: "#e74c3c",
   },
+  quantitySelector: {
+    marginBottom: "20px",
+  },
   walletDialogContent: {
     display: "flex",
     flexDirection: "column",
@@ -114,7 +118,7 @@ const styles = {
   },
 };
 
-// Helper function to format currency
+// Function to format the currency
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -122,21 +126,38 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
+// Conversion factor for units
+const unitConversion = {
+  kg: 1,
+  tons: 1000,
+  pounds: 2.20462, // 1 kg = 2.20462 pounds
+};
+
 const Inventory = () => {
   const [crops, setCrops] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [walletDialogOpen, setWalletDialogOpen] = useState(false);
-  const token = useSelector((state) => state.auth.token);
+  const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false); // New state for purchase confirmation
   const [searchQuery, setSearchQuery] = useState("");
   const [priceRange, setPriceRange] = useState([0, 100000]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedQuantity, setSelectedQuantity] = useState("");  // To store selected quantity
+  const [unit, setUnit] = useState("kg");  // Default unit is kg
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState(""); // State to track the withdraw amount
+  const [withdrawalStatusDialogOpen, setWithdrawalStatusDialogOpen] = useState(false);
+  const [withdrawalMessage, setWithdrawalMessage] = useState('');
+  
+  const token = useSelector((state) => state.auth.token);
+  const userId = useSelector((state) => state.auth.userId);  // Assuming userId is in the store
 
+  // Fetch crops and categories on load
   useEffect(() => {
     const fetchCrops = async () => {
       try {
         const response = await axios.get("http://localhost:8080/users/crops/all", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token} `},
         });
         setCrops(response.data);
       } catch (error) {
@@ -146,7 +167,7 @@ const Inventory = () => {
 
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/users/crops/categories", {
+        const response = await axios.get("http://localhost:8080/crops/categories/get/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCategories(response.data);
@@ -159,21 +180,80 @@ const Inventory = () => {
     fetchCategories();
   }, [token]);
 
+  useEffect(() => {
+    const fetchWalletBalance = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/users/wallet/balance", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setWalletBalance(response.data.balance);
+      } catch (error) {
+        console.error("Error fetching wallet balance:", error);
+      }
+    };
+
+    fetchWalletBalance();
+  }, [token]);
+
+  // Filtered crops based on search query and category
+  const filteredCrops = crops.filter(
+    (crop) =>
+      crop.cropName.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (!selectedCategory || crop.category === selectedCategory)
+  );
+
   const handleSearchChange = (e) => setSearchQuery(e.target.value);
   const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
   const handlePriceChange = (event, newRange) => setPriceRange(newRange);
   const handleProductClick = (product) => setSelectedProduct(product);
   const handleCloseProductDialog = () => setSelectedProduct(null);
   const handleBuyNowClick = () => setWalletDialogOpen(true);
-  const handleCloseWalletDialog = () => setWalletDialogOpen(false);
 
-  const filteredCrops = crops.filter(
-    (crop) =>
-      crop.cropName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (!selectedCategory || crop.category === selectedCategory) &&
-      crop.projectedProduction >= priceRange[0] &&
-      crop.projectedProduction <= priceRange[1]
-  );
+  const handleWithdrawAmountChange = (e) => setWithdrawAmount(e.target.value);
+
+  const getTotalPrice = () => {
+    const pricePerUnit = selectedProduct?.projectedProduction || 0;
+    const quantity = parseFloat(selectedQuantity) || 0;
+    const conversionFactor = unitConversion[unit];
+    return pricePerUnit * quantity * conversionFactor;
+  };
+
+  const handleWithdraw = async () => {
+    if (withdrawAmount <= 0) {
+      alert("Please enter a valid withdrawal amount.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/users/wallet/withdraw",
+        { userId, amount: withdrawAmount },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        setWalletBalance(walletBalance + parseFloat(withdrawAmount)); // Update wallet balance after withdrawal
+        setWithdrawalMessage("Withdrawal successful");
+      } else {
+        setWithdrawalMessage(response.data.message || "Failed to withdraw");
+      }
+    } catch (error) {
+      console.error("Error during withdrawal:", error);
+      setWithdrawalMessage("Failed to withdraw");
+    }
+
+    setWithdrawalStatusDialogOpen(true);
+  };
+
+  const handleConfirmPurchase = () => {
+    const totalPrice = getTotalPrice();
+    if (totalPrice <= walletBalance) {
+      setWalletBalance(walletBalance - totalPrice); // Deduct from wallet
+      setPurchaseDialogOpen(true); // Open confirmation dialog
+    } else {
+      alert("Insufficient balance.");
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -193,11 +273,12 @@ const Inventory = () => {
         >
           <option value="">All Categories</option>
           {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
+            <option key={category.id || category} value={category.name || category}>
+              {category.name || category}
             </option>
           ))}
         </select>
+
         <div style={styles.sliderContainer}>
           <div style={styles.sliderLabel}>
             Price Range (₹{formatCurrency(priceRange[0])} - ₹{formatCurrency(priceRange[1])})
@@ -221,6 +302,7 @@ const Inventory = () => {
             <p>No crops found.</p>
           ) : (
             filteredCrops.map((crop) => (
+              
               <Grid item xs={12} sm={6} md={4} lg={3} key={crop.id}>
                 <div
                   style={styles.productCard}
@@ -254,6 +336,28 @@ const Inventory = () => {
             />
             <p>Price: {formatCurrency(selectedProduct.projectedProduction)}</p>
             <p>{selectedProduct.description || "No description available."}</p>
+            <div style={styles.quantitySelector}>
+              <TextField
+                label="Enter Quantity"
+                value={selectedQuantity}
+                onChange={(e) => setSelectedQuantity(e.target.value)}
+                type="number"
+                fullWidth
+                style={{ marginBottom: "10px" }}
+              />
+              <FormControl fullWidth>
+                <InputLabel>Unit</InputLabel>
+                <Select
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                  label="Unit"
+                >
+                  <MenuItem value="kg">Kg</MenuItem>
+                  <MenuItem value="tons">Tons</MenuItem>
+                  <MenuItem value="pounds">Pounds</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleBuyNowClick} color="primary">
@@ -268,50 +372,87 @@ const Inventory = () => {
 
       {/* Wallet Modal */}
       <Dialog
-  open={walletDialogOpen}
-  onClose={handleCloseWalletDialog}
-  PaperProps={{
-    style: {
-      width: '700px', // Set the width to a specific value or use a percentage, e.g., '80%'
-      maxWidth: '100%', // Ensures it doesn't exceed the viewport width
-      height: 'auto', // Can be adjusted as needed
-      position: 'absolute', // Change to 'fixed' for fixed positioning
-      top: '3%', // Adjust as needed to move the dialog vertically
-      left: '70%', // Centers the dialog horizontally
-      transform: 'translate(-50%, 0)', // Ensures the dialog is centered
-      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)', // Optional: adds shadow for better visibility
-    }
-  }}
->
-  <DialogTitle>Pay Via for {selectedProduct?.cropName}</DialogTitle>
-  <DialogContent style={styles.walletDialogContent}>
-    <img
-      src="https://agri-nexus.online/assets/templates/basic/images/wallet.png"
-      alt="Wallet"
-      style={styles.walletImage}
-    />
-    <h4 style={styles.walletText}>Wallet</h4>
-    <p style={styles.walletText}>
-      Payment completed instantly with one click if sufficient balance is available.
-    </p>
+        open={walletDialogOpen}
+        onClose={() => setWalletDialogOpen(false)}
+        PaperProps={{
+          style: {
+            width: '700px',
+            maxWidth: '100%',
+            height: 'auto',
+            position: 'absolute',
+            top: '3%',
+            left: '70%',
+            transform: 'translate(-50%, 0)',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+          },
+        }}
+      >
+        <DialogTitle>Pay Via wallet for {selectedProduct?.cropName}</DialogTitle>
+        <DialogContent style={styles.walletDialogContent}>
+          <img
+            src="https://agri-nexus.online/assets/templates/basic/images/wallet.png"
+            alt="Wallet"
+            style={styles.walletImage}
+          />
+          <h4 style={styles.walletText}>Wallet</h4>
+          <p style={styles.walletText}>
+            Payment completed instantly with one click if sufficient balance is available.
+          </p>
 
-    <p>Your wallet balance is {formatCurrency(5000)}.</p>
-    <p>
-      {5000 >= selectedProduct?.projectedProduction
-        ? "You have enough balance to buy this product."
-        : "Insufficient balance. Please add funds."}
-    </p>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseWalletDialog} color="primary">
-      Close
-    </Button>
-    {5000 >= selectedProduct?.projectedProduction && (
-      <Button color="secondary">Confirm Purchase</Button>
-    )}
-  </DialogActions>
-</Dialog>
+          <p>Your wallet balance is {formatCurrency(walletBalance)}.</p>
+          <p>
+            {getTotalPrice() <= walletBalance
+              ? "You have enough balance to buy this product."
+              : "Insufficient balance. Please add funds."}
+          </p>
 
+          {/* Withdraw Amount */}
+          <TextField
+            label="Amount to Withdraw"
+            type="number"
+            value={withdrawAmount}
+            onChange={handleWithdrawAmountChange}
+            fullWidth
+          />
+          <Button onClick={handleWithdraw} color="primary">
+            Withdraw
+          </Button>
+
+          <Dialog open={withdrawalStatusDialogOpen} onClose={() => setWithdrawalStatusDialogOpen(false)}>
+            <DialogTitle>Withdrawal Status</DialogTitle>
+            <DialogContent>
+              <p>{withdrawalMessage}</p>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setWithdrawalStatusDialogOpen(false)} color="primary">
+                Close
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setWalletDialogOpen(false)} color="primary">
+            Close
+          </Button>
+          {getTotalPrice() <= walletBalance && (
+            <Button onClick={handleConfirmPurchase} color="secondary">
+              Confirm Purchase
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
+
+      {/* Purchase Confirmation Modal */}
+      <Dialog open={purchaseDialogOpen} onClose={() => setPurchaseDialogOpen(false)}>
+        <DialogTitle>Purchase Confirmed!</DialogTitle>
+        <DialogContent>
+          <p>Your purchase has been completed successfully!</p>
+          <p>Remaining balance: {formatCurrency(walletBalance)}</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPurchaseDialogOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
