@@ -3,7 +3,7 @@ import Home from "@/pages/dashboard/Home";  // Import the Home page for the outl
 import Inventory from "@/pages/dashboard/Inventory";  // Import Inventory page
 import Orders from "@/pages/dashboard/Orders";  // Import Orders page
 import Customers from "@/pages/dashboard/Customers";  // Import Customers page
-
+import ProfileCard from "@/pages/dashboard/ProfileCard"
 const outletRoutes = [
   {
     layout: "outlet-dashboard", // Define the layout type
@@ -12,6 +12,12 @@ const outletRoutes = [
         name: "Home", 
         path: "/outlet-dashboard/home", 
         element: <Home /> // The component to render for Home
+      },
+
+      {
+        name: "Profile", // Name for the profile page
+        path: "/outlet-dashboard/profile",  // Path for ProfileCard page
+        element: <ProfileCard />  // The ProfileCard component to render
       },
       {
         name: "Inventory",
