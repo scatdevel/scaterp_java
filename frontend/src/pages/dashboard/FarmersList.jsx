@@ -42,7 +42,7 @@ const FarmersList = () => {
   return (
     <div>
       <Typography variant="h6" gutterBottom style={{ color: '#4A90E2' , fontWeight:'bold'}} >
-        USER'S  LIST
+        FARMER LIST
       </Typography>
       <TableContainer component={Paper}>
         <Table>

@@ -1,8 +1,8 @@
 package com.scat.service;
 
-import com.scat.dto.UserDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
+import com.scat.model.request.UserDetailsRequestModel;
 
 import java.util.List;
 
@@ -32,5 +32,5 @@ public interface AdminService {
 
 	String getUserRole(String email);
 
-	UserDTO createUserByAdmin(UserDTO userDto);
+	UserEntity createUserByAdmin(UserDetailsRequestModel userDto);
 }

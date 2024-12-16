@@ -3,6 +3,7 @@ package com.scat.service.impl;
 import com.scat.dto.UserDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
+import com.scat.model.request.UserDetailsRequestModel;
 import com.scat.repository.RoleRepository;
 import com.scat.repository.UserRepository;
 import com.scat.service.AdminService;
@@ -68,24 +69,35 @@ public class AdminServiceImpl implements AdminService {
 
 		userRepository.save(adminUser);
 	}
+<<<<<<< HEAD
 	
 	@Override // creating User by Admin 
 	public UserDTO createUserByAdmin(UserDTO userDto) {
 		if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
 			throw new RuntimeException("User With This email already present");
+=======
+
+	@Override
+	public UserEntity createUserByAdmin(UserDetailsRequestModel userDto) {
+
+		Optional<RoleEntity> roleopt = roleRepository.findByName(userDto.getRoleName());
+
+		if (!roleopt.isEmpty()) {
+			throw new RuntimeException("Role Not Found For :" + roleopt);
+>>>>>>> cb1c8a179027c854c413401a32ba41ebe77f16ad
 		}
 
-		UserEntity user = mapper.map(userDto, UserEntity.class);
-		user.setEncryptedPassword(passwordEncoder.encode(userDto.getEncryptedPassword()));
-		
-		if(user.getRole() != null) {
-			RoleEntity  role = roleRepository.findByName(userDto.getRole().getName())
-					.orElseThrow(()-> new RuntimeException("Role Not Found With :" + userDto.getRole().getName()));
-			user.setRole(role);
-		}
-		
-		UserEntity storedUser = userRepository.save(user);
-		return mapper.map(storedUser, UserDTO.class);
+		RoleEntity role = roleopt.get();
+
+		String encryptedpassword = passwordEncoder.encode(userDto.getPassword());
+
+		UserEntity user = new UserEntity();
+		user.setEmail(userDto.getEmail());
+		user.setUsername(userDto.getUsername());
+		user.setEncryptedPassword(encryptedpassword);
+		user.setRole(role);
+
+		return userRepository.save(user);
 	}
 
 	@Override
@@ -180,18 +192,18 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public String getUserRole(String email) {
 		Optional<UserEntity> user = userRepository.findByEmail(email);
-		
-		if(user != null) {
+
+		if (user != null) {
 			RoleEntity role = user.get().getRole();
-			if(role != null) {
+			if (role != null) {
 				return role.getName();
 			} else {
 				throw new RuntimeException("User has No role Assigned");
 			}
 		} else {
-			throw new RuntimeException("User Not Found With This email :" +email);
+			throw new RuntimeException("User Not Found With This email :" + email);
 		}
-		
+
 	}
 
 	private void initializeDefaultRoles() {
