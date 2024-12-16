@@ -8,6 +8,10 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Slider from "@mui/material/Slider";
 import Grid from "@mui/material/Grid";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWallet } from '@fortawesome/free-solid-svg-icons';
+
+import { InputLabel, MenuItem, FormControl, Select, TextField } from "@mui/material";
 
 const styles = {
   container: {
@@ -92,6 +96,9 @@ const styles = {
     fontWeight: "600",
     color: "#e74c3c",
   },
+  quantitySelector: {
+    marginBottom: "20px",
+  },
   walletDialogContent: {
     display: "flex",
     flexDirection: "column",
@@ -104,7 +111,11 @@ const styles = {
     marginBottom: "10px",
   },
   walletText: {
+    fontWeight: "bold", // Making the text bold
+    fontSize: "1.5rem", // Increase font size
+    color: "#333", // Dark color for readability
     marginBottom: "10px",
+    textAlign: "center", // Center align text
   },
   dialogWrapper: {
     position: "fixed",
@@ -114,7 +125,7 @@ const styles = {
   },
 };
 
-// Helper function to format currency
+// Function to format the currency
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -122,16 +133,33 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
+// Conversion factor for units
+const unitConversion = {
+  kg: 1,
+  tons: 1000,
+  pounds: 2.20462, // 1 kg = 2.20462 pounds
+};
+
 const Inventory = () => {
   const [crops, setCrops] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [walletDialogOpen, setWalletDialogOpen] = useState(false);
-  const token = useSelector((state) => state.auth.token);
+  const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false); // New state for purchase confirmation
   const [searchQuery, setSearchQuery] = useState("");
   const [priceRange, setPriceRange] = useState([0, 100000]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedQuantity, setSelectedQuantity] = useState("");  // To store selected quantity
+  const [unit, setUnit] = useState("kg");  // Default unit is kg
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [withdrawAmount, setWithdrawAmount] = useState(""); // State to track the withdraw amount
+  const [withdrawalStatusDialogOpen, setWithdrawalStatusDialogOpen] = useState(false);
+  const [withdrawalMessage, setWithdrawalMessage] = useState('');
+  
+  const token = useSelector((state) => state.auth.token);
+  const userId = useSelector((state) => state.auth.userId);  // Assuming userId is in the store
 
+  // Fetch crops and categories on load
   useEffect(() => {
     const fetchCrops = async () => {
       try {
@@ -146,7 +174,7 @@ const Inventory = () => {
 
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/users/crops/categories", {
+        const response = await axios.get("http://localhost:8080/crops/categories/get/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCategories(response.data);
@@ -159,21 +187,95 @@ const Inventory = () => {
     fetchCategories();
   }, [token]);
 
+  useEffect(() => {
+    const fetchWalletBalance = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/users/wallet/balance", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setWalletBalance(response.data.balance);
+      } catch (error) {
+        console.error("Error fetching wallet balance:", error);
+      }
+    };
+
+    fetchWalletBalance();
+  }, [token]);
+
+  // Filtered crops based on search query and category
+  const filteredCrops = crops.filter(
+    (crop) =>
+      crop.cropName.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (!selectedCategory || crop.category === selectedCategory)
+  );
+
   const handleSearchChange = (e) => setSearchQuery(e.target.value);
   const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
   const handlePriceChange = (event, newRange) => setPriceRange(newRange);
   const handleProductClick = (product) => setSelectedProduct(product);
   const handleCloseProductDialog = () => setSelectedProduct(null);
-  const handleBuyNowClick = () => setWalletDialogOpen(true);
-  const handleCloseWalletDialog = () => setWalletDialogOpen(false);
+  //const handleBuyNowClick = () => setWalletDialogOpen(true);
 
-  const filteredCrops = crops.filter(
-    (crop) =>
-      crop.cropName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (!selectedCategory || crop.category === selectedCategory) &&
-      crop.projectedProduction >= priceRange[0] &&
-      crop.projectedProduction <= priceRange[1]
-  );
+  const handleWithdrawAmountChange = (e) => setWithdrawAmount(e.target.value);
+
+  const handleWithdraw = async () => {
+    if (withdrawAmount <= 0) {
+      alert("Please enter a valid withdrawal amount.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/users/wallet/withdraw",
+        { userId, amount: withdrawAmount },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        setWalletBalance(walletBalance + parseFloat(withdrawAmount)); // Update wallet balance after withdrawal
+        setWithdrawalMessage("Withdrawal successful");
+      } else {
+        setWithdrawalMessage(response.data.message || "Failed to withdraw");
+      }
+    } catch (error) {
+      console.error("Error during withdrawal:", error);
+      setWithdrawalMessage("Failed to withdraw");
+    }
+
+    setWithdrawalStatusDialogOpen(true);
+  };
+
+
+
+  const handleBuyNowClick = () => {
+    const totalPrice = getTotalPrice(); // Get total price based on selected quantity and unit
+    if (totalPrice <= walletBalance) {
+      setWalletDialogOpen(true);  // Open wallet dialog if sufficient balance
+    } else {
+      alert("Insufficient balance. Please add funds to your wallet.");
+    }
+  };
+  
+  // Function to calculate the total price based on quantity and unit
+  const getTotalPrice = () => {
+    const pricePerUnit = selectedProduct?.projectedProduction || 0;
+    const quantity = parseFloat(selectedQuantity) || 0;
+    const conversionFactor = unitConversion[unit];
+    return pricePerUnit * quantity * conversionFactor; // Multiply by the conversion factor (kg to tons, etc.)
+  };
+  
+  const handleConfirmPurchase = () => {
+    const totalPrice = getTotalPrice(); // Calculate total price
+  
+    if (totalPrice <= walletBalance) {
+      // Deduct the price from wallet balance
+      setWalletBalance(walletBalance - totalPrice);
+      setPurchaseDialogOpen(true); // Show the purchase confirmation dialog
+    } else {
+      alert("Insufficient balance. Please add funds.");
+    }
+  };
+  
 
   return (
     <div style={styles.container}>
@@ -193,11 +295,12 @@ const Inventory = () => {
         >
           <option value="">All Categories</option>
           {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
+            <option key={category.id || category} value={category.name || category}>
+              {category.name || category}
             </option>
           ))}
         </select>
+
         <div style={styles.sliderContainer}>
           <div style={styles.sliderLabel}>
             Price Range (₹{formatCurrency(priceRange[0])} - ₹{formatCurrency(priceRange[1])})
@@ -221,6 +324,7 @@ const Inventory = () => {
             <p>No crops found.</p>
           ) : (
             filteredCrops.map((crop) => (
+              
               <Grid item xs={12} sm={6} md={4} lg={3} key={crop.id}>
                 <div
                   style={styles.productCard}
@@ -254,6 +358,28 @@ const Inventory = () => {
             />
             <p>Price: {formatCurrency(selectedProduct.projectedProduction)}</p>
             <p>{selectedProduct.description || "No description available."}</p>
+            <div style={styles.quantitySelector}>
+              <TextField
+                label="Enter Quantity"
+                value={selectedQuantity}
+                onChange={(e) => setSelectedQuantity(e.target.value)}
+                type="number"
+                fullWidth
+                style={{ marginBottom: "10px" }}
+              />
+              <FormControl fullWidth>
+                <InputLabel>Unit</InputLabel>
+                <Select
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                  label="Unit"
+                >
+                  <MenuItem value="kg">Kg</MenuItem>
+                  <MenuItem value="tons">Tons</MenuItem>
+                  <MenuItem value="pounds">Pounds</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleBuyNowClick} color="primary">
@@ -268,50 +394,125 @@ const Inventory = () => {
 
       {/* Wallet Modal */}
       <Dialog
-  open={walletDialogOpen}
-  onClose={handleCloseWalletDialog}
-  PaperProps={{
-    style: {
-      width: '700px', // Set the width to a specific value or use a percentage, e.g., '80%'
-      maxWidth: '100%', // Ensures it doesn't exceed the viewport width
-      height: 'auto', // Can be adjusted as needed
-      position: 'absolute', // Change to 'fixed' for fixed positioning
-      top: '3%', // Adjust as needed to move the dialog vertically
-      left: '70%', // Centers the dialog horizontally
-      transform: 'translate(-50%, 0)', // Ensures the dialog is centered
-      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)', // Optional: adds shadow for better visibility
-    }
-  }}
->
-  <DialogTitle>Pay Via for {selectedProduct?.cropName}</DialogTitle>
-  <DialogContent style={styles.walletDialogContent}>
-    <img
-      src="https://agri-nexus.online/assets/templates/basic/images/wallet.png"
-      alt="Wallet"
-      style={styles.walletImage}
-    />
-    <h4 style={styles.walletText}>Wallet</h4>
-    <p style={styles.walletText}>
-      Payment completed instantly with one click if sufficient balance is available.
-    </p>
-
-    <p>Your wallet balance is {formatCurrency(5000)}.</p>
-    <p>
-      {5000 >= selectedProduct?.projectedProduction
-        ? "You have enough balance to buy this product."
+        open={walletDialogOpen}
+        onClose={() => setWalletDialogOpen(false)}
+        PaperProps={{
+          style: {
+            width: '800px',
+            maxWidth: '120%',
+            height: 'auto',
+            position: 'absolute',
+            top: '3%',
+            left: '70%',
+            transform: 'translate(-50%, 0)',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+          },
+        }}
+      >
+     <DialogTitle>Pay Via wallet for {selectedProduct?.cropName}</DialogTitle>
+<DialogContent style={styles.walletDialogContent}>
+  {/* FontAwesome Wallet Icon */}
+  <FontAwesomeIcon icon={faWallet} style={{ fontSize: '50px', color: '#4caf50', marginBottom: '15px' }} />
+  
+  <h4 style={styles.walletText}>Wallet</h4>
+  
+  {/* Wallet Balance */}
+  <p style={styles.walletText}>
+   {formatCurrency(walletBalance)}
+  </p>
+  <p>
+      {getTotalPrice() <= walletBalance
+        ? `Total Price: ${formatCurrency(getTotalPrice())}`
         : "Insufficient balance. Please add funds."}
     </p>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseWalletDialog} color="primary">
-      Close
-    </Button>
-    {5000 >= selectedProduct?.projectedProduction && (
-      <Button color="secondary">Confirm Purchase</Button>
-    )}
-  </DialogActions>
-</Dialog>
 
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '300px' }}>
+  {/* Input Field */}
+  <TextField
+    variant="outlined"
+    size="small"
+    style={{
+      width: '100%',
+      borderRadius: '4px',
+    }}
+    inputProps={{
+      style: {
+        padding: '8px',
+        fontSize: '14px',
+      },
+    }}
+    placeholder="Enter amount"
+  />
+</div>
+
+
+          <Dialog open={withdrawalStatusDialogOpen} onClose={() => setWithdrawalStatusDialogOpen(false)}>
+            <DialogTitle>Withdrawal Status</DialogTitle>
+            <DialogContent>
+              <p>{withdrawalMessage}</p>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setWithdrawalStatusDialogOpen(false)} color="primary">
+                Close
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </DialogContent>
+        <DialogActions>
+        <Button
+  onClick={() => setWalletDialogOpen(false)}
+  color="primary"
+  style={{
+    background: 'linear-gradient(45deg, #4caf50, #388e3c)',  // Green gradient background
+    color: 'white',  // White text color
+    padding: '10px 20px',  // Padding for better size
+    borderRadius: '20px',  // Rounded corners
+    fontWeight: '600',  // Bold text for emphasis
+    fontSize: '16px',  // Larger text
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.15)',  // Subtle shadow
+    transition: 'all 0.3s ease',  // Smooth transition for hover effect
+  }}
+  onMouseEnter={(e) => e.target.style.background = '#388e3c'}  // Darker green on hover
+  onMouseLeave={(e) => e.target.style.background = 'linear-gradient(45deg, #4caf50, #388e3c)'}  // Reset gradient on mouse leave
+>
+  Cancel
+</Button>
+         {getTotalPrice() <= walletBalance && (
+        <Button
+          onClick={handleConfirmPurchase}
+          color="secondary"
+          style={{
+            background: 'linear-gradient(45deg, #2196F3, #1976D2)',
+            color: 'white',
+            padding: '12px 24px',
+            borderRadius: '25px',
+            fontWeight: 'bold',
+            fontSize: '16px',
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => e.target.style.background = '#1976D2'}
+          onMouseLeave={(e) => e.target.style.background = 'linear-gradient(45deg, #2196F3, #1976D2)'}
+        >
+          Pay
+        </Button>
+          )}
+        </DialogActions>
+      </Dialog>
+<Dialog
+        open={purchaseDialogOpen}
+        onClose={() => setPurchaseDialogOpen(false)}
+      >
+        <DialogTitle>Purchase Success</DialogTitle>
+        <DialogContent>
+          <p>Your purchase was successful!</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPurchaseDialogOpen(false)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

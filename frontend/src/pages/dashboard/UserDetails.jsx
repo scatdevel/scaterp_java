@@ -7,7 +7,6 @@ const UserDetails = () => {
     const [loading, setLoading] = useState(true);
 
     const [roles, setRoles] = useState([]); // For storing the roles
-    // const [newUserRole, setNewUserRole] = useState('');
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [assignRoleDialogOpen, setAssignRoleDialogOpen] = useState(false);
