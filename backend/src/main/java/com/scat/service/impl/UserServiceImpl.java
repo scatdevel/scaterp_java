@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
 
 		if (userDTO.getRole() != null) {
-			RoleEntity role = roleRepository.findByName(userDTO.getRole().getName())
-					.orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole().getName()));
+			RoleEntity role = roleRepository.findByName(userDTO.getRole())
+					.orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
 			userEntity.setRole(role);
 		}
 
@@ -114,8 +114,8 @@ public class UserServiceImpl implements UserService {
 		userEntity.setProfilePictureUrl(userDTO.getProfilePictureUrl());
 
 		if (userDTO.getRole() != null) {
-			RoleEntity role = roleRepository.findByName(userDTO.getRole().getName())
-					.orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole().getName()));
+			RoleEntity role = roleRepository.findByName(userDTO.getRole())
+					.orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
 			userEntity.setRole(role);
 		}
 
