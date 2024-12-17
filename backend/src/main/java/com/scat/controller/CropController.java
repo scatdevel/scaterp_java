@@ -44,7 +44,7 @@ public class CropController {
                          @RequestParam Long  categoryId,
                          @RequestParam("cultivationLandValue") double cultivationLandValue,
                          @RequestParam("landValueUnit") String landValueUnit,
-                         @RequestParam("cost") double cost,
+                         @RequestParam("price") double price,
                          @RequestParam("weatherData") String weatherData,
                          @RequestParam("soilType") String soilType,
                          @RequestParam("productionUnit") String productionUnit,
@@ -57,7 +57,8 @@ public class CropController {
         crop.setProduction(production);
         crop.setCultivationLandValue(cultivationLandValue);
         crop.setLandValueUnit(landValueUnit);
-        crop.setCost(BigDecimal.valueOf(cost));
+//        crop.setCost(BigDecimal.valueOf(cost));
+        crop.setPrice(price);
         crop.setProjectionTimelineType(projectionTimelineType);
         crop.setProjectionTimelineValue(projectionTimelineValue);
         crop.setProductionUnit(productionUnit);

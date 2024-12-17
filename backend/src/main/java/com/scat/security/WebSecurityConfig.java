@@ -66,6 +66,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users/admin/**/**", "/users/admin/createuser").permitAll()
                 .antMatchers("/roles/all").permitAll()
                 .antMatchers("/users/login","/users/outlet/login", "/users/all", "/users/{username}", "/users/image/{username}").permitAll()
+                
+                .antMatchers("/users/wallet/deposit/{userId}", "/users/wallet/createwallet/{userId}", "/user/wallet/balance").permitAll()
+
                 .antMatchers("/users/api/{email}").permitAll()
                 .antMatchers("/users/get/{id}", "/users/crops/all").permitAll() // Ensure this line is accessible
                 .anyRequest().authenticated() // Any other requests require authentication

@@ -193,7 +193,7 @@ const Inventory = () => {
         const response = await axios.get("http://localhost:8080/users/wallet/balance", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setWalletBalance(response.data.balance);
+        setWalletBalance(response.data);
       } catch (error) {
         console.error("Error fetching wallet balance:", error);
       }
@@ -323,7 +323,7 @@ const Inventory = () => {
                   />
                   <div style={styles.productDetails}>
                     <h3 style={styles.productTitle}>{crop.cropName}</h3>
-                    <p style={styles.productPrice}>{formatCurrency(crop.projectedProduction)}</p>
+                    <p style={styles.productPrice}>{formatCurrency(crop.price)}</p>
                   </div>
                 </div>
               </Grid>
@@ -342,7 +342,7 @@ const Inventory = () => {
               alt={selectedProduct.cropName}
               style={{ width: "100%", borderRadius: "5px" }}
             />
-            <p>Price: {formatCurrency(selectedProduct.projectedProduction)}</p>
+            <p>Price: {formatCurrency(selectedProduct.price)}</p>
             <p>{selectedProduct.description || "No description available."}</p>
             <div style={styles.quantitySelector}>
               <TextField

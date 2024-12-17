@@ -29,8 +29,9 @@ public class Crop {
 	private double production;
 	private double cultivationLandValue;
 	private String landValueUnit;
-	  @Column(precision = 15, scale = 2)  // Use BigDecimal for cost
-	    private BigDecimal cost;
+	 
+	private double price;
+
 	  
 	  private String projectionTimelineType;
 		private int projectionTimelineValue;
@@ -71,15 +72,14 @@ public class Crop {
 			this.harvestDate = harvestDate;
 		}
 
-		public BigDecimal getCost() {
-			return cost;
+
+	public double getPrice() {
+			return price;
 		}
 
-	
-
-	public void setCost(BigDecimal cost) {
-		this.cost = cost;
-	}
+		public void setPrice(double price) {
+			this.price = price;
+		}
 
 	public double getProduction() {
 		return production;
