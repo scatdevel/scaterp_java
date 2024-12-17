@@ -108,7 +108,7 @@ const App = () => {
          <Route path="inventory" element={<Inventory />} />
         <Route path="orders" element={<Orders />} />
         <Route path="customers" element={<Customers />} />
-       
+       <Route path='profile' element ={<Profile />} />
         {/* Add more outlet-specific routes here */}
       </Route>
       

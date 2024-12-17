@@ -8,6 +8,9 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Slider from "@mui/material/Slider";
 import Grid from "@mui/material/Grid";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWallet } from '@fortawesome/free-solid-svg-icons';
+
 import { InputLabel, MenuItem, FormControl, Select, TextField } from "@mui/material";
 
 const styles = {
@@ -108,6 +111,9 @@ const styles = {
     marginBottom: "10px",
   },
   walletText: {
+    fontWeight: "bold", // Making the text bold
+    fontSize: "1.5rem", // Increase font size
+    color: "#333", // Dark color for readability
     marginBottom: "10px",
     textAlign: "center", // Center align text
   },
@@ -280,6 +286,7 @@ const Inventory = () => {
           ))}
         </select>
 
+
         <div style={styles.sliderContainer}>
           <div style={styles.sliderLabel}>
             Price Range (₹{formatCurrency(priceRange[0])} - ₹{formatCurrency(priceRange[1])})
@@ -377,8 +384,8 @@ const Inventory = () => {
         onClose={() => setWalletDialogOpen(false)}
         PaperProps={{
           style: {
-            width: '700px',
-            maxWidth: '100%',
+            width: '800px',
+            maxWidth: '120%',
             height: 'auto',
             position: 'absolute',
             top: '3%',
@@ -388,36 +395,42 @@ const Inventory = () => {
           },
         }}
       >
-        <DialogTitle>Pay Via wallet for {selectedProduct?.cropName}</DialogTitle>
-        <DialogContent style={styles.walletDialogContent}>
-          <img
-            src="https://agri-nexus.online/assets/templates/basic/images/wallet.png"
-            alt="Wallet"
-            style={styles.walletImage}
-          />
-          <h4 style={styles.walletText}>Wallet</h4>
-          <p style={styles.walletText}>
-            Payment completed instantly with one click if sufficient balance is available.
-          </p>
+     <DialogTitle>Pay Via wallet for {selectedProduct?.cropName}</DialogTitle>
+<DialogContent style={styles.walletDialogContent}>
+  {/* FontAwesome Wallet Icon */}
+  <FontAwesomeIcon icon={faWallet} style={{ fontSize: '50px', color: '#4caf50', marginBottom: '15px' }} />
+  
+  <h4 style={styles.walletText}>Wallet</h4>
+  
+  {/* Wallet Balance */}
+  <p style={styles.walletText}>
+   {formatCurrency(walletBalance)}
+  </p>
+  <p>
+      {getTotalPrice() <= walletBalance
+        ? `Total Price: ${formatCurrency(getTotalPrice())}`
+        : "Insufficient balance. Please add funds."}
+    </p>
 
-          <p>Your wallet balance is {formatCurrency(walletBalance)}.</p>
-          <p>
-            {getTotalPrice() <= walletBalance
-              ? "You have enough balance to buy this product."
-              : "Insufficient balance. Please add funds."}
-          </p>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '300px' }}>
+  {/* Input Field */}
+  <TextField
+    variant="outlined"
+    size="small"
+    style={{
+      width: '100%',
+      borderRadius: '4px',
+    }}
+    inputProps={{
+      style: {
+        padding: '8px',
+        fontSize: '14px',
+      },
+    }}
+    placeholder="Enter amount"
+  />
+</div>
 
-          {/* Withdraw Amount */}
-          <TextField
-            label="Amount to Withdraw"
-            type="number"
-            value={withdrawAmount}
-            onChange={handleWithdrawAmountChange}
-            fullWidth
-          />
-          <Button onClick={handleWithdraw} color="primary">
-            Withdraw
-          </Button>
 
           <Dialog open={withdrawalStatusDialogOpen} onClose={() => setWithdrawalStatusDialogOpen(false)}>
             <DialogTitle>Withdrawal Status</DialogTitle>
@@ -432,26 +445,58 @@ const Inventory = () => {
           </Dialog>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setWalletDialogOpen(false)} color="primary">
-            Close
-          </Button>
-          {getTotalPrice() <= walletBalance && (
-            <Button onClick={handleConfirmPurchase} color="secondary">
-              Confirm Purchase
-            </Button>
+        <Button
+  onClick={() => setWalletDialogOpen(false)}
+  color="primary"
+  style={{
+    background: 'linear-gradient(45deg, #4caf50, #388e3c)',  // Green gradient background
+    color: 'white',  // White text color
+    padding: '10px 20px',  // Padding for better size
+    borderRadius: '20px',  // Rounded corners
+    fontWeight: '600',  // Bold text for emphasis
+    fontSize: '16px',  // Larger text
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.15)',  // Subtle shadow
+    transition: 'all 0.3s ease',  // Smooth transition for hover effect
+  }}
+  onMouseEnter={(e) => e.target.style.background = '#388e3c'}  // Darker green on hover
+  onMouseLeave={(e) => e.target.style.background = 'linear-gradient(45deg, #4caf50, #388e3c)'}  // Reset gradient on mouse leave
+>
+  Cancel
+</Button>
+         {getTotalPrice() <= walletBalance && (
+        <Button
+          onClick={handleConfirmPurchase}
+          color="secondary"
+          style={{
+            background: 'linear-gradient(45deg, #2196F3, #1976D2)',
+            color: 'white',
+            padding: '12px 24px',
+            borderRadius: '25px',
+            fontWeight: 'bold',
+            fontSize: '16px',
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => e.target.style.background = '#1976D2'}
+          onMouseLeave={(e) => e.target.style.background = 'linear-gradient(45deg, #2196F3, #1976D2)'}
+        >
+          Pay
+        </Button>
           )}
         </DialogActions>
       </Dialog>
-
-      {/* Purchase Confirmation Modal */}
-      <Dialog open={purchaseDialogOpen} onClose={() => setPurchaseDialogOpen(false)}>
-        <DialogTitle>Purchase Confirmed!</DialogTitle>
+<Dialog
+        open={purchaseDialogOpen}
+        onClose={() => setPurchaseDialogOpen(false)}
+      >
+        <DialogTitle>Purchase Success</DialogTitle>
         <DialogContent>
-          <p>Your purchase has been completed successfully!</p>
-          <p>Remaining balance: {formatCurrency(walletBalance)}</p>
+          <p>Your purchase was successful!</p>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPurchaseDialogOpen(false)}>Close</Button>
+          <Button onClick={() => setPurchaseDialogOpen(false)} color="primary">
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
