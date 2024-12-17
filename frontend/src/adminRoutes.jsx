@@ -10,11 +10,11 @@ const adminRoutes = [
   {
     layout: "admin-dashboard",
     pages: [
-      { 
-        name: "Home", 
-        path: "/admin-dashboard/home", 
-        element: <Home /> 
-      },
+      // { 
+      //   name: "Home", 
+      //   path: "/admin-dashboard/home", 
+      //   element: <Home /> 
+      // },
 
       { 
         name: "Roles", 

@@ -179,13 +179,21 @@ public class UserController {
 
 	@GetMapping("/all")
 	public ResponseEntity<List<UserRest>> getAllUsers() {
-		List<UserDTO> users = userService.getAllUsers();
-		List<UserRest> userRestList = users.stream().map(userDTO -> {
-			UserRest userRest = new UserRest();
-			BeanUtils.copyProperties(userDTO, userRest);
-			return userRest;
-		}).collect(Collectors.toList());
-		return ResponseEntity.ok(userRestList);
+	    List<UserDTO> users = userService.getAllUsers();
+	    
+	    // Filter users to include only those with the role 'farmer', avoiding null roles
+	    List<UserDTO> filteredUsers = users.stream()
+	            .filter(userDTO -> userDTO.getRole() != null && userDTO.getRole().contains("FARMER"))
+	            .collect(Collectors.toList());
+
+	    // Map filtered users to UserRest objects
+	    List<UserRest> userRestList = filteredUsers.stream().map(userDTO -> {
+	        UserRest userRest = new UserRest();
+	        BeanUtils.copyProperties(userDTO, userRest);
+	        return userRest;
+	    }).collect(Collectors.toList());
+	    
+	    return ResponseEntity.ok(userRestList);
 	}
 
 	@PostMapping(value = "/uploadProfilePicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

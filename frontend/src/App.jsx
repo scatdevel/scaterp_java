@@ -96,22 +96,18 @@ const App = () => {
 
 
 
-      {/* Outlet Dashboard Routes */}
-      <Route
-        path="/outlet-dashboard/*"
-        element={authenticated && isOutlet ? <OutletDashboard /> : <Navigate to="/auth/sign-in" />}
-      >
-        <Route path="home" element={<Home />} />
+    <Route path="/outlet-dashboard/*" element={authenticated && isOutlet ? <OutletDashboard /> : <Navigate to="/auth/sign-in" />}>
+  {/* Default route, will handle /outlet-dashboard as the home page */}
+  <Route index element={<Home />} />
 
+  {/* Other relative routes */}
+  <Route path="home" element={<Home />} />
+  <Route path="inventory" element={<Inventory />} />
+  <Route path="orders" element={<Orders />} />
+  <Route path="customers" element={<Customers />} />
+  <Route path="profile" element={<Profile />} />
+</Route>
 
-         {/* Add routes for Inventory, Orders, Customers, and Reports for Outlet */}
-         <Route path="inventory" element={<Inventory />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="customers" element={<Customers />} />
-       <Route path='profile' element ={<Profile />} />
-        {/* Add more outlet-specific routes here */}
-      </Route>
-      
       {/* Redirect all other routes */}
       {/* <Route path="*" element={<Navigate to={authenticated ? (isAdmin ? "/admin-dashboard/home" : "/dashboard/home") : "/auth/sign-in"} replace />} />
     </Routes> */}
