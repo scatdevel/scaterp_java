@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux'; // Import useSelector
 import { Card, CardBody, Typography } from "@material-tailwind/react";
-import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar, Grid, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
-import axios from 'axios';
+import { Box, TextField, Button as MUIButton, Avatar as MUIAvatar, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import axios from 'axios';
 import UserIcon from '@mui/icons-material/Person';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
@@ -82,22 +82,12 @@ export function Profile() {
   const userId = useSelector((state) => state.auth.userId); // Access user ID from Redux
 
   const [formData, setFormData] = useState({
-    prefix:'',
     fullName: '',
-    phoneNumber: '+91',
+    phoneNumber: '',
     email: '',
     username: '',
     bio: '',
-    dob: '',
-    gender:'',
-    houseNumber: '',
-    street: '',
-    landmark: '',
-    locality: '',
-    city: '',
-    state: '',
-    pincode: '',
-    country: ''
+    dob: ''
   });
   
   const [alert, setAlert] = useState({ message: '', type: '' });
@@ -115,17 +105,7 @@ export function Profile() {
         email: userData.email,
         phoneNumber: userData.phoneNumber,
         bio: userData.bio,
-        dob: userData.dob,
-        prefix:userData.prefix||"",
-        gender: userData.gender || "",
-        houseNumber: userData.houseNumber || '',
-        street: userData.street || '',
-        landmark: userData.landmark || '',
-        locality: userData.locality || '',
-        city: userData.city || '',
-        state: userData.state || '',
-        pincode: userData.pincode || '',
-        country: userData.country || ''
+        dob: userData.dob
       });
       setFileState({ selectedFile: null, previewUrl: `http://localhost:8080/users/image/${userData.username}` }); 
     } catch (error) {
@@ -139,14 +119,14 @@ export function Profile() {
     }
   }, [userId]);
 
-  //const isValidPhoneNumber = (number) => /^[0-9]{10}$/.test(number);
+  const isValidPhoneNumber = (number) => /^[0-9]{10}$/.test(number);
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidDate = (date) => !isNaN(new Date(date).getTime());
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData(prev => ({ ...prev, [name]: value }));
-  // };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleFileChange = (file) => {
     setFileState({ 
@@ -155,83 +135,32 @@ export function Profile() {
     });
   };
 
-  // Validate phone number with the country code (+91)
-const isValidPhoneNumber = (number) => /^(\+91)?[0-9]{10}$/.test(number);
+  const validateFields = () => {
+    const { username, phoneNumber, email, dob } = formData;
+    let hasError = false;
+    const newErrors = { email: '', phoneNumber: '' };
 
-// Update the phone number input handler
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
-  if (name === 'phoneNumber') {
-    // Remove any non-numeric characters except the + sign
-    let formattedValue = value.replace(/[^0-9+]/g, '');
-
-    // If the value starts with +91 and is followed by 10 digits, it's valid
-    if (formattedValue.startsWith('+91') && formattedValue.length <= 13) {
-      formattedValue = formattedValue.substring(0, 13); // Limit to max length including +91
-    } else if (formattedValue.length > 13) {
-      // Ensure length doesn't exceed 13 characters (including +91)
-      formattedValue = formattedValue.substring(0, 13);
-    }
-
-    setFormData(prev => ({ ...prev, [name]: formattedValue }));
-  } else {
-    setFormData(prev => ({ ...prev, [name]: value }));
-  }
-};
-
-// Include phone validation logic in `validateFields`
-const validateFields = () => {
-  const { username, phoneNumber, email, dob, gender } = formData; // Include gender here
-  let hasError = false;
-  const newErrors = { email: '', phoneNumber: '' };
-
-  if (!username) {
-    setAlert({ message: 'Username is required', type: 'error' });
-    hasError = true;
-  }
-  if (!isValidPhoneNumber(phoneNumber)) {
-    newErrors.phoneNumber = 'Please enter a valid phone number (10 digits, optional +91)';
-    hasError = true;
-  }
-  if (!isValidEmail(email)) {
-    newErrors.email = 'Please enter a valid email address';
-    hasError = true;
-  }
-  if (!gender) { // Now accessing gender from formData
-    setAlert({ message: 'Gender is required', type: 'error' });
-    hasError = true;
-  }
-  console.log(gender);
-  
-  if (!isValidDate(dob)) {
-    setAlert({ message: 'Please enter a valid date of birth', type: 'error' });
-    hasError = true;
-  } else {
-    const age = calculateAge(new Date(dob));
-    if (age < 18) {
-      newErrors.age = 'You must be at least 18 years old.';
+    if (!username) {
+      setAlert({ message: 'Username is required', type: 'error' });
       hasError = true;
     }
-  }
+    if (!isValidPhoneNumber(phoneNumber)) {
+      newErrors.phoneNumber = 'Please enter a valid phone number (10 digits)';
+      hasError = true;
+    }
+    if (!isValidEmail(email)) {
+      newErrors.email = 'Please enter a valid email address';
+      hasError = true;
+    }
+    if (!isValidDate(dob)) {
+      setAlert({ message: 'Please enter a valid date of birth', type: 'error' });
+      hasError = true;
+    }
 
-  setErrors(newErrors);
-  return !hasError;
-};
+    setErrors(newErrors);
+    return !hasError;
+  };
 
-// Age validation logic
-const calculateAge = (dob) => {
-  const today = new Date();
-  const birthDate = new Date(dob);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const month = today.getMonth();
-  const day = today.getDate();
-  
-  if (month < birthDate.getMonth() || (month === birthDate.getMonth() && day < birthDate.getDate())) {
-    age--; // Subtract 1 if the birthday hasn't occurred yet this year
-  }
-
-  return age;
-};
   const handleSave = async () => {
     if (!validateFields()) return;
 
@@ -243,22 +172,7 @@ const calculateAge = (dob) => {
       formDataToSend.append('username', username);
         formDataToSend.append('fullName', fullName);
       formDataToSend.append('bio', bio);
-      if (formData.dob) {
-        const formattedDob = new Date(formData.dob).toISOString().split('T')[0];
-        formDataToSend.append('dob', formattedDob);
-      } else {
-        formDataToSend.append('dob', '');  // or send null if required by your backend
-      }
-      formDataToSend.append('gender', formData.gender);
-    formDataToSend.append('prefix', formData.prefix);
-    formDataToSend.append('houseNumber', formData.houseNumber);
-    formDataToSend.append('street', formData.street);
-    formDataToSend.append('landmark', formData.landmark);
-    formDataToSend.append('locality', formData.locality);
-    formDataToSend.append('city', formData.city);
-    formDataToSend.append('state', formData.state);
-    formDataToSend.append('pincode', formData.pincode);
-    formDataToSend.append('country', formData.country); 
+      formDataToSend.append('dob', dob);
       if (fileState.selectedFile) {
         formDataToSend.append('image', fileState.selectedFile);
       }
@@ -278,31 +192,20 @@ const calculateAge = (dob) => {
       }
 
       setAlert({ message: 'Profile updated successfully', type: 'success' });
-    }  catch (error) {
-      if (error.response) {
-        // Server responded with a status other than 200-299
-        console.error("Backend error:", error.response.data);
-      } else if (error.request) {
-        // Request was made but no response received
-        console.error("Network error:", error.request);
-      } else {
-        // Something else happened
-        console.error("Error:", error.message);
-      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Error saving profile';
+      setAlert({ message: `Error: ${errorMessage}`, type: 'error' });
     }
   };
 
-  
   const handleCancel = () => {
     setFormData({
-      prefix: '',
       fullName: '',
-      phoneNumber: '+91',
+      phoneNumber: '',
       email: '',
       username: '',
       bio: '',
-      dob: '',
-      gender: ''
+      dob: ''
     });
     setAlert({ message: '', type: '' });
     setErrors({ email: '', phoneNumber: '' });
@@ -367,77 +270,36 @@ const calculateAge = (dob) => {
         <Box className="mb-4">
           <Typography variant="h6" className="mb-2">{t('personal Information')}</Typography>
           <Grid container spacing={3}>
-            
-    {/* Prefix Dropdown - Ensure it is rendered only once */}
-    <Grid item xs={12} sm={6}>
-              <FormControl fullWidth variant="outlined" className="my-2">
-                <InputLabel>{t('Prefix')}</InputLabel>
-                <Select
-                  value={formData.prefix}
-                  onChange={handleInputChange}
-                  name="prefix"
-                  label={t('prefix')}
-                >
-                  <MenuItem value="Mr.">{t('Mr.')}</MenuItem>
-                  <MenuItem value="Ms.">{t('Ms.')}</MenuItem>
-                  <MenuItem value="Dr.">{t('Dr.')}</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {/* Iterate over other form fields, excluding 'prefix' */}
             {Object.keys(formData).map((key) => (
-              key !== 'prefix' && key !== 'gender' && (
-                <Grid item xs={12} sm={6} key={key}>
-                  <TextField
-                    fullWidth
-                    label={t(key)}
-                    name={key}
-                    variant="outlined"
-                    className="my-2"
-                    value={formData[key]}
-                    onChange={handleInputChange}
-                    error={Boolean(errors[key])} // Show error if field has validation issues
-                    helperText={errors[key]} // Display the error message
-                    InputProps={{
-                      startAdornment: (
-                        <Box sx={{ mr: 1 }}>
-                          {key === 'username' || key === 'fullName' ? <UserIcon /> :
-                           key === 'email' ? <EmailIcon /> :
-                           key === 'phoneNumber' ? <PhoneIcon /> :
-                           key === 'dob' ? <CalendarTodayIcon /> :
-                           <InfoIcon />}
-                        </Box>
-                      ),
-                    }}
-                    type={key === 'dob' ? 'date' : 'text'}
-                    multiline={key === 'bio'}
-                    rows={key === 'bio' ? 4 : 1}
-                  />
-                </Grid>
-              )
-            ))}
-
-
-              {/* Gender Dropdown */}
-              <Grid item xs={12} sm={6}>
-              <FormControl fullWidth variant="outlined" className="my-2">
-                <InputLabel>{t('Gender')}</InputLabel>
-                <Select
-                  value={formData.gender}
+              <Grid item xs={12} sm={6} key={key}>
+                <TextField
+                  fullWidth
+                  label={t(key)}
+                  name={key}
+                  variant="outlined"
+                  className="my-2"
+                  value={formData[key]}
                   onChange={handleInputChange}
-                  name="gender"
-                  label={t('gender')}
-                >
-                  <MenuItem value="Male">{t('male')}</MenuItem>
-                  <MenuItem value="Female">{t('female')}</MenuItem>
-                  <MenuItem value="Others">{t('Others')}</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+                  error={Boolean(errors[key])}
+                  helperText={errors[key]}
+                  InputProps={{
+                    startAdornment: (
+                      <Box sx={{ mr: 1 }}>
+                        {key === 'username' || key === 'fullName' ? <UserIcon /> :
+                         key === 'email' ? <EmailIcon /> :
+                         key === 'phoneNumber' ? <PhoneIcon /> :
+                         key === 'dob' ? <CalendarTodayIcon /> :
+                         <InfoIcon />}
+                      </Box>
+                    ),
+                  }}
+                  type={key === 'dob' ? 'date' : 'text'}
+                  multiline={key === 'bio'}
+                  rows={key === 'bio' ? 4 : 1}
+                />
+              </Grid>
+            ))}
           </Grid>
-          
-          
         </Box>
         <Box className="flex justify-end space-x-4">
           <MUIButton variant="outlined" color="primary" onClick={handleCancel}>{t('cancel')}</MUIButton>

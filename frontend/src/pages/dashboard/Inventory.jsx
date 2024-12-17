@@ -109,6 +109,7 @@ const styles = {
   },
   walletText: {
     marginBottom: "10px",
+    textAlign: "center", // Center align text
   },
   dialogWrapper: {
     position: "fixed",
