@@ -16,22 +16,22 @@ const outletRoutes = [
 
       {
         name: "Profile", // Name for the profile page
-        path: "/outlet-dashboard/profile",  // Path for ProfileCard page
+        path: "/profile",  // Path for ProfileCard page
         element: <Profile />  // The ProfileCard component to render
       },
       {
         name: "Inventory",
-        path: "/outlet-dashboard/inventory", 
+        path: "/inventory", 
         element: <Inventory /> // The component to render for Inventory
       },
       {
         name: "Orders",
-        path: "/outlet-dashboard/orders", 
+        path: "/orders", 
         element: <Orders /> // The component to render for Orders
       },
       {
         name: "Customers",
-        path: "/outlet-dashboard/customers", 
+        path: "/customers", 
         element: <Customers /> // The component to render for Customers
       },
       

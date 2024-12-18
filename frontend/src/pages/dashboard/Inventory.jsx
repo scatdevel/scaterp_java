@@ -155,9 +155,31 @@ const Inventory = () => {
   const [withdrawAmount, setWithdrawAmount] = useState(""); // State to track the withdraw amount
   const [withdrawalStatusDialogOpen, setWithdrawalStatusDialogOpen] = useState(false);
   const [withdrawalMessage, setWithdrawalMessage] = useState('');
+  const [totalCost, setTotalCost] = useState(0);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+
   
   const token = useSelector((state) => state.auth.token);
   const userId = useSelector((state) => state.auth.userId);  // Assuming userId is in the store
+
+  const handleError = (error) => {
+    let message = '';
+
+    if (error.response) {
+      // Server responded with a status other than 200-299
+      message = `Backend error: ${error.response.data}`;
+    } else if (error.request) {
+      // Request was made but no response received
+      message = `Network error: ${error.request}`;
+    } else {
+      // Something else happened
+      message = `Error: ${error.message}`;
+    }
+
+    // Update the error message state
+    setErrorMessage(message);
+  };
 
   // Fetch crops and categories on load
   useEffect(() => {
@@ -303,10 +325,16 @@ const Inventory = () => {
       setWalletDialogOpen(false);
   
     } catch (error) {
-      console.error("Error purchasing product:", error);
-  
-      // You can show an error message if the purchase fails
-      alert("An error occurred while processing your purchase.");
+      if (error.response) {
+        // Server responded with a status other than 200-299
+        console.error("Backend error:", error.response.data);
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error("Network error:", error.request);
+      } else {
+        // Something else happened
+        console.error("Error:", error.message);
+      }
     }
   };
   
@@ -396,7 +424,12 @@ const Inventory = () => {
         <TextField
           label="Enter Quantity"
           value={selectedQuantity}
-          onChange={(e) => setSelectedQuantity(e.target.value)}
+          onChange={(e) => {
+            const quantity = e.target.value;
+            setSelectedQuantity(quantity);
+            // Calculate the total cost whenever the quantity changes
+            setTotalCost(quantity * selectedProduct.price);
+          }}
           type="number"
           fullWidth
           style={{ marginBottom: "10px" }}
@@ -414,10 +447,10 @@ const Inventory = () => {
           </Select>
         </FormControl>
         
-        {/* Total Cost Calculation */}
+        {/* Display the Total Cost */}
         {selectedQuantity > 0 && (
           <p style={{ marginTop: "10px" }}>
-            Total Cost: {formatCurrency(selectedQuantity * selectedProduct.price)}
+            Total Cost: ₹{totalCost.toFixed(2)} {/* Showing the total cost with the rupee symbol */}
           </p>
         )}
       </div>
@@ -535,7 +568,8 @@ const Inventory = () => {
           onMouseEnter={(e) => e.target.style.background = '#1976D2'}
           onMouseLeave={(e) => e.target.style.background = 'linear-gradient(45deg, #2196F3, #1976D2)'}
         >
-          Pay
+      Pay   ₹{totalCost.toFixed(2)} {/* Format the price with the rupee symbol */}
+
         </Button>
           )}
         </DialogActions>

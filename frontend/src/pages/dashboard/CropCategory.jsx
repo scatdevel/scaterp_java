@@ -185,12 +185,16 @@ const CropCategory = () => {
 
   return (
     <Container maxWidth="xl">
+      <Typography variant="h6" textAlign={'center'} gutterBottom style={{ color: '#333' ,fontSize:'2rem', fontWeight:'bold'}} >
+       CROP CATEGORY
+      </Typography>
+
       <Button
         variant="contained"
         color="primary"
         startIcon={<AddIcon />}
         onClick={() => handleOpenDialog(null)} // Open dialog for adding
-        sx={{ mb: 2 }}
+        sx={{ mb: 3 }}
       >
         Add Category
       </Button>

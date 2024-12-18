@@ -87,7 +87,7 @@ const App = () => {
         path="/admin-dashboard/*"
         element={authenticated && isAdmin ? <AdminDashboard /> : <Navigate to="/auth/sign-in" />}
       >
-        <Route path="home" element={<Home />} />
+        {/* <Route path="home" element={<Home />} /> */}
         <Route path="crop-categories" element={<CropCategory />} />
         <Route path="farmers-list" element={<FarmersList />} />
         <Route path="user-details" element={<UserDetails />} />
@@ -98,10 +98,10 @@ const App = () => {
 
     <Route path="/outlet-dashboard/*" element={authenticated && isOutlet ? <OutletDashboard /> : <Navigate to="/auth/sign-in" />}>
   {/* Default route, will handle /outlet-dashboard as the home page */}
-  <Route index element={<Home />} />
+  {/* <Route index element={<Home />} /> */}
 
   {/* Other relative routes */}
-  <Route path="home" element={<Home />} />
+  {/* <Route path="home" element={<Home />} /> */}
   <Route path="inventory" element={<Inventory />} />
   <Route path="orders" element={<Orders />} />
   <Route path="customers" element={<Customers />} />

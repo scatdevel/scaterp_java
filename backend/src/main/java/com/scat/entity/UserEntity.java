@@ -75,9 +75,6 @@ public class UserEntity implements Serializable {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference
 	private List<Crop> crop = new ArrayList<Crop>();
-	
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Wallet wallet = new Wallet();
 
 	// Constructors, Getters, and Setters
 
@@ -90,14 +87,6 @@ public class UserEntity implements Serializable {
 		this.username = username;
 	}
 	
-
-	public Wallet getWallet() {
-		return wallet;
-	}
-
-	public void setWallet(Wallet wallet) {
-		this.wallet = wallet;
-	}
 
 	public String getHouseNumber() {
 		return houseNumber;
