@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   TextField, Button, Typography, Container, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, CircularProgress, Dialog,
@@ -20,8 +20,20 @@ const CropCategory = () => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
+  const [page, setPage] = useState(1);  // Current page
+  const categoriesPerPage = 10;  // Number of categories per page
+
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const totalPages = useMemo(() => Math.ceil(categories.length / categoriesPerPage), [categories, categoriesPerPage]);
+  const currentPageCategories = useMemo(() => categories.slice((page - 1) * categoriesPerPage, page * categoriesPerPage), [categories, page, categoriesPerPage]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+    }
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -182,38 +194,64 @@ const CropCategory = () => {
   };
 
   if (loading) return <CircularProgress />;
+const styles= {
+  tableRowEven: {
+    backgroundColor: '#f9f9f9',
+},
+tableRowOdd: {
+    backgroundColor: '#ffffff',
+},    paginationButtonDisabled: {
+  backgroundColor: '#cccccc', // Gray color for disabled button
+  cursor: 'not-allowed',
+},
+paginationButton: { 
+  textAlign: 'center',
+  padding: '5px 10px',  // Smaller padding for smaller button size
+  fontSize: '14px',     // Smaller font size
+  margin: '0 5px',      // Reduced margin between buttons
+  backgroundColor: '#ff6347', // Vibrant Tomato red for normal button
+  color: 'white',
+  border: 'none',
+  borderRadius: '20px', // Rounded corners for a more modern look
+  cursor: 'pointer',
+  transition: 'background-color 0.3s ease, transform 0.2s ease', // Smooth color and scale transition
+},
+}
 
   return (
     <Container maxWidth="xl">
-      <Typography variant="h6" textAlign={'center'} gutterBottom style={{ color: '#333' ,fontSize:'2rem', fontWeight:'bold'}} >
-       CROP CATEGORY
+      <Typography variant="h6" textAlign={'center'} gutterBottom style={{  fontSize:'2rem', fontWeight:'bold'}} >
+       CROP CATEGORIES
       </Typography>
 
       <Button
         variant="contained"
         color="primary"
+
+
         startIcon={<AddIcon />}
         onClick={() => handleOpenDialog(null)} // Open dialog for adding
-        sx={{ mb: 3 }}
+  sx={{ mb: 3, ml: 'auto', display: 'flex' }}
       >
         Add Category
       </Button>
       <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
-        <Table sx={{ width: '100%' }}>
+        <Table sx={{ width: '100%',  border: '1px solid #ddd'}}>
           <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Picture</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Actions</TableCell>
+            <TableRow  sx={ {backgroundColor: '#f2f2f2'}}  >
+              <TableCell sx={{border: '1px solid #ddd', textAlign:'center'}}>ID</TableCell>
+              <TableCell sx={{border: '1px solid #ddd', textAlign:'center'}}>Picture</TableCell>
+              <TableCell sx={{border: '1px solid #ddd', textAlign:'center'}}>Name</TableCell>
+              <TableCell sx={{border: '1px solid #ddd', textAlign:'center'}}>Description</TableCell>
+              <TableCell sx={{border: '1px solid #ddd', textAlign:'center'}}>Actions</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {categories.map((category) => (
-              <TableRow key={category.id}>
-                <TableCell>{category.id}</TableCell>
-                <TableCell>
+          <TableBody >
+            {currentPageCategories.map((category,index) => (
+              <TableRow key={category.id}
+              style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}>
+                <TableCell sx={{border: '1px solid #ddd', textAlign:'center'}}>{category.id}</TableCell>
+                <TableCell sx={{border: '1px solid #ddd'}}>
                   {category.picture ? (
                     <img
                       src={category.picture}
@@ -224,9 +262,9 @@ const CropCategory = () => {
                     <Typography>No Picture</Typography>
                   )}
                 </TableCell>
-                <TableCell>{category.name}</TableCell>
-                <TableCell>{category.description}</TableCell>
-                <TableCell>
+                <TableCell sx={{border: '1px solid #ddd', textAlign:'center'}}>{category.name}</TableCell>
+                <TableCell sx={{border: '1px solid #ddd', textAlign:'center'}}>{category.description}</TableCell>
+                <TableCell sx={{border: '1px solid #ddd'}}>
                   <Button
                     variant="contained"
                     onClick={() => handleOpenDialog(category)} // Pass category for editing
@@ -246,6 +284,34 @@ const CropCategory = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      
+        {/* Pagination Controls */}
+        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+          style={
+            page === 1
+              ? { ...styles.paginationButton, ...styles.paginationButtonDisabled }
+              : { ...styles.paginationButton }
+          }          >
+          Previous
+        </button>
+        <span style={{ margin: '0 20px' }}>
+          Page {page} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages}
+          style={
+            page === totalPages
+              ? { ...styles.paginationButton, ...styles.paginationButtonDisabled }
+              : { ...styles.paginationButton }
+          }          >
+          Next
+        </button>
+      </div> 
+          
 
       {/* Dialog for Adding/Editing Category */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
@@ -321,7 +387,9 @@ const CropCategory = () => {
         </DialogActions>
       </Dialog>
     </Container>
+    
   );
+
 };
 
 export default CropCategory;

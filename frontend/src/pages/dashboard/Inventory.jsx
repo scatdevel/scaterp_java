@@ -156,7 +156,7 @@ const Inventory = () => {
   const [withdrawalStatusDialogOpen, setWithdrawalStatusDialogOpen] = useState(false);
   const [withdrawalMessage, setWithdrawalMessage] = useState('');
   const [totalCost, setTotalCost] = useState(0);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
 
   
@@ -298,6 +298,9 @@ const Inventory = () => {
   
   const handleConfirmPurchase = async () => {
     try {
+
+      setErrorMessage("");
+
       // Prepare the request data
       const product = selectedProduct.cropName;
       const quantity = selectedQuantity;
@@ -330,6 +333,7 @@ const Inventory = () => {
       if (error.response) {
         // Server responded with a status other than 200-299
         console.error("Backend error:", error.response.data);
+        setErrorMessage(error.response.data.message || "An error occurred during the purchase."); // Set the error message from backend
       } else if (error.request) {
         // Request was made but no response received
         console.error("Network error:", error.request);
@@ -337,6 +341,7 @@ const Inventory = () => {
         // Something else happened
         console.error("Error:", error.message);
       }
+      
     }
   };
 
@@ -469,6 +474,7 @@ const Inventory = () => {
 )}
 
       {/* Wallet Modal */}
+      
       <Dialog
         open={walletDialogOpen}
         onClose={() => setWalletDialogOpen(false)}
@@ -493,6 +499,7 @@ const Inventory = () => {
   <h4 style={styles.walletText}>Wallet</h4>
   
   {/* Wallet Balance */}
+  
   <p style={styles.walletText}>
    {formatCurrency(walletBalance)}
   </p>
@@ -520,7 +527,11 @@ const Inventory = () => {
     placeholder="Enter amount"
   /> */}
 </div>
-
+{errorMessage && (
+        <div style={{ color: "red", padding: "10px", backgroundColor: "lightcoral", marginTop: "10px" }}>
+          <strong>Error:</strong> {errorMessage}
+        </div>
+      )}
 
           <Dialog open={withdrawalStatusDialogOpen} onClose={() => setWithdrawalStatusDialogOpen(false)}>
             <DialogTitle>Withdrawal Status</DialogTitle>

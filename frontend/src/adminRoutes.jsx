@@ -32,7 +32,7 @@ const adminRoutes = [
         element: <CropCategory /> 
       },
       { 
-        name: "Farmers List", 
+        name: "Farmer List", 
         path: "/farmers-list", 
         element: <FarmersList /> 
       },

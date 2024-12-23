@@ -225,6 +225,8 @@ const styles = {
     },
     addRoleContainer: {
         marginBottom: '20px',
+        display:'flex',
+        justifyContent:'flex-end'
     },
     addButton: {
         backgroundColor: '#007bff',
