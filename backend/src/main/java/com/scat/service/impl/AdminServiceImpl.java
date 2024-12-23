@@ -42,6 +42,28 @@ public class AdminServiceImpl implements AdminService {
 		initializeDefaultRoles();
 	}
 	
+//	@Override
+//	public UserEntity createUserByAdmin(UserDetailsRequestModel userDto) {
+//	    Optional<RoleEntity> roleOpt = roleRepository.findByName(userDto.getRoleName());
+//
+//	    if (!roleOpt.isPresent()) {
+//	        throw new RuntimeException("Role not found");
+//	    }
+//
+//	    RoleEntity role = roleOpt.get();
+//
+//	    // Hash the password before saving it
+//	    String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+//
+//	    UserEntity user = new UserEntity();
+//	    user.setUsername(userDto.getUsername());
+//	    user.setEmail(userDto.getEmail());
+//	    user.setEncryptedPassword(encodedPassword);
+//	    user.setRole(role);
+//
+//	    return userRepository.save(user);
+//	}
+	
 	
 	@Override
 	public UserDTO createUserByAdmin(UserDetailsRequestModel userDto) {
@@ -162,34 +184,6 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	
-<<<<<<< HEAD
-=======
-	
-	
-	@Override
-	public UserEntity createUserByAdmin(UserDetailsRequestModel userDto) {
-
-		Optional<RoleEntity> roleopt = roleRepository.findByName(userDto.getRoleName());
-
-		if (!roleopt.isEmpty()) {
-			throw new RuntimeException("Role Not Found For :" + roleopt);
-
-		}
-
-		RoleEntity role = roleopt.get();
-
-		String encryptedpassword = passwordEncoder.encode(userDto.getPassword());
-
-		UserEntity user = new UserEntity();
-		user.setEmail(userDto.getEmail());
-		user.setUsername(userDto.getUsername());
-		user.setEncryptedPassword(encryptedpassword);
-		user.setRole(role);
-
-		return userRepository.save(user);
-	}
-
->>>>>>> a3c9de4f4a3b3d9c3d27d9c1075c3cdce8639243
 	@Override
 	public UserEntity getAdminByEmail(String email) {
 		return userRepository.findByEmail(email).orElse(null);

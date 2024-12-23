@@ -53,19 +53,12 @@ public class UserServiceImpl implements UserService {
 	    UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
 	    userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
 
-<<<<<<< HEAD
 	    if (userDTO.getRole() != null) {
 	        RoleEntity role = roleRepository.findByName(userDTO.getRole())
 	                .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
 	        userEntity.setRole(role);
 	    }
-=======
-		if (userDTO.getRole() != null) {
-			RoleEntity role = roleRepository.findByName(userDTO.getRole())
-					.orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
-			userEntity.setRole(role);
-		}
->>>>>>> a3c9de4f4a3b3d9c3d27d9c1075c3cdce8639243
+
 
 	    UserEntity storedUserDetails = userRepository.save(userEntity);
 
