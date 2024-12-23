@@ -27,11 +27,7 @@ public class UserEntity implements Serializable {
 	private String email;
 
 	private String username;
-	
-	private String gender;
 
-	private String prefix;
-	
 	@Column(nullable = false)
 	private String encryptedPassword;
 
@@ -81,11 +77,15 @@ public class UserEntity implements Serializable {
 	private List<Crop> crop = new ArrayList<Crop>();
 	
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Wallet wallet = new Wallet();
+	private Wallet wallet;
 
 	// Constructors, Getters, and Setters
 
 	public UserEntity() {
+		
+	}
+	
+	public UserEntity(Long userId) {
 	}
 
 	public UserEntity(String email, String encryptedPassword, String username) {
@@ -94,21 +94,6 @@ public class UserEntity implements Serializable {
 		this.username = username;
 	}
 	
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getPrefix() {
-		return prefix;
-	}
-
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
 
 	public Wallet getWallet() {
 		return wallet;

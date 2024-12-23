@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 @Entity
 public class Wallet {
@@ -16,8 +18,11 @@ public class Wallet {
 
     private double balance;
 
+    private String currency;
+    
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private UserEntity user;
 
     public void deposit(double amount) {
@@ -54,6 +59,14 @@ public class Wallet {
 
 	public void setUser(UserEntity user) {
 		this.user = user;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+	
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
     
     

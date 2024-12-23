@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.scat.dto.UserDTO;
+import com.scat.dto.WalletDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
 import com.scat.repository.RoleRepository;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -30,38 +30,77 @@ public class UserServiceImpl implements UserService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final RoleRepository roleRepository;
 	private final JwtUtil jwtUtil;
+	private final WalletServiceImpl walletService;
 
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper,
-			BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil) {
+			BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil, WalletServiceImpl walletService) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.modelMapper = modelMapper;
-		this.jwtUtil =jwtUtil;
+		this.jwtUtil = jwtUtil;
+		this.walletService = walletService;
 
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
 
-
-
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
-		if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
-			throw new RuntimeException("Email already in use");
-		}
+	    if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
+	        throw new RuntimeException("Email already in use");
+	    }
 
-		UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
-		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
+	    UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
+	    userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
 
-		if (userDTO.getRole() != null) {
-			RoleEntity role = roleRepository.findByName(userDTO.getRole())
-					.orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
-			userEntity.setRole(role);
-		}
+	    if (userDTO.getRole() != null) {
+	        RoleEntity role = roleRepository.findByName(userDTO.getRole())
+	                .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
+	        userEntity.setRole(role);
+	    }
 
-		UserEntity storedUserDetails = userRepository.save(userEntity);
-		return modelMapper.map(storedUserDetails, UserDTO.class);
+	    UserEntity storedUserDetails = userRepository.save(userEntity);
+
+	    if (storedUserDetails.getWallet() == null) {
+	        walletService.createWallet(storedUserDetails.getId());
+	    }
+
+	    // Map the userEntity to UserDTO and include the wallet information
+	    UserDTO userResponse = modelMapper.map(storedUserDetails, UserDTO.class);
+	    
+	    // If wallet exists, map it to WalletDTO and include in response
+	    if (storedUserDetails.getWallet() != null) {
+	        WalletDTO walletDTO = new WalletDTO();
+	        walletDTO.setId(storedUserDetails.getWallet().getId());
+	        walletDTO.setBalance(storedUserDetails.getWallet().getBalance());
+	        walletDTO.setCurrency(storedUserDetails.getWallet().getCurrency());
+	        userResponse.setWallet(walletDTO);  // Include wallet in the response DTO
+	    }
+
+	    return userResponse;
 	}
+
+
+	
+//	@Override
+//	public UserDTO createUser(UserDTO userDTO) {
+//		if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
+//			throw new RuntimeException("Email already in use");
+//		}
+//
+//		UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
+//		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
+//
+//		if (userDTO.getRole() != null) {
+//			RoleEntity role = roleRepository.findByName(userDTO.getRole())
+//					.orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
+//			userEntity.setRole(role);
+//		}
+//
+//		UserEntity storedUserDetails = userRepository.save(userEntity);
+//
+//		return modelMapper.map(storedUserDetails, UserDTO.class);
+//	}
 
 	@Override
 	public UserEntity getUser(String emailOrUsername) {
@@ -97,8 +136,6 @@ public class UserServiceImpl implements UserService {
 		userEntity.setPhoneNumber(userDTO.getPhoneNumber());
 		userEntity.setEmail(userDTO.getEmail());
 		userEntity.setBio(userDTO.getBio());
-		userEntity.setGender(userDTO.getGender());
-		userEntity.setPrefix(userDTO.getPrefix());
 		userEntity.setDob(userDTO.getDob());
 		userEntity.setHouseNumber(userDTO.getHouseNumber());
 		userEntity.setStreet(userDTO.getStreet());
@@ -108,7 +145,6 @@ public class UserServiceImpl implements UserService {
 		userEntity.setState(userDTO.getState());
 		userEntity.setPincode(userDTO.getPincode());
 		userEntity.setCountry(userDTO.getCountry());
-
 
 		if (userDTO.getEncryptedPassword() != null && !userDTO.getEncryptedPassword().isEmpty()) {
 			userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDTO.getEncryptedPassword()));
@@ -217,16 +253,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Optional<UserEntity> getUserById(Long id) {
-		 return userRepository.findById(id);
+		return userRepository.findById(id);
 	}
 
 	@Override
 	public UserEntity getUserByJwtToken(String jwtToken) {
-	    String email = jwtUtil.extractEmail(jwtToken);
-	    UserEntity user = getUser(email);
-	    
-	    return user;
+		String email = jwtUtil.extractEmail(jwtToken);
+		UserEntity user = getUser(email);
+
+		return user;
 	}
-	
-	
+
 }

@@ -1,15 +1,18 @@
 package com.scat.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.scat.entity.Wallet;
-import com.scat.repository.UserRepository;
 import com.scat.service.impl.WalletServiceImpl;
 
 @RestController
@@ -19,8 +22,6 @@ public class WalletController {
 	@Autowired
 	private WalletServiceImpl walletService;
 	
-	@Autowired
-	private UserRepository userrepo;
 
 	@GetMapping("/{userId}")
 	public Wallet getWallet(@PathVariable Long userId) {
@@ -33,6 +34,30 @@ public class WalletController {
 		
 		return walletService.createWallet(userId);
 	}
+	 
+
+    @GetMapping("/balance")
+    public ResponseEntity<Double> getBalance(@RequestHeader("Authorization") String token) {
+        try {
+            // Call the service to get the balance
+            double balance = walletService.getBalance(token);
+            return ResponseEntity.ok(balance);  // Return the balance as a raw double
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(null);  // Unauthorized if token is invalid
+        }
+    }
+
+    // Endpoint to fetch the price of a crop by ID
+    @GetMapping("/crop/price/{cropId}")
+    public ResponseEntity<Double> getCropPrice(@PathVariable Long cropId) {
+        try {
+            double price = walletService.getCropPrice(cropId);
+            return ResponseEntity.ok(price);
+        } catch (IllegalArgumentException e) {
+            // Return a 404 Not Found if the crop is not found
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 	@PostMapping("/deposit/{userId}")
 	void deposit(@PathVariable Long userId, @RequestBody double amount) {
@@ -46,5 +71,6 @@ public class WalletController {
 
 		return walletService.withdraw(userId, amount);
 	}
+	
+	
 }
-

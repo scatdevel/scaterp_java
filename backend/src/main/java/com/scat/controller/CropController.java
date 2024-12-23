@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,6 +25,7 @@ public class CropController {
 
     @Autowired
     private CropServiceImpl cropService;
+    
     
     @Autowired
     private  UserServiceImpl service;
@@ -40,34 +39,31 @@ public class CropController {
     @PostMapping("/save")
     public Crop saveCrop(@RequestHeader("Authorization") String jwt,
     		@RequestParam("cropName") String cropName,
-                         @RequestParam("production") double production,
+                         @RequestParam("Production") double Production,
                          @RequestParam Long  categoryId,
+                         @RequestParam("description") String description,
                          @RequestParam("cultivationLandValue") double cultivationLandValue,
                          @RequestParam("landValueUnit") String landValueUnit,
                          @RequestParam("price") double price,
-                         @RequestParam("weatherData") String weatherData,
-                         @RequestParam("soilType") String soilType,
-                         @RequestParam("productionUnit") String productionUnit,
-                         @RequestParam("harvestDate") String harvestDate,
+                         @RequestParam("stock") int stock,
+                         @RequestParam("ProductionUnit") String ProductionUnit,
+                         @RequestParam("projectCost") double projectCost,
                          @RequestParam("projectionTimelineType") String projectionTimelineType,
                          @RequestParam("projectionTimelineValue") int projectionTimelineValue,
                          @RequestParam("image") MultipartFile image) throws IOException {
         Crop crop = new Crop();
         crop.setCropName(cropName);
-        crop.setProduction(production);
+        crop.setProduction(Production);
         crop.setCultivationLandValue(cultivationLandValue);
         crop.setLandValueUnit(landValueUnit);
-//        crop.setCost(BigDecimal.valueOf(cost));
         crop.setPrice(price);
+        crop.setStock(stock);
+        crop.setDescription(description);
+        crop.setProjectCost(projectCost);
         crop.setProjectionTimelineType(projectionTimelineType);
         crop.setProjectionTimelineValue(projectionTimelineValue);
-        crop.setProductionUnit(productionUnit);
-
+        crop.setProductionUnit(ProductionUnit);
         crop.setImage(image.getBytes());  
-        
-        // Set createdAt as the current date
-        crop.setCreatedAt(LocalDate.now()); // Automatically set the current date
-        
         
         UserEntity user = service.getUserByJwtToken(jwt);
         
@@ -83,12 +79,21 @@ public class CropController {
         return cropService.saveCrop(crop);
     }
 
-
     @GetMapping("/all")
     public List<Crop> getAllCrops() {
         return cropService.getAllCrops();
     }
+
+ // In your Spring Controller
     
+    @GetMapping("/get/byUser")
+    public List<Crop> getCropsByUser(@RequestHeader("Authorization") String token) {
+        UserEntity user = service.getUserByJwtToken(token); // Get the user from token (or get user ID directly)
+        
+       String userName= user.getUsername();
+        return cropService.getCropsByUser(userName); // Fetch crops for that user
+        
+    }
 
     @GetMapping("/{id}")
     public Crop getCropById(@PathVariable Long id) {

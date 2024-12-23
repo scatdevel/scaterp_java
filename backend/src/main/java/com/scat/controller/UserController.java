@@ -57,7 +57,8 @@ public class UserController {
 		if (userDetails.getRoleId() != null) {
 			userDto.setRoleId(userDetails.getRoleId());
 		}
-
+		
+		
 		UserDTO createdUser = userService.createUser(userDto);
 
 		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
@@ -119,18 +120,6 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving user information");
 		}
 	}
-	
-	@GetMapping("/profile")
-	public ResponseEntity<UserEntity> findUserByJwtToken(@RequestHeader("Authorization") String jwtToken) {
-	    // Call a service method that handles the logic to find the user by JWT
-	    UserEntity user = userService.getUserByJwtToken(jwtToken);
-	    
-	    if (user != null) {
-	        return ResponseEntity.ok(user);
-	    } else {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-	    }
-	}
 
 
 	@GetMapping("/image/{username}")
@@ -153,7 +142,7 @@ public class UserController {
 	    }
 	}
 
-	@GetMapping("/{email}")
+	@GetMapping("/find-by-email/{email}")
 	public ResponseEntity<UserEntity> getUser(@PathVariable String email) {
 		UserEntity userDto = userService.getUser(email);
 		if (userDto != null) {
@@ -176,18 +165,26 @@ public class UserController {
 		
 	}
 
-
 	@GetMapping("/all")
 	public ResponseEntity<List<UserRest>> getAllUsers() {
-		List<UserDTO> users = userService.getAllUsers();
-		List<UserRest> userRestList = users.stream().map(userDTO -> {
-			UserRest userRest = new UserRest();
-			BeanUtils.copyProperties(userDTO, userRest);
-			return userRest;
-		}).collect(Collectors.toList());
-		return ResponseEntity.ok(userRestList);
+	    List<UserDTO> users = userService.getAllUsers();
+	    
+	    // Filter users to include only those with the role 'farmer', avoiding null roles
+	    List<UserDTO> filteredUsers = users.stream()
+	            .filter(userDTO -> userDTO.getRole() != null && userDTO.getRole().contains("FARMER"))
+	            .collect(Collectors.toList());
+
+	    // Map filtered users to UserRest objects
+	    List<UserRest> userRestList = filteredUsers.stream().map(userDTO -> {
+	        UserRest userRest = new UserRest();
+	        BeanUtils.copyProperties(userDTO, userRest);
+	        return userRest;
+	    }).collect(Collectors.toList());
+	    
+	    return ResponseEntity.ok(userRestList);
 	}
 
+	
 	@PostMapping(value = "/uploadProfilePicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> uploadProfilePicture(@RequestParam("username") String username,
 			@RequestParam("file") MultipartFile file) {
@@ -220,6 +217,16 @@ public class UserController {
 		}
 	}
 
-	
+	@GetMapping("/profile")
+	public ResponseEntity<UserEntity> findUserByJwtToken(@RequestHeader("Authorization") String jwtToken) {
+	    // Call a service method that handles the logic to find the user by JWT
+	    UserEntity user = userService.getUserByJwtToken(jwtToken);
+	    
+	    if (user != null) {
+	        return ResponseEntity.ok(user);
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	    }
+	}
 	
 }

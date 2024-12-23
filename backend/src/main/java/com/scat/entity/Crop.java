@@ -1,9 +1,7 @@
 
 package com.scat.entity;
 
-import java.math.BigDecimal;
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.Base64;
 
 import javax.persistence.Column;
@@ -26,79 +24,22 @@ public class Crop {
 	private Long id;
 
 	private String cropName;
-	private double production;
+	private double Production;
 	private double cultivationLandValue;
 	private String landValueUnit;
-	 
-	private double price;
-
-	  
-	  private String projectionTimelineType;
-		private int projectionTimelineValue;
-
-		@Lob
-		private byte[] image;
-
-		private String productionUnit;
-		
-		private String weatherData; // New field for weather data
-
-	    private String soilType; // New field for soil type
-
-	    private Date harvestDate; // New field for harvest date
-
-
-	    public String getWeatherData() {
-			return weatherData;
-		}
-
-		public void setWeatherData(String weatherData) {
-			this.weatherData = weatherData;
-		}
-
-		public String getSoilType() {
-			return soilType;
-		}
-
-		public void setSoilType(String soilType) {
-			this.soilType = soilType;
-		}
-
-		public Date getHarvestDate() {
-			return harvestDate;
-		}
-
-		public void setHarvestDate(Date harvestDate) {
-			this.harvestDate = harvestDate;
-		}
-
-
-	public double getPrice() {
-			return price;
-		}
-
-		public void setPrice(double price) {
-			this.price = price;
-		}
-
-	public double getProduction() {
-		return production;
-	}
-
-	public void setProduction(double production) {
-		this.production = production;
-	}
-
+	private double projectCost;
+	private String projectionTimelineType;
+	private int projectionTimelineValue;
 	
+	//stock  data will change according to the product
+	private int stock;
+	private double price;
+	private String description;
 
+	@Lob
+	private byte[] image;
 
-	public String getProductionUnit() {
-		return productionUnit;
-	}
-
-	public void setProductionUnit(String productionUnit) {
-		this.productionUnit = productionUnit;
-	}
+	private String productionUnit;
 
 	@ManyToOne
 	@JoinColumn(name = "user_Id", nullable = false)
@@ -110,7 +51,8 @@ public class Crop {
 	@JsonBackReference
 	private CropCategory category;
 
-	  private LocalDate createdAt; 
+	private Date createdAt;
+
 	//gets and sets
 	public CropCategory getCategory() {
 		return category;
@@ -122,6 +64,14 @@ public class Crop {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public byte[] getImage() {
@@ -147,10 +97,37 @@ public class Crop {
 	public String getCropName() {
 		return cropName;
 	}
+	
+
+	public int getStock() {
+		return stock;
+	}
+
+	public String getProductionUnit() {
+		return productionUnit;
+	}
+
+	public void setProductionUnit(String productionUnit) {
+		this.productionUnit = productionUnit;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
 
 	public void setCropName(String cropName) {
 		this.cropName = cropName;
 	}
+
+
+	public double getProduction() {
+		return Production;
+	}
+
+	public void setProduction(double production) {
+		Production = production;
+	}
+
 
 	public double getCultivationLandValue() {
 		return cultivationLandValue;
@@ -166,6 +143,23 @@ public class Crop {
 
 	public void setLandValueUnit(String landValueUnit) {
 		this.landValueUnit = landValueUnit;
+	}
+
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public double getProjectCost() {
+		return projectCost;
+	}
+
+	public void setProjectCost(double projectCost) {
+		this.projectCost = projectCost;
 	}
 
 	public String getProjectionTimelineType() {
@@ -184,17 +178,15 @@ public class Crop {
 		this.projectionTimelineValue = projectionTimelineValue;
 	}
 
-	
-
-	   public LocalDate getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(LocalDate createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public String getImageUrl() {
+	   public String getImageUrl() {
 	        if (image != null) {
 	            return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(image);
 	        }
