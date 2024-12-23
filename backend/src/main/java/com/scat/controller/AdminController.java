@@ -1,9 +1,11 @@
 
 package com.scat.controller;
 import com.scat.dto.UserDTO;
+import com.scat.dto.WalletDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
 import com.scat.model.request.UserDetailsRequestModel;
+import com.scat.repository.RoleRepository;
 import com.scat.repository.UserRepository;
 import com.scat.service.AdminService;
 import com.scat.service.impl.AdminServiceImpl;
@@ -26,33 +28,94 @@ public class AdminController {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final AdminServiceImpl serviceImpl;
-
+    private final RoleRepository roleRepo;
 
     @Autowired
-    public AdminController(AdminService adminService, AdminServiceImpl serviceImpl, JwtUtil jwtUtil, UserRepository userRepository) {
+    public AdminController(AdminService adminService, RoleRepository roleRepo,AdminServiceImpl serviceImpl, JwtUtil jwtUtil, UserRepository userRepository) {
         this.adminService = adminService;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.serviceImpl = serviceImpl;
-    }
-
-    @PostMapping("/createuser")
-    public ResponseEntity<UserEntity> createUser(@RequestBody UserDetailsRequestModel userdt){
-    	try {
-    		UserEntity createdUser = serviceImpl.createUserByAdmin(userdt);
-    		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    	}catch (Exception e) {
-    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-    	}
-    	
+        this.roleRepo = roleRepo;
     }
     
+//    @PostMapping("/createuser")
+//    public ResponseEntity<UserDTO> createUserByAdmin(@RequestBody UserDetailsRequestModel userdt) {
+//
+//        // Initialize UserDTO from request model
+//        UserDTO userDto = new UserDTO();
+//        userDto.setEmail(userdt.getEmail());
+//        userDto.setUsername(userdt.getUsername());
+//        userDto.setEncryptedPassword(userdt.getPassword());
+//
+//        // Check if the role name is provided in the request model
+//        if (userdt.getRole() != null) {
+//            // Fetch the RoleEntity based on role name
+//            RoleEntity role = roleRepo.findByName(userdt.getRole().getName())
+//                    .orElseThrow(() -> new RuntimeException("Role not found with name: " + userdt.getRole()));
+//            // Set the role in the UserDTO
+//         
+//            userDto.setRole(role);
+//        }
+//
+//        // Call the service layer to create the user
+//        UserDTO savedUser = serviceImpl.createUserByAdmin(userDto);
+//
+//        // Return the saved user with HTTP status CREATED
+//        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+//    }
+    
+//    @PostMapping("/createuser")    //---------------------
+//    public ResponseEntity<UserDTO> createUserByAdmin(@RequestBody UserDetailsRequestModel userdt) {
+//
+//        // Initialize UserDTO from request model
+//        UserDTO userDto = new UserDTO();
+//        userDto.setEmail(userdt.getEmail());
+//        userDto.setUsername(userdt.getUsername());
+//        userDto.setEncryptedPassword(userdt.getPassword());
+//
+//        // Check if the role name is provided in the request model
+//        if (userdt.getRole() != null && userdt.getRole().getName() != null) {
+//            // Fetch the RoleEntity based on role name
+//            RoleEntity role = roleRepo.findByName(userdt.getRole().getName())
+//                    .orElseThrow(() -> new RuntimeException("Role not found with name: " + userdt.getRole().getName()));
+//        
+//            // Set the role in the UserDTO
+//            userDto.setRole(role);
+//        }
+//
+//        // Call the service layer to create the user
+//        UserDTO savedUser = serviceImpl.createUserByAdmin(userDto);
+//
+//        // Return the saved user with HTTP status CREATED
+//        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+//    }
+    
+    @PostMapping("/createuser")
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDetailsRequestModel userDto) {
+        try {
+            UserDTO createdUser = serviceImpl.createUserByAdmin(userDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @PutMapping("/add-balance")
+	public double addBalance(@RequestParam Long userId, @RequestParam double balance) {
+		
+		return serviceImpl.setBalanceByAdmin(userId, balance);
+	}
+
     @PostMapping("/login")
     public ResponseEntity<String> adminLogin(@RequestBody LoginRequest loginRequest) {
         try {
             boolean isValid = adminService.validateAdmin(loginRequest.getEmail(), loginRequest.getPassword());
             if (isValid) {
-                String token = jwtUtil.generateToken(loginRequest.getEmail(), Set.of("ADMIN"));
+            	
+            String role = adminService.getUserRole(loginRequest.getEmail());
+            	
+                String token = jwtUtil.generateToken(loginRequest.getEmail(), Set.of(role));
                 return ResponseEntity.ok("{\"token\":\"" + token + "\", \"role\":\"ADMIN\"}");
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"Invalid username or password\"}");
@@ -81,6 +144,7 @@ public class AdminController {
         }
     }
 
+    
 
     @GetMapping("/roles")
     public ResponseEntity<?> getAllRoles() {
@@ -136,7 +200,6 @@ public class AdminController {
     }
 
 
-    
     @PostMapping("/roles/create")
     public ResponseEntity<String> createRole(@RequestBody Map<String, String> body) {
         String roleName = body.get("roleName");

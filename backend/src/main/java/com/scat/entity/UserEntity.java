@@ -75,10 +75,17 @@ public class UserEntity implements Serializable {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference
 	private List<Crop> crop = new ArrayList<Crop>();
+	
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Wallet wallet;
 
 	// Constructors, Getters, and Setters
 
 	public UserEntity() {
+		
+	}
+	
+	public UserEntity(Long userId) {
 	}
 
 	public UserEntity(String email, String encryptedPassword, String username) {
@@ -87,6 +94,14 @@ public class UserEntity implements Serializable {
 		this.username = username;
 	}
 	
+
+	public Wallet getWallet() {
+		return wallet;
+	}
+
+	public void setWallet(Wallet wallet) {
+		this.wallet = wallet;
+	}
 
 	public String getHouseNumber() {
 		return houseNumber;

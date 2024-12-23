@@ -32,7 +32,10 @@ public interface AdminService {
 	void deleteRoleFromUser(String email);
 
 	String getUserRole(String email);
+	
+//	UserEntity createUserByAdmin(UserDTO userDto);
 
-	UserEntity createUserByAdmin(UserDetailsRequestModel userDto);
+	RoleEntity getRoleById(Long id);
 
+	UserDTO createUserByAdmin(UserDetailsRequestModel userDt);
 }

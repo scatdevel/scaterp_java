@@ -55,17 +55,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 
                 .antMatchers("/users/admin/admin-dashboard").hasRole("ADMIN")
                 .antMatchers("/users/user-dashboard").hasRole("Farmer")
-                .antMatchers("/users/admin/outlet-dashboard").hasRole("OUTLET")
-                .antMatchers("/users/admin/godown-dashboard").hasRole("GODOWN")
+                .antMatchers("/users/outlet-dashboard").hasRole("OUTLET")
+                .antMatchers("/users/godown-dashboard").hasRole("GODOWN").antMatchers("/dashboard/**").hasAnyRole("ADMIN","OUTLET","Farmer","GODOWN")
                 
-                .antMatchers("/crops/categories/get/all", "/crops/categories/add").permitAll()
+                .antMatchers("/crops/categories/get/all","/users/crops/get/byUser", "/crops/categories/add").permitAll()
                 .antMatchers("/crops/categories/update/{id}", "/crops/categories/delete/{id}").permitAll()
-                .antMatchers("/users/admin/login").permitAll()
+                .antMatchers("/users/admin/login","/users/wallet/{userId}").permitAll()
+                .antMatchers("/users/admin/add-balance", "/users/find-by-email/{email}").permitAll()
+
                 .antMatchers("/users/admin/create").hasRole("ADMIN")
-                .antMatchers("/users/admin/create", "/users/admin/roles", "/users/profile").permitAll()
-                .antMatchers("/users/admin/**/**", "/users/admin/createuser").permitAll()
+                .antMatchers("/users/admin/create", "/users/profile").permitAll()
+                .antMatchers("/users/wallet/deposit/{userId}", "/users/wallet/createwallet/{userId}", "/user/wallet/balance", "/users/wallet/add-balance").permitAll()
+                .antMatchers("/users/transaction/buy").permitAll()
+
+                .antMatchers("/users/admin/**/**","/users/admin/createuser", "/users/outlet/login").permitAll()
                 .antMatchers("/roles/all").permitAll()
-                .antMatchers("/users/login","/users/outlet/login", "/users/all", "/users/{username}", "/users/image/{username}").permitAll()
+                .antMatchers("/users/wallet/crop/price/{cropId}").permitAll()
+                 .antMatchers("/users/login", "/users/all","/users/outlet/login",  "/users/{username}", "/users/image/{username}").permitAll()
                 .antMatchers("/users/api/{email}").permitAll()
                 .antMatchers("/users/get/{id}", "/users/crops/all").permitAll() // Ensure this line is accessible
                 .anyRequest().authenticated() // Any other requests require authentication

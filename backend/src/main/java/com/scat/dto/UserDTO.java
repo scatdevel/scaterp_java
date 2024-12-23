@@ -1,35 +1,35 @@
-
 package com.scat.dto;
 
 import java.sql.Date;
 
 public class UserDTO {
+    private long id;
+    private String email;
+    private String username;
+    private String encryptedPassword;
+    private String fullName;
+    private Long phoneNumber;
+    private String bio;
+    private String gender;
+    private String prefix;
+    private String role;
+    private Long roleId;
+    private String profilePictureUrl;
+    private Date dob;
+    private String resetToken;
+    private Long resetTokenExpiration;
+    
+    private String houseNumber;
+    private String street;
+    private String landmark;
+    private String locality;
+    private String city;
+    private String state;
+    private Long pincode;
+    private String country;
 
-	private long id;
-	private String email;
-	private String username;
-	private String encryptedPassword; // Handle securely
-	private String fullName;
-	private Long phoneNumber;
-	private String bio;
-	private String role; // Consider if RoleDTO is required or roleId would suffice
-	private Long roleId; // Optional: Use if needed for role ID references
-	private String profilePictureUrl;
-	private Date dob;
-	private String resetToken;
-	private Long resetTokenExpiration;
-	
-	private String houseNumber;
-	private String street;
-	private String landmark;
-	private String locality;
-	private String city;
-	private String state;
-	private Long pincode;
-	private String country;
-	
-	
-	// Getters and Setters
+    // Add wallet as part of the response DTO
+    private WalletDTO wallet;  // A new class that maps wallet data
 
 	public long getId() {
 		return id;
@@ -50,14 +50,113 @@ public class UserDTO {
 	public String getUsername() {
 		return username;
 	}
-	
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getEncryptedPassword() {
+		return encryptedPassword;
+	}
+
+	public void setEncryptedPassword(String encryptedPassword) {
+		this.encryptedPassword = encryptedPassword;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public Long getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(Long phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getBio() {
+		return bio;
+	}
+
+	public void setBio(String bio) {
+		this.bio = bio;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public Long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+
+	public String getProfilePictureUrl() {
+		return profilePictureUrl;
+	}
+
+	public void setProfilePictureUrl(String profilePictureUrl) {
+		this.profilePictureUrl = profilePictureUrl;
+	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public String getResetToken() {
+		return resetToken;
+	}
+
+	public void setResetToken(String resetToken) {
+		this.resetToken = resetToken;
+	}
+
+	public Long getResetTokenExpiration() {
+		return resetTokenExpiration;
+	}
+
+	public void setResetTokenExpiration(Long resetTokenExpiration) {
+		this.resetTokenExpiration = resetTokenExpiration;
+	}
 
 	public String getHouseNumber() {
 		return houseNumber;
 	}
 
-	public void setHouseNumber(String house_No) {
-		this.houseNumber = house_No;
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
 	}
 
 	public String getStreet() {
@@ -116,88 +215,14 @@ public class UserDTO {
 		this.country = country;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public WalletDTO getWallet() {
+		return wallet;
 	}
 
-	public String getEncryptedPassword() {
-		return encryptedPassword;
+	public void setWallet(WalletDTO wallet) {
+		this.wallet = wallet;
 	}
-
-	public void setEncryptedPassword(String encryptedPassword) {
-		this.encryptedPassword = encryptedPassword;
-	}
-
-	public String getFullName() {
-		return fullName;
-	}
-
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
-
-	public Long getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public void setPhoneNumber(Long phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public String getBio() {
-		return bio;
-	}
-
-	public void setBio(String bio) {
-		this.bio = bio;
-	}
-
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-
-	public Long getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
-	}
-
-	public String getProfilePictureUrl() {
-		return profilePictureUrl;
-	}
-
-	public void setProfilePictureUrl(String profilePictureUrl) {
-		this.profilePictureUrl = profilePictureUrl;
-	}
-
-	public Date getDob() {
-		return dob;
-	}
-
-	public void setDob(Date dob) {
-		this.dob = dob;
-	}
-
-	public String getResetToken() {
-		return resetToken;
-	}
-
-	public void setResetToken(String resetToken) {
-		this.resetToken = resetToken;
-	}
-
-	public Long getResetTokenExpiration() {
-		return resetTokenExpiration;
-	}
-
-	public void setResetTokenExpiration(Long resetTokenExpiration) {
-		this.resetTokenExpiration = resetTokenExpiration;
-	}
+    
+    // Getters and Setters for these fields
+    
 }

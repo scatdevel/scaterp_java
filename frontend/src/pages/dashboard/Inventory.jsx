@@ -188,7 +188,7 @@ const Inventory = () => {
         console.log("Fetching crops from:", "http://localhost:8080/users/crops/all");
 
         const response = await axios.get("http://localhost:8080/users/crops/all", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token} `},
         });
         setCrops(response.data);
       } catch (error) {
@@ -244,9 +244,11 @@ const Inventory = () => {
   const handlePriceChange = (event, newRange) => setPriceRange(newRange);
   const handleProductClick = (product) => setSelectedProduct(product);
   const handleCloseProductDialog = () => setSelectedProduct(null);
-  //const handleBuyNowClick = () => setWalletDialogOpen(true);
+  // const handleBuyNowClick = () => setWalletDialogOpen(true);
 
   const handleWithdrawAmountChange = (e) => setWithdrawAmount(e.target.value);
+
+
 
   const handleWithdraw = async () => {
     if (withdrawAmount <= 0) {
@@ -337,7 +339,6 @@ const Inventory = () => {
       }
     }
   };
-  
 
   return (
     <div style={styles.container}>
@@ -362,6 +363,7 @@ const Inventory = () => {
             </option>
           ))}
         </select>
+
 
         <div style={styles.sliderContainer}>
           <div style={styles.sliderLabel}>
