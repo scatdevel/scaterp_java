@@ -72,13 +72,13 @@ export function Configurator() {
       <div className="py-4 px-6">
         <div className="mb-12">
           <div className="mt-3 flex flex-col px-6">
-            <Button
+            {/* <Button
               variant={sidenavType === "white" ? "gradient" : "outlined"}
               onClick={() => setSidenavType(dispatch, "none")}
             >
               <FontAwesomeIcon icon={faLock} className="mr-2" />
               Privacy
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className="mb-12">

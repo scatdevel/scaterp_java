@@ -10,30 +10,30 @@ const adminRoutes = [
   {
     layout: "admin-dashboard",
     pages: [
-      { 
-        name: "Home", 
-        path: "/admin-dashboard/home", 
-        element: <Home /> 
-      },
+      // { 
+      //   name: "Home", 
+      //   path: "/admin-dashboard/home", 
+      //   element: <Home /> 
+      // },
 
       { 
         name: "Roles", 
-        path: "/admin-dashboard/roles-page", // Use relative path
+        path: "/roles-page", // Use relative path
         element: <RolesPage /> 
       },
       { 
         name: "User Details", // New User List page
-        path: "/admin-dashboard/user-details", 
+        path: "/user-details", 
         element: <UserDetails /> 
       },
       { 
         name: "Crop Categories",
-        path: "/admin-dashboard/crop-categories", 
+        path: "/crop-categories", 
         element: <CropCategory /> 
       },
       { 
         name: "Farmers List", 
-        path: "/admin-dashboard/farmers-list", 
+        path: "/farmers-list", 
         element: <FarmersList /> 
       },
       // Add more admin pages here

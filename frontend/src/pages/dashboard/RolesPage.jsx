@@ -98,7 +98,7 @@ const RolesPage = () => {
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.heading}>Roles</h1>
+            <h1 style={styles.heading}>ROLES</h1>
             {loading && <p style={styles.loading}>Loading...</p>}
             {error && <p style={styles.error}>{error}</p>}
             {successMessage && <p style={styles.success}>{successMessage}</p>}
@@ -180,8 +180,10 @@ const styles = {
         padding: '20px',
     },
     heading: {
-        fontSize: '24px',
+        textAlign:'center',
+        fontSize: '2rem',
         marginBottom: '20px',
+        fontWeight:'bold'
     },
     loading: {
         color: 'blue',

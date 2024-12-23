@@ -27,9 +27,61 @@ public class Crop {
 	private double Production;
 	private double cultivationLandValue;
 	private String landValueUnit;
+<<<<<<< HEAD
 	private double projectCost;
 	private String projectionTimelineType;
 	private int projectionTimelineValue;
+=======
+	  @Column(precision = 15, scale = 2)  // Use BigDecimal for cost
+	    private BigDecimal cost;
+	  
+	  private String projectionTimelineType;
+		private int projectionTimelineValue;
+
+	
+
+		@Lob
+		private byte[] image;
+
+		private String productionUnit;
+		
+		private String weatherData; // New field for weather data
+
+
+	    private String soilType; // New field for soil type
+
+	    private Date harvestDate; // New field for harvest date
+
+
+	    public String getWeatherData() {
+			return weatherData;
+		}
+
+		public void setWeatherData(String weatherData) {
+			this.weatherData = weatherData;
+		}
+
+		public String getSoilType() {
+			return soilType;
+		}
+
+		public void setSoilType(String soilType) {
+			this.soilType = soilType;
+		}
+
+		public Date getHarvestDate() {
+			return harvestDate;
+		}
+
+		public void setHarvestDate(Date harvestDate) {
+			this.harvestDate = harvestDate;
+		}
+
+		public BigDecimal getCost() {
+			return cost;
+		}
+
+>>>>>>> a3c9de4f4a3b3d9c3d27d9c1075c3cdce8639243
 	
 	//stock  data will change according to the product
 	private int stock;

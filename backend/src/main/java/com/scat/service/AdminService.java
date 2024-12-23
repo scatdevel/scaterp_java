@@ -33,7 +33,12 @@ public interface AdminService {
 
 	String getUserRole(String email);
 
+<<<<<<< HEAD
 	UserDTO createUserByAdmin(UserDetailsRequestModel userDto);
 
 	RoleEntity getRoleById(Long id);
+=======
+	UserEntity createUserByAdmin(UserDetailsRequestModel userDto);
+
+>>>>>>> a3c9de4f4a3b3d9c3d27d9c1075c3cdce8639243
 }

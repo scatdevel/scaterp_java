@@ -155,14 +155,38 @@ const Inventory = () => {
   const [withdrawAmount, setWithdrawAmount] = useState(""); // State to track the withdraw amount
   const [withdrawalStatusDialogOpen, setWithdrawalStatusDialogOpen] = useState(false);
   const [withdrawalMessage, setWithdrawalMessage] = useState('');
+  const [totalCost, setTotalCost] = useState(0);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+
   
   const token = useSelector((state) => state.auth.token);
   const userId = useSelector((state) => state.auth.userId);  // Assuming userId is in the store
+
+  const handleError = (error) => {
+    let message = '';
+
+    if (error.response) {
+      // Server responded with a status other than 200-299
+      message = `Backend error: ${error.response.data}`;
+    } else if (error.request) {
+      // Request was made but no response received
+      message = `Network error: ${error.request}`;
+    } else {
+      // Something else happened
+      message = `Error: ${error.message}`;
+    }
+
+    // Update the error message state
+    setErrorMessage(message);
+  };
 
   // Fetch crops and categories on load
   useEffect(() => {
     const fetchCrops = async () => {
       try {
+        console.log("Fetching crops from:", "http://localhost:8080/users/crops/all");
+
         const response = await axios.get("http://localhost:8080/users/crops/all", {
           headers: { Authorization: `Bearer ${token} `},
         });
@@ -198,9 +222,15 @@ const Inventory = () => {
         console.error("Error fetching wallet balance:", error);
       }
     };
-
     fetchWalletBalance();
   }, [token]);
+  
+  useEffect(() => {
+    console.log("Wallet Balance updated:", walletBalance); // Check if the balance is updated
+  }, [walletBalance]);
+  
+  
+  
 
   // Filtered crops based on search query and category
   const filteredCrops = crops.filter(
@@ -214,16 +244,11 @@ const Inventory = () => {
   const handlePriceChange = (event, newRange) => setPriceRange(newRange);
   const handleProductClick = (product) => setSelectedProduct(product);
   const handleCloseProductDialog = () => setSelectedProduct(null);
-  const handleBuyNowClick = () => setWalletDialogOpen(true);
+  // const handleBuyNowClick = () => setWalletDialogOpen(true);
 
   const handleWithdrawAmountChange = (e) => setWithdrawAmount(e.target.value);
 
-  const getTotalPrice = () => {
-    const pricePerUnit = selectedProduct?.projectedProduction || 0;
-    const quantity = parseFloat(selectedQuantity) || 0;
-    const conversionFactor = unitConversion[unit];
-    return pricePerUnit * quantity * conversionFactor;
-  };
+
 
   const handleWithdraw = async () => {
     if (withdrawAmount <= 0) {
@@ -252,13 +277,66 @@ const Inventory = () => {
     setWithdrawalStatusDialogOpen(true);
   };
 
-  const handleConfirmPurchase = () => {
-    const totalPrice = getTotalPrice();
+
+
+  const handleBuyNowClick = () => {
+    const totalPrice = getTotalPrice(); // Get total price based on selected quantity and unit
     if (totalPrice <= walletBalance) {
-      setWalletBalance(walletBalance - totalPrice); // Deduct from wallet
-      setPurchaseDialogOpen(true); // Open confirmation dialog
+      setWalletDialogOpen(true);  // Open wallet dialog if sufficient balance
     } else {
-      alert("Insufficient balance.");
+      alert("Insufficient balance. Please add funds to your wallet.");
+    }
+  };
+  
+  // Function to calculate the total price based on quantity and unit
+  const getTotalPrice = () => {
+    const pricePerUnit = selectedProduct?.projectedProduction || 0;
+    const quantity = parseFloat(selectedQuantity) || 0;
+    const conversionFactor = unitConversion[unit];
+    return pricePerUnit * quantity * conversionFactor; // Multiply by the conversion factor (kg to tons, etc.)
+  };
+  
+  const handleConfirmPurchase = async () => {
+    try {
+      // Prepare the request data
+      const product = selectedProduct.cropName;
+      const quantity = selectedQuantity;
+  
+      // Make the API call to buy the product
+      const response = await axios.post(
+        "http://localhost:8080/users/transaction/buy",  // Update with your backend URL
+        null,  // Body is sent using URL params
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Pass the authorization token
+          },
+          params: {
+            product,   // Product name (selectedProduct.cropName)
+            quantity,  // Quantity to purchase
+          },
+        }
+      );
+  
+      // Handle successful purchase
+      console.log("Purchase successful:", response.data);
+  
+      // Open the purchase success dialog
+      setPurchaseDialogOpen(true);
+  
+      // Close the wallet dialog
+      setWalletDialogOpen(false);
+  
+    } catch (error) {
+      if (error.response) {
+        // Server responded with a status other than 200-299
+        console.error("Backend error:", error.response.data);
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error("Network error:", error.request);
+      } else {
+        // Something else happened
+        console.error("Error:", error.message);
+      }
     }
   };
 
@@ -334,49 +412,61 @@ const Inventory = () => {
 
       {/* Product Details Modal */}
       {selectedProduct && (
-        <Dialog open={true} onClose={handleCloseProductDialog}>
-          <DialogTitle>{selectedProduct.cropName}</DialogTitle>
-          <DialogContent>
-            <img
-              src={selectedProduct.imageUrl || "defaultImage.jpg"}
-              alt={selectedProduct.cropName}
-              style={{ width: "100%", borderRadius: "5px" }}
-            />
-            <p>Price: {formatCurrency(selectedProduct.price)}</p>
-            <p>{selectedProduct.description || "No description available."}</p>
-            <div style={styles.quantitySelector}>
-              <TextField
-                label="Enter Quantity"
-                value={selectedQuantity}
-                onChange={(e) => setSelectedQuantity(e.target.value)}
-                type="number"
-                fullWidth
-                style={{ marginBottom: "10px" }}
-              />
-              <FormControl fullWidth>
-                <InputLabel>Unit</InputLabel>
-                <Select
-                  value={unit}
-                  onChange={(e) => setUnit(e.target.value)}
-                  label="Unit"
-                >
-                  <MenuItem value="kg">Kg</MenuItem>
-                  <MenuItem value="tons">Tons</MenuItem>
-                  <MenuItem value="pounds">Pounds</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleBuyNowClick} color="primary">
-              Buy Now
-            </Button>
-            <Button onClick={handleCloseProductDialog} color="secondary">
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+  <Dialog open={true} onClose={handleCloseProductDialog}>
+    <DialogTitle>{selectedProduct.cropName}</DialogTitle>
+    <DialogContent>
+      <img
+        src={selectedProduct.imageUrl || "defaultImage.jpg"}
+        alt={selectedProduct.cropName}
+        style={{ width: "100%", borderRadius: "5px" }}
+      />
+      <p>Price: {formatCurrency(selectedProduct.price)}</p>
+      <p>{selectedProduct.description || "No description available."}</p>
+      <div style={styles.quantitySelector}>
+        <TextField
+          label="Enter Quantity"
+          value={selectedQuantity}
+          onChange={(e) => {
+            const quantity = e.target.value;
+            setSelectedQuantity(quantity);
+            // Calculate the total cost whenever the quantity changes
+            setTotalCost(quantity * selectedProduct.price);
+          }}
+          type="number"
+          fullWidth
+          style={{ marginBottom: "10px" }}
+        />
+        <FormControl fullWidth>
+          <InputLabel>Unit</InputLabel>
+          <Select
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+            label="Unit"
+          >
+            <MenuItem value="kg">Kg</MenuItem>
+            <MenuItem value="tons">Tons</MenuItem>
+            <MenuItem value="pounds">Pounds</MenuItem>
+          </Select>
+        </FormControl>
+        
+        {/* Display the Total Cost */}
+        {selectedQuantity > 0 && (
+          <p style={{ marginTop: "10px" }}>
+            Total Cost: ₹{totalCost.toFixed(2)} {/* Showing the total cost with the rupee symbol */}
+          </p>
+        )}
+      </div>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={handleBuyNowClick} color="primary">
+        Buy Now
+      </Button>
+      <Button onClick={handleCloseProductDialog} color="secondary">
+        Close
+      </Button>
+    </DialogActions>
+  </Dialog>
+)}
 
       {/* Wallet Modal */}
       <Dialog
@@ -406,15 +496,15 @@ const Inventory = () => {
   <p style={styles.walletText}>
    {formatCurrency(walletBalance)}
   </p>
-  <p>
+  {/* <p>
       {getTotalPrice() <= walletBalance
         ? `Total Price: ${formatCurrency(getTotalPrice())}`
         : "Insufficient balance. Please add funds."}
-    </p>
+    </p> */}
 
   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '300px' }}>
   {/* Input Field */}
-  <TextField
+  {/* <TextField
     variant="outlined"
     size="small"
     style={{
@@ -428,7 +518,7 @@ const Inventory = () => {
       },
     }}
     placeholder="Enter amount"
-  />
+  /> */}
 </div>
 
 
@@ -480,7 +570,8 @@ const Inventory = () => {
           onMouseEnter={(e) => e.target.style.background = '#1976D2'}
           onMouseLeave={(e) => e.target.style.background = 'linear-gradient(45deg, #2196F3, #1976D2)'}
         >
-          Pay
+      Pay   ₹{totalCost.toFixed(2)} {/* Format the price with the rupee symbol */}
+
         </Button>
           )}
         </DialogActions>
