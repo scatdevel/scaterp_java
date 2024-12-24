@@ -267,6 +267,7 @@ paginationButton: {
                 <TableCell sx={{border: '1px solid #ddd'}}>
                   <Button
                     variant="contained"
+                    color='success'
                     onClick={() => handleOpenDialog(category)} // Pass category for editing
                   >
                     Edit

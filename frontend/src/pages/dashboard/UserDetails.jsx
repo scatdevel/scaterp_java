@@ -1802,6 +1802,65 @@ useEffect(() => {
             setLoading(false);
         }
     };
+
+    const getUserByEmail = async (email) => {
+
+        try {
+          // Log the email that is being passed into the function
+          console.log('Fetching user details for email:', email);
+      
+          // Make a GET request with the email as a query parameter
+          const response = await axios.get(
+            `http://localhost:8080/users/admin/get-user-by-email/${email}`,
+            {
+              params: {
+                email: email, // Pass email as a query parameter
+              },
+            }
+          );
+      
+          // Log the response from the server
+          console.log('User details fetched successfully:', response.data);
+      
+          return response.data; // Return the user data
+        } catch (error) {
+          // Log the error if there was an issue with the request
+          console.error('Error fetching user by email:', error);
+      
+          throw error; // You can handle this further depending on your application
+        }
+      };
+      
+      // Function that handles the click event and calls both functions
+const handleAddBalanceClick = async () => {
+    if (!dialogUserEmail) {
+      setError('Email is not defined.');
+      console.log('dialogUserEmail is empty or undefined');
+      return;
+    }
+  
+    // Log the dialogUserEmail to verify if it's being passed correctly
+    console.log('Dialog user email:', dialogUserEmail);
+  
+    try {
+      // 1. Get user by email
+      const fetchedUser = await getUserByEmail(dialogUserEmail);
+      
+      // Log the fetched user details to check if the API call was successful
+      console.log('Fetched user:', fetchedUser);
+  
+      // 2. Open the wallet dialog and pass the fetched user
+      openAddWalletDialog(fetchedUser);
+      
+      // Optionally, you can set the userId or any other user details
+      setUserId(fetchedUser.userId);
+  
+    } catch (error) {
+      console.error('Error in fetching user or opening dialog:', error);
+    }
+  };
+
+
     const handleAddWalletBalance = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from localStorage or any other place it's stored
     
@@ -1819,6 +1878,7 @@ useEffect(() => {
         try {
             // Create the request body as an object matching WalletDTO structure
             const data = {
+                userId: userId,
                 balance: walletAmount, // Make sure this matches the WalletDTO's property name
             };
     
@@ -1986,6 +2046,9 @@ const handleCreateUser = async () => {
         }
     };
 
+  
+
+
     const handleDelete = async () => {
         if (!dialogRoleId) {
             setError('Role ID is not defined.');
@@ -2131,7 +2194,7 @@ const handleCreateUser = async () => {
           {/* Add Balance Button */}
           <button
             style={styles.actionButton}
-            onClick={() => openAddWalletDialog(user)}
+            onClick={openAddWalletDialog(user)}
           >
             Add Balance ₹
           </button>
@@ -2382,6 +2445,24 @@ const styles = {
       borderRadius: '5px',
       margin: '0 5px', // Add margin for spacing between buttons
     },
+    actionButtonEdit: {
+        padding: '5px 10px',
+        backgroundColor: '#4CAF50',
+        color: 'success',
+        cursor: 'pointer',
+        border: 'none',
+        borderRadius: '5px',
+        margin: '0 5px', // Add margin for spacing between buttons
+      },
+      actionButtonDelete: {
+        padding: '5px 10px',
+        backgroundColor: '#4CAF50',
+        color: 'error',
+        cursor: 'pointer',
+        border: 'none',
+        borderRadius: '5px',
+        margin: '0 5px', // Add margin for spacing between buttons
+      },
     buttonGroup: {
       display: 'flex', 
       justifyContent: 'space-between', // Distribute buttons evenly

@@ -64,6 +64,12 @@ public class AdminServiceImpl implements AdminService {
 //	    return userRepository.save(user);
 //	}
 	
+	public Optional<UserEntity> getUserByEmail(String email) {
+		Optional<UserEntity> user=userRepository.findByEmail(email);
+		return user;
+		
+	}
+	
 	
 	@Override
 	public UserDTO createUserByAdmin(UserDetailsRequestModel userDto) {
