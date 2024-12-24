@@ -1802,9 +1802,16 @@ useEffect(() => {
             setLoading(false);
         }
     };
+
     const handleAddWalletBalance = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from localStorage or any other place it's stored
-    
+
+        if(walletAmount){
+            console.log(walletAmount);
+            return;
+            
+        }
+
         if (!token) {
             setError('Authentication token is missing.');
             return;
@@ -1819,7 +1826,7 @@ useEffect(() => {
         try {
             // Create the request body as an object matching WalletDTO structure
             const data = {
-                id: userId,
+                id: 4,
                 balance: walletAmount, // Make sure this matches the WalletDTO's property name
             };
     
