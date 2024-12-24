@@ -1741,17 +1741,17 @@ const [passwordError, setPasswordError] = useState('');
     const totalPages = useMemo(() => Math.ceil(filteredUsers.length / usersPerPage), [filteredUsers, usersPerPage]);
     const currentPageUsers = useMemo(() => filteredUsers.slice((page - 1) * usersPerPage, page * usersPerPage), [filteredUsers, page, usersPerPage]);
 
-    const handlePageChange = (newPage) => {
-        if (newPage >= 1 && newPage <= totalPages) {
-            setPage(newPage);
-        }
-    };
-
+ 
     const handleRoleFilterChange = (e) => {
-        setSelectedRole(e.target.value);
-        setPage(1); // Reset to first page when filtering
-    };
-
+      setSelectedRole(e.target.value);
+      setPage(1); // Reset to first page when filtering
+  };
+  
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+        setPage(newPage);
+    }
+};
 
 useEffect(() => {
     // Replace this URL with your actual API endpoint for fetching roles
@@ -2092,78 +2092,76 @@ const handleCreateUser = async () => {
         style={styles.createUserButton}
         onClick={openCreateUserDialog}
       >
-        Create User
+        + Create User
       </button>
     </div>
 
             {loading && <p style={styles.loading}>Loading users...</p>}
             {error && <p style={styles.error}>{error}</p>}
             {successMessage && <p style={styles.success}>{successMessage}</p>}
-<table style={styles.table}>
-        <thead>
-          <tr>
+            <table style={styles.table}>
+    <thead>
+        <tr>
             <th style={styles.tableHeader}>ID</th>
             <th style={styles.tableHeader}>Email</th>
             <th style={styles.tableHeader}>Roles</th>
             <th style={styles.tableHeader}>Wallet Balance</th>
             <th style={styles.tableHeader}>Actions</th>
-           
-          </tr>
-        </thead>
+        </tr>
+    </thead>
 
-        <tbody>   
-  {currentPageUsers.map((user, index) => (
-    <tr
-      key={user.id}
-      style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}
-    >
-      <td style={styles.tableCell}>{user.id}</td>
-      <td style={styles.tableCell}>{user.email}</td>
-      <td style={styles.tableCell}>
-        <span style={styles.roleBadge}>
-          {user.role?.name || 'No Role Assigned'}
-        </span>
-      </td>
-      <td style={styles.tableCell}>{user.walletBalance}</td>
+    <tbody>   
+        {currentPageUsers.map((user, index) => (
+            <tr
+                key={user.id}
+                style={index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}
+            >
+                <td style={styles.tableCell}>{user.id}</td>
+                <td style={styles.tableCell}>{user.email}</td>
+                <td style={styles.tableCell}>
+                    <span style={styles.roleBadge}>
+                        {user.role?.name || 'No Role Assigned'}
+                    </span>
+                </td>
+                <td style={styles.tableCell}>{user.walletBalance}</td>
 
-      <td style={styles.tableCell}>
-        <div style={styles.buttonGroup}>
-          {/* Add Balance Button */}
-          <button
-            style={styles.actionButton}
-            onClick={() => openAddWalletDialog(user)}
-          >
-            Add Balance ₹
-          </button>
+                <td style={styles.tableCell}>
+                    <div style={styles.buttonGroup}>
+                        {/* Add Balance Button */}
+                        <button
+                            style={styles.actionButton}
+                            onClick={() => openAddWalletDialog(user)}
+                        >
+                            Add ₹
+                        </button>
 
-          {/* Edit Role Button */}
-          <button
-            style={styles.actionButton}
-            onClick={() =>
-              openAssignRoleDialog(user, user.role?.name || '', 'edit')
-            }
-            disabled={!user.role} // Disable edit if no role
-          >
-            Edit
-          </button>
+                        {/* Edit Role Button */}
+                        <button
+                            style={styles.actionButton}
+                            onClick={() =>
+                                openAssignRoleDialog(user, user.role?.name || '', 'edit')
+                            }
+                            disabled={!user.role} // Disable edit if no role
+                        >
+                            Edit Role
+                        </button>
 
-          {/* Delete Role Button */}
-          <button
-            style={styles.actionButton}
-            onClick={() =>
-              openDeleteRoleDialog(user.email, user.role?.id)
-            }
-            disabled={!user.role?.id} // Disable delete if no role
-          >
-            Delete
-          </button>
-        </div>
-      </td>
-    </tr>
-  ))}
-</tbody>
+                        {/* Delete Role Button */}
+                        <button
+    style={styles.deleteButton} // Use the error red color style
+    onClick={() => openDeleteRoleDialog(user.email, user.role?.id)}
+    disabled={!user.role?.id} // Disable the button if no role exists
+>
+    Delete
+</button>
 
-      </table>
+                    </div>
+                </td>
+            </tr>
+        ))}
+    </tbody>
+</table>
+
 
     {/* pagination */}
 
@@ -2330,7 +2328,7 @@ const styles = {
       padding: '10px 15px',
       fontSize: '16px',
       cursor: 'pointer',
-      backgroundColor: '#4CAF50',
+      backgroundColor: '#007BFF',
       color: '#fff',
       border: 'none',
       borderRadius: '5px',
@@ -2373,19 +2371,37 @@ const styles = {
       backgroundColor: '#e7e7e7',
       borderRadius: '5px',
     },
-    actionButton: {
-      padding: '5px 10px',
-      backgroundColor: '#4CAF50',
-      color: '#fff',
-      cursor: 'pointer',
-      border: 'none',
-      borderRadius: '5px',
-      margin: '0 5px', // Add margin for spacing between buttons
-    },
-    buttonGroup: {
-      display: 'flex', 
-      justifyContent: 'space-between', // Distribute buttons evenly
-    },
+  actionButton: {
+    padding: '5px 8px', // Reduced padding to make the buttons smaller
+    borderRadius: '4px',
+    border: 'none',
+    cursor: 'pointer',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    fontSize: '14px', // Smaller font size for a more compact button
+    margin: '0 5px', // Added margin to ensure space between buttons
+    transition: 'background-color 0.3s ease', // Smooth color transition on hover
+},
+deleteButton: {
+    padding: '5px 8px', // Reduced padding for Delete button
+    borderRadius: '4px',
+    border: 'none',
+    cursor: 'pointer',
+    backgroundColor: '#D32F2F', // Error Red color for Delete button
+    color: 'white',
+    fontSize: '14px', // Smaller font size
+    margin: '0 5px', // Added margin to ensure space between buttons
+    transition: 'background-color 0.3s ease', // Smooth color transition on hover
+},
+
+buttonGroup: {
+    display: 'flex',
+    justifyContent: 'center', // This ensures the buttons are aligned in the center
+    gap: '4px', // Reduced space between buttons using the gap property
+    alignItems: 'center', // Ensures buttons are vertically centered (if they have different heights)
+},
+
+  
     dialogOverlay: {
       position: 'fixed',
       top: '0',
