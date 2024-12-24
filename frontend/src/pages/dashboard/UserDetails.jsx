@@ -1691,9 +1691,6 @@
 
 // export default UserDetails;
 
-
-
-
 import React, { useEffect, useState,useMemo } from 'react';
 import axios from 'axios';
 import { textAlign } from '@mui/system';
@@ -1803,62 +1800,6 @@ useEffect(() => {
         }
     };
 
-    const getUserByEmail = async (email) => {
-
-        try {
-          // Log the email that is being passed into the function
-          console.log('Fetching user details for email:', email);
-      
-          // Make a GET request with the email as a query parameter
-          const response = await axios.get(
-            `http://localhost:8080/users/admin/get-user-by-email/${email}`,
-            {
-              params: {
-                email: email, // Pass email as a query parameter
-              },
-            }
-          );
-      
-          // Log the response from the server
-          console.log('User details fetched successfully:', response.data);
-      
-          return response.data; // Return the user data
-        } catch (error) {
-          // Log the error if there was an issue with the request
-          console.error('Error fetching user by email:', error);
-      
-          throw error; // You can handle this further depending on your application
-        }
-      };
-      
-      // Function that handles the click event and calls both functions
-const handleAddBalanceClick = async () => {
-    if (!dialogUserEmail) {
-      setError('Email is not defined.');
-      console.log('dialogUserEmail is empty or undefined');
-      return;
-    }
-  
-    // Log the dialogUserEmail to verify if it's being passed correctly
-    console.log('Dialog user email:', dialogUserEmail);
-  
-    try {
-      // 1. Get user by email
-      const fetchedUser = await getUserByEmail(dialogUserEmail);
-      
-      // Log the fetched user details to check if the API call was successful
-      console.log('Fetched user:', fetchedUser);
-  
-      // 2. Open the wallet dialog and pass the fetched user
-      openAddWalletDialog(fetchedUser);
-      
-      // Optionally, you can set the userId or any other user details
-      setUserId(fetchedUser.userId);
-  
-    } catch (error) {
-      console.error('Error in fetching user or opening dialog:', error);
-    }
-  };
 
 
     const handleAddWalletBalance = async () => {
