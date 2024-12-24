@@ -1693,7 +1693,6 @@
 
 import React, { useEffect, useState,useMemo } from 'react';
 import axios from 'axios';
-import { textAlign } from '@mui/system';
 
 
 const UserDetails =  ({ currentUserRole }) => {
@@ -1799,9 +1798,6 @@ useEffect(() => {
             setLoading(false);
         }
     };
-
-
-
     const handleAddWalletBalance = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from localStorage or any other place it's stored
     
@@ -1819,7 +1815,6 @@ useEffect(() => {
         try {
             // Create the request body as an object matching WalletDTO structure
             const data = {
-                userId: userId,
                 balance: walletAmount, // Make sure this matches the WalletDTO's property name
             };
     
@@ -1987,9 +1982,6 @@ const handleCreateUser = async () => {
         }
     };
 
-  
-
-
     const handleDelete = async () => {
         if (!dialogRoleId) {
             setError('Role ID is not defined.');
@@ -2071,34 +2063,30 @@ const handleCreateUser = async () => {
                     Add +
                 </button>
             )}
-
-
-<div style={styles.containerCU}>
-      {/* Filter Container */}
-      <div style={styles.filterContainer}>
-        <label>Filter by Role : </label>
-        <select
-          value={selectedRole}
-          onChange={(e) => setSelectedRole(e.target.value)}
-          style={styles.filterSelect}
-        >
-          <option value="">All Roles</option>
-          {roles.map((role) => (
+            <div style={styles.filterContainer}>
+    <label>Filter by Role: </label>
+    <select
+        value={selectedRole}
+        onChange={(e) => setSelectedRole(e.target.value)}
+        style={styles.filterSelect}
+    >
+        <option value="">All Roles</option>
+        {roles.map((role) => (
             <option key={role.id} value={role.name}>
-              {role.name}
+                {role.name}
             </option>
-          ))}
-        </select>
-      </div>
+        ))}
+    </select>
+</div>
 
-      {/* Create User Button */}
-      <button
-        style={styles.createUserButton}
-        onClick={openCreateUserDialog}
-      >
-        Create User
-      </button>
-    </div>
+
+             {/* Create User Button */}
+        <button 
+            style={styles.createUserButton} 
+            onClick={openCreateUserDialog}
+        >
+            Create User
+        </button>
 
             {loading && <p style={styles.loading}>Loading users...</p>}
             {error && <p style={styles.error}>{error}</p>}
@@ -2109,13 +2097,13 @@ const handleCreateUser = async () => {
             <th style={styles.tableHeader}>ID</th>
             <th style={styles.tableHeader}>Email</th>
             <th style={styles.tableHeader}>Roles</th>
-            <th style={styles.tableHeader}>Wallet Balance</th>
             <th style={styles.tableHeader}>Actions</th>
-           
+            <th style={styles.tableHeader}>Wallet Balance</th>
           </tr>
         </thead>
+        <tbody>
 
-        <tbody>   
+            
   {currentPageUsers.map((user, index) => (
     <tr
       key={user.id}
@@ -2128,14 +2116,12 @@ const handleCreateUser = async () => {
           {user.role?.name || 'No Role Assigned'}
         </span>
       </td>
-      <td style={styles.tableCell}>{user.walletBalance}</td>
-
       <td style={styles.tableCell}>
         <div style={styles.buttonGroup}>
           {/* Add Balance Button */}
           <button
             style={styles.actionButton}
-            onClick={openAddWalletDialog(user)}
+            onClick={() => openAddWalletDialog(user)}
           >
             Add Balance ₹
           </button>
@@ -2163,13 +2149,12 @@ const handleCreateUser = async () => {
           </button>
         </div>
       </td>
+      <td style={styles.tableCell}>{user.walletBalance}</td>
     </tr>
   ))}
 </tbody>
 
       </table>
-
-    {/* pagination */}
 
       <div style={styles.paginationContainer}>
   <button
@@ -2315,9 +2300,6 @@ const styles = {
       padding: '20px',
       fontFamily: 'Arial, sans-serif',
       backgroundColor: '#f4f4f9',
-    //   display: 'flex',
-    //   justifyContent: 'space-between',
-      textAlign:'center'
     },
     heading: {
         fontWeight:'bold',
@@ -2325,10 +2307,6 @@ const styles = {
       fontSize: '2rem',
     //   color: '#333',
     },
-    containerCU: {
-        display: 'flex',
-        justifyContent: 'flex-end',  // Aligns child items to the right
-      },
     createUserButton: {
       marginBottom: '20px',
       padding: '10px 15px',
@@ -2338,19 +2316,14 @@ const styles = {
       color: '#fff',
       border: 'none',
       borderRadius: '5px',
-    // textAlign:'right'
     },
     filterContainer: {
-        display: 'flex',            // Flexbox for horizontal alignment within the filter container
-        alignItems: 'center',       // Ensure the label and select box are aligned vertically
-        marginRight: 'auto',   
-      },
+      marginBottom: '20px',
+    },
     filterSelect: {
       padding: '10px',
       fontSize: '16px',
       width: '200px',
-      marginLeft: '10px',         // Adds space between the label and the select dropdown
-
     },
     table: {
       width: '100%',
@@ -2386,24 +2359,6 @@ const styles = {
       borderRadius: '5px',
       margin: '0 5px', // Add margin for spacing between buttons
     },
-    actionButtonEdit: {
-        padding: '5px 10px',
-        backgroundColor: '#4CAF50',
-        color: 'success',
-        cursor: 'pointer',
-        border: 'none',
-        borderRadius: '5px',
-        margin: '0 5px', // Add margin for spacing between buttons
-      },
-      actionButtonDelete: {
-        padding: '5px 10px',
-        backgroundColor: '#4CAF50',
-        color: 'error',
-        cursor: 'pointer',
-        border: 'none',
-        borderRadius: '5px',
-        margin: '0 5px', // Add margin for spacing between buttons
-      },
     buttonGroup: {
       display: 'flex', 
       justifyContent: 'space-between', // Distribute buttons evenly
@@ -2467,7 +2422,6 @@ const styles = {
     },
     
     paginationButton: {
-        textAlign: 'center',
         padding: '5px 10px',  // Smaller padding for smaller button size
         fontSize: '14px',     // Smaller font size
         margin: '0 5px',      // Reduced margin between buttons
