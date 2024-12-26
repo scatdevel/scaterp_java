@@ -1,5 +1,7 @@
 package com.scat.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -48,10 +50,24 @@ public class WalletServiceImpl {
 		return walletRepository.save(wallet);
 	}
 
+	public List<Wallet> getAllWallet() {
+		return walletRepository.findAll();
+	}
+
 	public Wallet getWallet(Long userId) {
 		return walletRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("No Wallet Found for :" + userId));
 
+	}
+
+	//Get Balnce By USerID
+	public double getBalanceByUserId(Long userId) {
+		// Fetch the wallet for the given userId
+		Wallet wallet = walletRepository.findByUserId(userId);
+		if (wallet != null) {
+			return wallet.getBalance();
+		}
+		return 0.0; // Return a default value if no wallet is found for the userId
 	}
 
 	public void deposit(Long userId, double amount) {
@@ -74,23 +90,23 @@ public class WalletServiceImpl {
 	}
 
 	public double getBalance(String token) {
-	        // Validate the token and extract user information
-	        UserEntity user = userService.getUserByJwtToken(token);
-	        if (user == null) {
-	            throw new RuntimeException("Invalid or expired token.");
-	        }
+		// Validate the token and extract user information
+		UserEntity user = userService.getUserByJwtToken(token);
+		if (user == null) {
+			throw new RuntimeException("Invalid or expired token.");
+		}
 
-	        // Retrieve user ID from the validated token
-	        Long userId = user.getId();
+		// Retrieve user ID from the validated token
+		Long userId = user.getId();
 
-	        // Fetch the wallet by user ID (Wallet repository method will use user ID)
-	        Wallet wallet = walletRepository.findByUserId(userId);
-	        if (wallet == null) {
-	            throw new RuntimeException("Wallet not found for the user.");
-	        }
+		// Fetch the wallet by user ID (Wallet repository method will use user ID)
+		Wallet wallet = walletRepository.findByUserId(userId);
+		if (wallet == null) {
+			throw new RuntimeException("Wallet not found for the user.");
+		}
 
-	        // Return the balance of the wallet associated with the user
-	        return wallet.getBalance();
-	    }
-	
+		// Return the balance of the wallet associated with the user
+		return wallet.getBalance();
+	}
+
 }

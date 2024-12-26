@@ -2,7 +2,6 @@
 package com.scat.controller;
 
 import com.scat.dto.UserDTO;
-import com.scat.dto.WalletDTO;
 import com.scat.entity.RoleEntity;
 import com.scat.entity.UserEntity;
 import com.scat.model.request.UserDetailsRequestModel;
@@ -52,6 +51,11 @@ public class AdminController {
 			return ResponseEntity.notFound().build();
 		}
 	}
+	
+	   @GetMapping("/wallet/balance/{userId}")
+	    public double getBalance(@PathVariable Long userId) {
+	        return serviceImpl.getBalanceByUserId(userId);
+	    }
 
 	@PostMapping("/createuser")
 	public ResponseEntity<UserDTO> createUser(@RequestBody UserDetailsRequestModel userDto) {

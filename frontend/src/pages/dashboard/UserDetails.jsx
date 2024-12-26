@@ -26,6 +26,8 @@ const [passwordError, setPasswordError] = useState('');
     const [walletAmount, setWalletAmount] = useState('');
     const [dialogUserEmail, setDialogUserEmail] = useState('');
     const [userId, setUserId] = useState(null); 
+    const [walletBalance, setWalletBalance] = useState(null);
+
     const [page, setPage] = useState(1);
     const [usersPerPage, setUsersPerPage] = useState(10);
     const [filteredUsers, setFilteredUsers] = useState([]);  // <-- Add this line
@@ -99,6 +101,9 @@ useEffect(() => {
                     walletBalance: user.walletBalance || 0, // Assume users have a walletBalance field
                 }));
                 setUsers(processedUsers);
+                setUserId(processedUsers.id);
+                console.log(userId);
+                
             } else {
                 setError('Unexpected response format');
             }
@@ -108,6 +113,37 @@ useEffect(() => {
             setLoading(false);
         }
     };
+
+      // Fetch wallet balance when the component mounts or dialogUserId changes
+      useEffect(() => {
+        console.log(dialogUserId);
+        
+        if (!dialogUserId) {
+            console.error('No dialogUserId provided');
+            return;
+        }
+
+        const fetchWalletBalance = async () => {
+            try {
+                // Make the GET request to fetch the wallet balance
+                const response = await axios.get(`http://localhost:8080/users/wallet/balance/${dialogUserId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Add token if necessary
+                    }
+                });
+
+                // Set the balance from the response data
+                setWalletBalance(response.data);
+
+            } catch (error) {
+                console.error('Error fetching wallet balance:', error);
+                setWalletBalance(null); // Handle the error case (optional)
+            }
+        };
+
+        // Fetch the wallet balance when the component mounts or dialogUserId changes
+        fetchWalletBalance();
+    }, [dialogUserId]);
 
     const handleAddWalletBalance = async () => {
         const token = localStorage.getItem('token'); // Retrieve the token from localStorage or any other place it's stored
@@ -155,6 +191,7 @@ useEffect(() => {
                 setSuccessMessage('Wallet balance added successfully!');
                 setAddWalletDialogOpen(false);  // Close dialog if successful
                 fetchUsers();  // Refresh the user list after updating the wallet balance
+                setUserId(dialogUserId);
             } else {
                 setError('Failed to add balance. Please try again.');
             }
@@ -173,65 +210,7 @@ useEffect(() => {
             }
         }
     };
-                     //---------------------------------------------------------------------
     
-
-    // const handleAddWalletBalance = async () => {
-    //     const token = localStorage.getItem('token'); // Retrieve the token from localStorage or any other place it's stored
-
-        // if(walletAmount && dialogUserId){
-        //     console.log("Balance :",walletAmount,
-        //         "UserId :", dialogUserId
-        //     );
-        //     return;  
-        // }
-
-
-    //     if (!token) {
-    //         setError('Authentication token is missing.');
-    //         return;
-    //     }
-    
-    //     // Check if the wallet amount is valid
-    //     if (!walletAmount || isNaN(walletAmount) || walletAmount <= 0) {
-    //         setError('Please enter a valid amount.');
-    //         return;
-    //     }
-    
-    //     try {
-    //         // Create the request body as an object matching WalletDTO structure
-    //         const data = {
-    //             id: dialogUserId,
-    //             balance: walletAmount, // Make sure this matches the WalletDTO's property name
-    //         };
-    
-    //         // console.log("UserId :", id);
-            
-    //         // Send the request with the appropriate headers and body
-    //         await axios.put('http://localhost:8080/users/admin/add-balance', data, {
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`, // Include the token for authentication
-    //                 'Content-Type': 'application/json', // The server expects JSON content type
-    //             },
-    //         });
-    
-    //         setSuccessMessage('Wallet balance added successfully!');
-    //         setAddWalletDialogOpen(false);
-    //         fetchUsers(); // Refresh the user list
-    
-    //     } catch (error) {
-    //         if (error.response) {
-    //             console.error("Backend error:", error.response.data);
-    //             setError(`Error: ${error.response.data.message || 'An error occurred'}`);
-    //         } else if (error.request) {
-    //             console.error("Network error:", error.request);
-    //             setError('Network error. Please try again later.');
-    //         } else {
-    //             console.error("Error:", error.message);
-    //             setError(`Error: ${error.message}`);
-    //         }
-    //     }
-    // };
     
     
     // Email validation
@@ -458,7 +437,7 @@ const handleCreateUser = async () => {
       {/* Filter Container */}
        {/* Filter Container */}
        <div style={styles.filterContainer}>
-          <label>Filter by Role : </label>
+          <label>Filter : </label>
           <select
             value={selectedRole}
             onChange={handleRoleFilterChange}

@@ -49,6 +49,15 @@ public class AdminServiceImpl implements AdminService {
 
 	}
 
+    public double getBalanceByUserId(Long userId) {
+        // Fetch the wallet for the given userId
+        Wallet wallet = walletRepo.findByUserId(userId);
+        if (wallet != null) {
+            return wallet.getBalance();
+        }
+        return 0.0; // Return a default value if no wallet is found for the userId
+    }
+	
 	@Override
 	public UserDTO createUserByAdmin(UserDetailsRequestModel userDto) {
 		// Step 1: Find role by name
@@ -132,6 +141,7 @@ public class AdminServiceImpl implements AdminService {
 			throw new RuntimeException("An error occurred while setting the balance.");
 		}
 	}
+
 
 	@Override
 	public boolean validateAdmin(String email, String password) {

@@ -61,11 +61,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/crops/categories/get/all","/users/crops/get/byUser", "/crops/categories/add").permitAll()
                 .antMatchers("/crops/categories/update/{id}", "/crops/categories/delete/{id}").permitAll()
                 .antMatchers("/users/admin/login","/users/wallet/{userId}").permitAll()
-                .antMatchers("/users/admin/add-balance", "/users/find-by-email/{email}").permitAll()
+                .antMatchers("/users/admin/add-balance", "/users/find-by-email/{email}", "/users/admin/wallet/balance/{userId}").permitAll()
 
                 .antMatchers("/users/admin/create").hasRole("ADMIN")
                 .antMatchers("/users/admin/create", "/users/profile", "/users/admin/get-user-by-email/{email}").permitAll()
-                .antMatchers("/users/wallet/deposit/{userId}", "/users/wallet/createwallet/{userId}", "/user/wallet/balance", "/users/wallet/add-balance/{userId}").permitAll()
+                .antMatchers("/users/wallet/all", "/users/wallet/createwallet/{userId}", "/users/wallet/balance/{userId}", "/users/wallet/add-balance/{userId}").permitAll()
                 .antMatchers("/users/transaction/buy").permitAll()
 
                 .antMatchers("/users/admin/**/**","/users/admin/createuser", "/users/outlet/login").permitAll()
