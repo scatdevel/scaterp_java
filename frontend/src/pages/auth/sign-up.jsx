@@ -287,7 +287,7 @@ export function SignUp() {
     password: '',
     roleId: '' 
   });
-
+  const [passwordVisible, setPasswordVisible] = useState(false); 
   const [roles, setRoles] = useState([]); 
   const [alertMessage, setAlertMessage] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -440,22 +440,29 @@ export function SignUp() {
             />
             {emailError && <Typography variant="small" color="red" className="mt-1 text-sm">{emailError}</Typography>}
           </div>
-          <div>
-            <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Password')}</Typography>
-            <Input
-              type="password"
-              size="lg"
-              placeholder="********"
-              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
-              labelProps={{
-                className: "before:content-none after:content-none",
-              }}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <div className="relative">
+  <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Password')}</Typography>
+  <Input
+    type={passwordVisible ? 'text' : 'password'}
+    size="lg"
+    placeholder="********"
+    className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+    labelProps={{ className: "before:content-none after:content-none" }}
+    name="password"
+    value={formData.password}
+    onChange={handleChange}
+    required
+  />
+  <button
+    type="button"
+    className="absolute right-3 top-1/2 transform -translate-y-1/10" // Keep the vertical centering
+    onClick={() => setPasswordVisible(!passwordVisible)}
+  >
+    {/* Font Awesome Eye Icon */}
+    <i className={`fas ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'} w-6 h-6`} aria-hidden="true"></i>
+  </button>
+</div>
+ 
             {/* Role Dropdown with React Select */}
             <div>
             <Typography variant="small" color="blue-gray" className="font-medium mb-1 flex items-center">

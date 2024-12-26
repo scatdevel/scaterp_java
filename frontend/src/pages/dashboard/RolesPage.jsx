@@ -108,7 +108,7 @@ const RolesPage = () => {
             {/* Create Role Button */}
             <div style={styles.addRoleContainer}>
                 <button style={styles.addButton} onClick={openCreateRoleDialog}>
-                    Create Role
+                    + Create Role
                 </button>
             </div>
 

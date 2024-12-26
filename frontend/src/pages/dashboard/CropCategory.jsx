@@ -223,18 +223,27 @@ paginationButton: {
       <Typography variant="h6" textAlign={'center'} gutterBottom style={{  fontSize:'2rem', fontWeight:'bold'}} >
        CROP CATEGORIES
       </Typography>
-
       <Button
-        variant="contained"
-        color="primary"
+  variant="contained"
+  color="primary"
+  startIcon={<AddIcon />}
+  onClick={() => handleOpenDialog(null)} // Open dialog for adding
+  sx={{
+    mb: 3,                        // Margin bottom
+    ml: 'auto',                   // Align to the right
+    display: 'flex',               // Flex display for alignment
+    padding: '12px 20px',         // Adjusted padding for larger size
+    fontSize: '12px',             // Increased font size
+    backgroundColor: '#007BFF',   // Custom Blue color
+    color: '#fff',                // White text
+    borderRadius: '5px',          // Rounded corners
+    cursor: 'pointer',           // Pointer cursor on hover
+    textAlign: 'center',          // Center the text inside
+  }}
+>
+  Add Category
+</Button>
 
-
-        startIcon={<AddIcon />}
-        onClick={() => handleOpenDialog(null)} // Open dialog for adding
-  sx={{ mb: 3, ml: 'auto', display: 'flex' }}
-      >
-        Add Category
-      </Button>
       <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
         <Table sx={{ width: '100%',  border: '1px solid #ddd'}}>
           <TableHead>
