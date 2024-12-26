@@ -65,7 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .antMatchers("/users/admin/create").hasRole("ADMIN")
                 .antMatchers("/users/admin/create", "/users/profile", "/users/admin/get-user-by-email/{email}").permitAll()
-                .antMatchers("/users/wallet/deposit/{userId}", "/users/wallet/createwallet/{userId}", "/user/wallet/balance", "/users/wallet/add-balance").permitAll()
+                .antMatchers("/users/wallet/deposit/{userId}", "/users/wallet/createwallet/{userId}", "/user/wallet/balance", "/users/wallet/add-balance/{userId}").permitAll()
                 .antMatchers("/users/transaction/buy").permitAll()
 
                 .antMatchers("/users/admin/**/**","/users/admin/createuser", "/users/outlet/login").permitAll()

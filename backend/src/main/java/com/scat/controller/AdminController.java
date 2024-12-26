@@ -63,8 +63,8 @@ public class AdminController {
 		}
 	}
 
-	@PutMapping("/add-balance")
-	public double addBalance(@RequestParam Long userId, @RequestParam double balance) {
+	@PutMapping("/add-balance/{userId}")
+	public double addBalance(@PathVariable Long userId, @RequestParam double balance) {
 
 		return serviceImpl.setBalanceByAdmin(userId, balance);
 	}
