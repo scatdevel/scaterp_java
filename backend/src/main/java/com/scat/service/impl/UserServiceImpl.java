@@ -175,25 +175,50 @@ public class UserServiceImpl implements UserService {
 		return userDTOs;
 	}
 
+//	@Override
+//	public UserDetails loadUserByUsername(String emailOrUsername) throws UsernameNotFoundException {
+//		UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
+//		if (userEntity == null) {
+//			userEntity = userRepository.findByEmail(emailOrUsername).orElse(null);
+//		}
+//		if (userEntity == null) {
+//			throw new UsernameNotFoundException("User not found with identifier: " + emailOrUsername);
+//		}
+//
+//		// Convert roles to GrantedAuthority
+//		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+//		if (userEntity.getRole() != null) {
+//			authorities.add(new SimpleGrantedAuthority(userEntity.getRole().getName()));
+//		}
+//
+//		// Return a UserDetails object with roles
+//		return new User(userEntity.getUsername(), userEntity.getEncryptedPassword(), authorities);
+//	}
+
+	
 	@Override
-	public UserDetails loadUserByUsername(String emailOrUsername) throws UsernameNotFoundException {
-		UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
-		if (userEntity == null) {
-			userEntity = userRepository.findByEmail(emailOrUsername).orElse(null);
-		}
-		if (userEntity == null) {
-			throw new UsernameNotFoundException("User not found with identifier: " + emailOrUsername);
-		}
+	public UserDetails loadUserByUsername(String phoneNumberOrUsername) throws UsernameNotFoundException {
+	    // First, try to find the user by phone number (this method returns Optional<UserEntity>)
+	    Optional<UserEntity> userEntityOptional = userRepository.findByPhoneNumber(Long.parseLong(phoneNumberOrUsername));
 
-		// Convert roles to GrantedAuthority
-		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-		if (userEntity.getRole() != null) {
-			authorities.add(new SimpleGrantedAuthority(userEntity.getRole().getName()));
-		}
+	    // If user is not found by phone number, check by username (findByUsername returns UserEntity, not Optional)
+	    if (userEntityOptional.isEmpty()) {
+	        userEntityOptional = Optional.ofNullable(userRepository.findByUsername(phoneNumberOrUsername)); // Wrap in Optional
+	    }
 
-		// Return a UserDetails object with roles
-		return new User(userEntity.getUsername(), userEntity.getEncryptedPassword(), authorities);
+	    // If still not found, throw an exception
+	    UserEntity userEntity = userEntityOptional.orElseThrow(() -> new UsernameNotFoundException("User not found with identifier: " + phoneNumberOrUsername));
+
+	    // Convert roles to GrantedAuthority
+	    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+	    if (userEntity.getRole() != null) {
+	        authorities.add(new SimpleGrantedAuthority(userEntity.getRole().getName()));
+	    }
+
+	    // Return a UserDetails object with roles
+	    return new User(userEntity.getUsername(), userEntity.getEncryptedPassword(), authorities);
 	}
+
 
 	@Override
 	public UserDTO updateProfilePicture(String emailOrUsername, String profilePictureUrl) {

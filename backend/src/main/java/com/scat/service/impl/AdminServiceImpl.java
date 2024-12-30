@@ -42,21 +42,44 @@ public class AdminServiceImpl implements AdminService {
 
 		initializeDefaultRoles();
 	}
+	
+//	@Override
+//	public UserEntity createUserByAdmin(UserDetailsRequestModel userDto) {
+//	    Optional<RoleEntity> roleOpt = roleRepository.findByName(userDto.getRoleName());
+//
+//	    if (!roleOpt.isPresent()) {
+//	        throw new RuntimeException("Role not found");
+//	    }
+//
+//	    RoleEntity role = roleOpt.get();
+//
+//	    // Hash the password before saving it
+//	    String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+//
+//	    UserEntity user = new UserEntity();
+//	    user.setUsername(userDto.getUsername());
+//	    user.setEmail(userDto.getEmail());
+//	    user.setEncryptedPassword(encodedPassword);
+//	    user.setRole(role);
+//
+//	    return userRepository.save(user);
+//	}
+	@Override
+	public boolean validateAdmin(Long userId, String password) {
+	    // Fetch the user by userId
+	    UserEntity adminUser = userRepository.findById(userId)
+	            .orElseThrow(() -> new RuntimeException("Admin user not found"));
 
-	public Optional<UserEntity> getUserByEmail(String email) {
-		Optional<UserEntity> user = userRepository.findByEmail(email);
-		return user;
-
+	    // Validate the password (assuming password is encrypted)
+	    return passwordEncoder.matches(password, adminUser.getEncryptedPassword());
 	}
+	  @Override
+	    public String getUserRole(Long phoneNumber) {
+	        UserEntity user = userRepository.findByPhoneNumber(phoneNumber)
+	                .orElseThrow(() -> new RuntimeException("User not found with phone number: " + phoneNumber));
+	        return user.getRole().getName();
+	    }
 
-    public double getBalanceByUserId(Long userId) {
-        // Fetch the wallet for the given userId
-        Wallet wallet = walletRepo.findByUserId(userId);
-        if (wallet != null) {
-            return wallet.getBalance();
-        }
-        return 0.0; // Return a default value if no wallet is found for the userId
-    }
 	
 	@Override
 	public UserDTO createUserByAdmin(UserDetailsRequestModel userDto) {

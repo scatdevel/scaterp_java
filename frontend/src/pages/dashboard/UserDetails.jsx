@@ -88,30 +88,86 @@ useEffect(() => {
     }, [successMessage]);
 
     const fetchUsers = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await axios.get('http://localhost:8080/users/admin/fetch/all');
-            if (Array.isArray(response.data)) {
-                const processedUsers = response.data.map(user => ({
-                    id: user.id,
-                    email: user.email,
-                    username: user.username,
-                    role: user.role ? { id: user.role.id, name: user.role.name } : { id: null, name: 'No Role Assigned' },
-                    walletBalance: user.walletBalance || 0, // Assume users have a walletBalance field
-                }));
-                setUsers(processedUsers);
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get('http://localhost:8080/users/admin/fetch/all');
+        if (Array.isArray(response.data)) {
+          const processedUsers = response.data.map((user) => ({
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            fullName: user.fullName, // Assuming 'fullName' exists in the API response
+            profilePic: user.profilePic, // Assuming 'profilePic' exists in the API response
+            mobileNumber: user.mobileNumber, // Assuming 'mobileNumber' exists in the API response
+            dob: user.dob, // Assuming 'dob' exists in the API response
+            role: user.role ? { id: user.role.id, name: user.role.name } : { id: null, name: 'No Role Assigned' },
+            walletBalance: user.walletBalance || 0,
+          }));
+          setUsers(processedUsers);
                 setUserId(processedUsers.id);
                 console.log(userId);
                 
-            } else {
-                setError('Unexpected response format');
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+        } else {
+          setError('Unexpected response format');
         }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    const handleEditUserDetails = async () => {
+      const { id, fullName, profilePic, mobileNumber, email, username, dob } = editUserData;
+  
+      // Validate that all fields are filled
+      if (!fullName || !profilePic || !mobileNumber || !email || !username || !dob) {
+        setError('All fields are required.');
+        return;
+      }
+  
+      try {
+        await axios.put(`http://localhost:8080/users/admin/edit/${id}`, {
+          fullName,
+          profilePic,
+          mobileNumber,
+          email,
+          username,
+          dob,
+        });
+        setSuccessMessage('User details updated successfully!');
+        setEditUserDialogOpen(false);
+        fetchUsers(); // Refresh the user list
+      } catch (err) {
+        setError(err.response?.data?.error || 'Failed to update user details');
+      }
+    };
+  
+    const openEditUserDialog = (user) => {
+      setEditUserData({
+        id: user.id,
+        fullName: user.fullName,
+        profilePic: user.profilePic,
+        mobileNumber: user.mobileNumber,
+        email: user.email,
+        username: user.username,
+        dob: user.dob,
+      });
+      setEditUserDialogOpen(true);
+    };
+  
+    const closeEditUserDialog = () => {
+      setEditUserDialogOpen(false);
+      setEditUserData({
+        id: null,
+        fullName: '',
+        profilePic: '',
+        mobileNumber: '',
+        email: '',
+        username: '',
+        dob: '',
+      });
     };
 
       // Fetch wallet balance when the component mounts or dialogUserId changes
@@ -417,6 +473,26 @@ const handleCreateUser = async () => {
         setAddWalletDialogOpen(false);  // Close the dialog
         setWalletAmount('');            // Reset wallet amount input
     };
+
+
+    // Handle file input change for profile picture
+const handleFileChange = (e) => {
+  const file = e.target.files[0]; // Get the selected file
+  if (file) {
+    const reader = new FileReader();
+    
+    reader.onloadend = () => {
+      // Set the base64 string as the profile picture URL
+      setEditUserData({
+        ...editUserData,
+        profilePic: reader.result, // Store the base64 image string
+      });
+    };
+    
+    reader.readAsDataURL(file); // Read the file as a base64 data URL
+  }
+};
+
     return (
         <div style={styles.container}>
             <h1 style={styles.heading}>USER DETAILS</h1>
@@ -509,6 +585,10 @@ const handleCreateUser = async () => {
                   >
                     EDIT
                   </button>
+                  <button onClick={() => openEditUserDialog(user)} style={styles.actionButton}>
+    Edit details
+</button>
+
 
                   {/* Delete Role Button */}
                   <button
@@ -524,6 +604,95 @@ const handleCreateUser = async () => {
           ))}
         </tbody>
       </table>
+
+
+      {editUserDialogOpen && (
+  <div style={styles.dialogOverlay}>
+    <div style={styles.dialogContainer}>
+      <h3 style={{ fontWeight: 'bold', fontSize: '1.5rem', textAlign: 'center' }}>Edit User</h3>
+      <form onSubmit={handleEditUserDetails} style={styles.dialogForm}>
+        
+        {/* Full Name */}
+        <label style={styles.label}>Full Name</label>
+        <input
+          type="text"
+          value={editUserData.fullName}
+          onChange={(e) => setEditUserData({ ...editUserData, fullName: e.target.value })}
+          style={styles.dialogInput}
+        />
+        
+        {/* Profile Pic */}
+        <label style={styles.label}>Profile Pic</label>
+        <div style={styles.profilePicPreview}>
+          {editUserData.profilePic ? (
+            <img
+              src={editUserData.profilePic} // Show existing profile picture
+              alt="Current Profile"
+              style={styles.profilePicImage}
+            />
+          ) : (
+            <p>No profile picture</p>
+          )}
+        </div>
+
+        {/* Allow the user to upload a new profile picture */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}  // Handle file input
+          style={styles.dialogInput}
+        />
+        
+        {/* Mobile Number */}
+        <label style={styles.label}>Mobile Number</label>
+        <input
+          type="text"
+          value={editUserData.mobileNumber}
+          onChange={(e) => setEditUserData({ ...editUserData, mobileNumber: e.target.value })}
+          style={styles.dialogInput}
+        />
+        
+        {/* Email */}
+        <label style={styles.label}>Email</label>
+        <input
+          type="email"
+          value={editUserData.email}
+          onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })}
+          style={styles.dialogInput}
+        />
+        
+        {/* Username */}
+        <label style={styles.label}>Username</label>
+        <input
+          type="text"
+          value={editUserData.username}
+          onChange={(e) => setEditUserData({ ...editUserData, username: e.target.value })}
+          style={styles.dialogInput}
+        />
+        
+        {/* Date of Birth */}
+        <label style={styles.label}>DOB</label>
+        <input
+          type="date"
+          value={editUserData.dob}
+          onChange={(e) => setEditUserData({ ...editUserData, dob: e.target.value })}
+          style={styles.dialogInput}
+        />
+        
+        {/* Error message */}
+        {error && <p style={styles.error}>{error}</p>}
+        
+        {/* Submit and Cancel Buttons */}
+        <div style={styles.buttonGroup}>
+          <button type="submit" style={styles.submitButton}>Save Changes</button>
+          <button type="button" onClick={closeEditUserDialog} style={styles.cancelButton}>Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
     {/* pagination */}
 
       <div style={styles.paginationContainer}>
@@ -553,6 +722,10 @@ const handleCreateUser = async () => {
     Next
   </button>
 </div>
+
+
+
+
 
 
 {addWalletDialogOpen && (
@@ -628,6 +801,8 @@ const handleCreateUser = async () => {
 )}
 
 
+
+
             {/* Assign Role Dialog */}
             {assignRoleDialogOpen && (
                 <div style={styles.dialogOverlay}>
@@ -658,80 +833,88 @@ const handleCreateUser = async () => {
                         <button onClick={closeDeleteRoleDialog} style={styles.dialogButton}>Cancel</button>
                     </div>
                 </div>
+                
             )}
         </div>
     );
 };
 
 const styles = {
-    container: {
-      width: '100%',
-      minHeight: '100vh',
-      padding: '20px',
-      fontFamily: 'Arial, sans-serif',
-      backgroundColor: '#f4f4f9',
-    //   display: 'flex',
-    //   justifyContent: 'space-between',
-      textAlign:'center'
-    },
-    heading: {
-        fontWeight:'bold',
-      textAlign: 'center',
-      fontSize: '2rem',
-    //   color: '#333',
-    },
-    containerCU: {
-        display: 'flex',
-        justifyContent: 'flex-end',  // Aligns child items to the right
-      },
-    createUserButton: {
-      marginBottom: '20px',
-      padding: '10px 15px',
-      fontSize: '16px',
-      cursor: 'pointer',
-      backgroundColor: '#007BFF',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '5px',
-    // textAlign:'right'
-    },
-    filterContainer: {
-        display: 'flex',            // Flexbox for horizontal alignment within the filter container
-        alignItems: 'center',       // Ensure the label and select box are aligned vertically
-        marginRight: 'auto',   
-      },
-    filterSelect: {
-      padding: '10px',
-      fontSize: '16px',
-      width: '200px',
-      marginLeft: '10px',         // Adds space between the label and the select dropdown
+  container: {
+    width: '100%',
+    minHeight: '100vh',
+    padding: '20px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: '#f4f4f9',
+    textAlign: 'center',
+  },
+  
+  heading: {
+    fontWeight: 'bold',
+    fontSize: '2rem',
+    textAlign: 'center',
+  },
 
-    },
-    table: {
-      width: '100%',
-      borderCollapse: 'collapse',
-      marginBottom: '20px',
-    },
-    tableHeader: {
-      backgroundColor: '#f2f2f2',
-      padding: '10px',
-      border: '1px solid #ddd',
-    },
-    tableRowEven: {
-      backgroundColor: '#f9f9f9',
-    },
-    tableRowOdd: {
-      backgroundColor: '#ffffff',
-    },
-    tableCell: {
-      padding: '10px',
-      border: '1px solid #ddd',
-    },
-    roleBadge: {
-      padding: '5px 10px',
-      backgroundColor: '#e7e7e7',
-      borderRadius: '5px',
-    },
+  containerCU: {
+    display: 'flex',
+    justifyContent: 'flex-end',  // Aligns child items to the right
+  },
+
+  createUserButton: {
+    marginBottom: '20px',
+    padding: '10px 15px',
+    fontSize: '16px',
+    cursor: 'pointer',
+    backgroundColor: '#007BFF',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+  },
+
+  filterContainer: {
+    display: 'flex',  // Flexbox for horizontal alignment within the filter container
+    alignItems: 'center',  // Ensure the label and select box are aligned vertically
+    marginRight: 'auto',
+  },
+
+  filterSelect: {
+    padding: '10px',
+    fontSize: '16px',
+    width: '200px',
+    marginLeft: '10px',  // Adds space between the label and the select dropdown
+  },
+
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    marginBottom: '20px',
+  },
+
+  tableHeader: {
+    backgroundColor: '#f2f2f2',
+    padding: '10px',
+    border: '1px solid #ddd',
+  },
+
+  tableRowEven: {
+    backgroundColor: '#f9f9f9',
+  },
+
+  tableRowOdd: {
+    backgroundColor: '#ffffff',
+  },
+
+  tableCell: {
+    padding: '10px',
+    border: '1px solid #ddd',
+  },
+
+  roleBadge: {
+    padding: '5px 10px',
+    backgroundColor: '#e7e7e7',
+    borderRadius: '5px',
+  },
+
   actionButton: {
     padding: '5px 8px', // Reduced padding to make the buttons smaller
     borderRadius: '4px',
@@ -742,8 +925,9 @@ const styles = {
     fontSize: '14px', // Smaller font size for a more compact button
     margin: '0 5px', // Added margin to ensure space between buttons
     transition: 'background-color 0.3s ease', // Smooth color transition on hover
-},
-deleteButton: {
+  },
+
+  deleteButton: {
     padding: '5px 8px', // Reduced padding for Delete button
     borderRadius: '4px',
     border: 'none',
@@ -753,101 +937,204 @@ deleteButton: {
     fontSize: '14px', // Smaller font size
     margin: '0 5px', // Added margin to ensure space between buttons
     transition: 'background-color 0.3s ease', // Smooth color transition on hover
-},
+  },
 
-buttonGroup: {
+  buttonGroup: {
     display: 'flex',
     justifyContent: 'center', // This ensures the buttons are aligned in the center
     gap: '4px', // Reduced space between buttons using the gap property
     alignItems: 'center', // Ensures buttons are vertically centered (if they have different heights)
-},
+  },
 
-  
-    dialogOverlay: {
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      right: '0',
-      bottom: '0',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    dialog: {
-      backgroundColor: '#fff',
-      padding: '20px',
-      borderRadius: '8px',
-      width: '400px',
-    },
-    input: {
-      width: '100%',
-      padding: '10px',
-      marginBottom: '10px',
-      borderRadius: '4px',
-      border: '1px solid #ddd',
-    },
-    dialogButton: {
-        padding: '10px 20px', // Adjust padding to make sure there's enough space around the text
-        fontSize: '16px',
-        cursor: 'pointer',
-        backgroundColor: '#4CAF50',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        marginRight: '10px',
-        whiteSpace: 'nowrap', // Prevent the text from breaking into multiple lines
-        minWidth: '150px', // Optional: you can set a minimum width for consistency
-        textAlign: 'center', // Center the text inside the button
-    },
-    
-    error: {
-      color: 'red',
-      fontSize: '14px',
-    },
-    success: {
-      color: 'green',
-      fontSize: '16px',
-    },
-    loading: {
-      fontSize: '16px',
-      color: '#333',
-    },
+  dialogOverlay: {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    right: '0',
+    bottom: '0',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
-    pagination: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        marginTop: '20px',  // Moves pagination to the footer area
-    },
-    
-    paginationButton: {
-        textAlign: 'center',
-        padding: '5px 10px',  // Smaller padding for smaller button size
-        fontSize: '14px',     // Smaller font size
-        margin: '0 5px',      // Reduced margin between buttons
-        backgroundColor: '#ff6347', // Vibrant Tomato red for normal button
-        color: 'white',
-        border: 'none',
-        borderRadius: '20px', // Rounded corners for a more modern look
-        cursor: 'pointer',
-        transition: 'background-color 0.3s ease, transform 0.2s ease', // Smooth color and scale transition
-      },
-      paginationButtonHover: {
-        backgroundColor: '#ff4500', // Darker shade of red on hover
-        transform: 'scale(1.1)', // Slightly larger on hover for better interactivity
-      },
-      paginationButtonDisabled: {
-        backgroundColor: '#cccccc', // Gray color for disabled button
-        cursor: 'not-allowed',
-      },
-      pageNumber: {
-        fontSize: '14px',  // Smaller font size for page number
-        fontWeight: 'bold',
-        margin: '0 5px',
-        color: '#333',  // Dark gray color for page number
-      },
+  dialog: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '8px',
+    width: '400px',
+  },
 
-  };
+  input: {
+    width: '100%',
+    padding: '10px',
+    marginBottom: '10px',
+    borderRadius: '4px',
+    border: '1px solid #ddd',
+  },
+
+  dialogButton: {
+    padding: '10px 20px', // Adjust padding to make sure there's enough space around the text
+    fontSize: '16px',
+    cursor: 'pointer',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    marginRight: '10px',
+    whiteSpace: 'nowrap', // Prevent the text from breaking into multiple lines
+    minWidth: '150px', // Optional: you can set a minimum width for consistency
+    textAlign: 'center', // Center the text inside the button
+  },
+
+  error: {
+    color: 'red',
+    fontSize: '14px',
+  },
+
+  success: {
+    color: 'green',
+    fontSize: '16px',
+  },
+
+  loading: {
+    fontSize: '16px',
+    color: '#333',
+  },
+
+  pagination: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: '20px',  // Moves pagination to the footer area
+  },
+
+  paginationButton: {
+    textAlign: 'center',
+    padding: '5px 10px',  // Smaller padding for smaller button size
+    fontSize: '14px',     // Smaller font size
+    margin: '0 5px',      // Reduced margin between buttons
+    backgroundColor: '#ff6347', // Vibrant Tomato red for normal button
+    color: 'white',
+    border: 'none',
+    borderRadius: '20px', // Rounded corners for a more modern look
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease, transform 0.2s ease', // Smooth color and scale transition
+  },
+
+  paginationButtonHover: {
+    backgroundColor: '#ff4500', // Darker shade of red on hover
+    transform: 'scale(1.1)', // Slightly larger on hover for better interactivity
+  },
+
+  paginationButtonDisabled: {
+    backgroundColor: '#cccccc', // Gray color for disabled button
+    cursor: 'not-allowed',
+  },
+
+  pageNumber: {
+    fontSize: '14px',  // Smaller font size for page number
+    fontWeight: 'bold',
+    margin: '0 5px',
+    color: '#333',  // Dark gray color for page number
+  },
+
+  dialogContainer: {
+    backgroundColor: '#fff',
+    padding: '15px',  // Increased padding for more space
+    borderRadius: '8px',
+    width: '400px',  // Increased width for better form layout
+    maxWidth: '90%', // Allow for responsiveness on smaller screens
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Soft shadow for depth
+    animation: 'fadeIn 0.3s ease',
+    maxHeight: '80vh', // Limits the height to 80% of the viewport height
+    overflowY: 'auto', // Ensures scrolling if content exceeds maxHeight
+  },
+
+  dialogForm: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px', // Increased gap for better spacing between inputs
+  },
+
+  dialogInput: {
+    width: '100%',
+    padding: '10px',  // Slightly larger padding for a more comfortable feel
+    marginBottom: '12px',
+    borderRadius: '6px',  // Slightly more rounded edges
+    border: '1px solid #ccc',
+    fontSize: '16px',
+    transition: 'border-color 0.3s ease',
+  },
+
+  dialogInputFocus: {
+    borderColor: '#007BFF', // Blue border on focus for clarity
+  },
+
+  submitButton: {
+    backgroundColor: '#4CAF50', // Green color for save button
+    color: 'white',
+    padding: '12px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    transition: 'background-color 0.3s ease, transform 0.2s ease',
+  },
+
+  cancelButton: {
+    backgroundColor: '#D32F2F', // Red color for cancel button
+    color: 'white',
+    padding: '12px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    marginLeft: '15px',
+    transition: 'background-color 0.3s ease, transform 0.2s ease',
+  },
+
+  buttonGroup: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '10px',
+    marginTop: '20px',
+  },
+
+  submitButtonHover: {
+    backgroundColor: '#45a049', // Slightly darker green for hover
+    transform: 'scale(1.05)', // Slight scale-up on hover for interaction feedback
+  },
+
+  cancelButtonHover: {
+    backgroundColor: '#C62828', // Darker red for hover
+    transform: 'scale(1.05)', // Slight scale-up on hover
+  },
+
+  profilePicPreview: {
+    marginBottom: '10px',
+    textAlign: 'center',
+  },
+
+  profilePicImage: {
+    maxWidth: '100px',  // Limit image size to 100px
+    maxHeight: '100px',
+    borderRadius: '50%', // Circular crop for profile picture
+    border: '2px solid #ddd',
+    objectFit: 'cover',  // Ensure the image fits inside the circle
+  },
+  label: {
+    fontSize: '16px',               // Larger font size for better readability
+    fontWeight: '600',              // Slightly bolder text for better emphasis
+    marginBottom: '8px',            // Adds spacing below the label to prevent it from touching the input
+    display: 'block',               // Makes the label a block element so it takes full width
+    color: '#333',                  // Darker color for better contrast with the background
+    textAlign: 'left',              // Align the text to the left
+  },
+
+};
+
+
+
   
   export default UserDetails;

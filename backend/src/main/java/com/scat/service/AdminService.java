@@ -38,4 +38,9 @@ public interface AdminService {
 	RoleEntity getRoleById(Long id);
 
 	UserDTO createUserByAdmin(UserDetailsRequestModel userDt);
+// Updated to accept phone number as Long
+String getUserRole(Long phoneNumber);  // Accepts Long for phone number instead of String
+
+boolean validateAdmin(Long phoneNumber, String password);  // Use Long for phoneNumber validation.
+
 }
