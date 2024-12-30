@@ -5,14 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserLoginRequestModel {
     
-	private String email;
+	private Long phoneNumber;
 	private String password;
 
-    public String getEmail() {
-		return email;
+  
+	public Long getPhoneNumber() {
+		return phoneNumber;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setPhoneNumber(Long phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 	public String getPassword() {
 		return password;

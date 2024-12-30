@@ -20,7 +20,6 @@ public class OutletController {
 	private AdminService adminService;
 	private JwtUtil jwt;
 
-	
 	public OutletController(AdminService adminService, JwtUtil jwt) {
 		this.adminService = adminService;
 		this.jwt = jwt;
@@ -30,18 +29,18 @@ public class OutletController {
 	public ResponseEntity<String> outletLogin(@RequestBody UserLoginRequestModel req) {
 	    try {
 	        // Validate admin login
-	        boolean isValid = adminService.validateAdmin(req.getEmail(), req.getPassword());
+	        boolean isValid = adminService.validateAdmin(req.getPhoneNumber().toString(), req.getPassword());
 	        
 	        // Check if the login is valid and user email does not contain "@admin"
-	        if (isValid && !req.getEmail().contains("@admin")) {
+	        if (isValid && !req.getPhoneNumber().toString().contains("@admin")) {
 	            
 	            // Retrieve the user's role (assuming you have a method to get this)
-	            String role = adminService.getUserRole(req.getEmail());
+	            String role = adminService.getUserRole(req.getPhoneNumber().toString());  // Convert phoneNumber to String here.
 	            
 	            // Check if the role is 'outlet'
 	            if ("outlet".equalsIgnoreCase(role)) {
 	                // Generate the JWT token for the outlet role
-	                String token = jwt.generateToken(req.getEmail(), Set.of(role));
+	                String token = jwt.generateToken(req.getPhoneNumber().toString(), Set.of(role));  // Convert phoneNumber to String here.
 	                
 	                // Return the token and role in the response
 	                return ResponseEntity.ok("{\"token\":\"" + token + "\", \"role\":\"" + role + "\"}");
@@ -58,7 +57,4 @@ public class OutletController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("\"An Error Occurred During Login\"");
 	    }
 	}
-
-
 }
-

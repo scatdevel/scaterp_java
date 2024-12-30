@@ -7,6 +7,8 @@ i18n
     resources: {
       en: {
         translation: {
+
+           "createAccount": "Create an account",
           "signUp": "Sign Up",
           "username": "Username",
           "email": "Email Address",
@@ -96,18 +98,22 @@ i18n
           "locateOnMap": "Locate on Map",
           "submit": "Submit",
           //crop details form
-
+          
+            "description": "Description",
+            
+          "enterDescription": "Enter description",
+          
           "cropDetailsForm": "Crop Details Form",
           "cropName": "Crop Name",
           "category": "Category",
           "cropImage": "Crop Image",
-          "actualProduction": "Actual Production",
-          "projectedProduction": "Projected Production",
+          "production": "Production",
           "landValueUnit": "Land Value Unit",
           "cultivationLandValue": "Cultivation Land Value",
           "cost": "Cost",
           "projectCost": "Project Cost",
-          "projectionTimeline": "Projection Timeline",
+            "timeline": "Timeline",
+
           "selectTimelineType": "Select Timeline Type",
           "enterCropName": "Enter crop name",
           "selectCategory": "Select a category",
@@ -148,6 +154,7 @@ noImageAvailable: "No Image Available"
       },
       ta: {
         translation: {
+          "createAccount": "கணக்கை உருவாக்கவும்",
           "signUp": "பதிவுசெய்ய",
           "username": "பயனர்பெயர்",
           "email": "மின்னஞ்சல் முகவரி",
@@ -239,18 +246,19 @@ noImageAvailable: "No Image Available"
 ,
 
 //land details form
-
+"description": "விளக்கம்",
+"enterDescription": "விளக்கத்தை உள்ளிடவும்",
   "cropDetailsForm": "விவசாயத் தகவல் படிவம்",
   "cropName": "விவசாயப் பெயர்",
   "category": "வகை",
   "cropImage": "விவசாயப் படம்",
-  "actualProduction": "உண்மை உற்பத்தி",
-  "projectedProduction": "திட்டமிட்ட உற்பத்தி",
+  "production": "உற்பத்தி",
+  "Production": "திட்டமிட்ட உற்பத்தி",
   "landValueUnit": "நில மதிப்பு அலகு",
   "cultivationLandValue": "விவசாய நில மதிப்பு",
   "cost": "செலவு",
   "projectCost": "திட்ட செலவு",
-  "projectionTimeline": "திட்ட நேரக்கோடு",
+  "timeline": "நேரக்கோடு",
   "selectTimelineType": "நேரக்கோடு வகையை தேர்ந்தெடுக்கவும்",
   "enterCropName": "விவசாயப் பெயரை உள்ளிடவும்",
   "selectCategory": "ஒரு வகையைத் தேர்ந்தெடுக்கவும்",

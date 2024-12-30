@@ -53,56 +53,56 @@
 //     return emailRegex.test(email);
 //   };
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setShowAlert(false); 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setShowAlert(false); 
   
-//     try {
-//       const emailDomain = formData.email.split('@')[1];
-//       let token, role, userId;
+  //   try {
+  //     const emailDomain = formData.email.split('@')[1];
+  //     let token, role, userId;
   
-//       if (emailDomain === 'admin.com') {
-//         const response = await loginAdmin(formData);
-//         token = response.token;
-//         role = 'admin';
-//         userId = response.id;
-//         setIsAdmin(true);
-//       } else {
-//         const response = await loginUser(formData);
-//         token = response.token;
-//         role = 'user';
-//         userId = response.id;
-//         setIsAdmin(false);
-//       }
+  //     if (emailDomain === 'admin.com') {
+  //       const response = await loginAdmin(formData);
+  //       token = response.token;
+  //       role = 'admin';
+  //       userId = response.id;
+  //       setIsAdmin(true);
+  //     } else {
+  //       const response = await loginUser(formData);
+  //       token = response.token;
+  //       role = 'user';
+  //       userId = response.id;
+  //       setIsAdmin(false);
+  //     }
 
-//       localStorage.setItem('jwtToken', token);
-//       localStorage.setItem('userRole', role);
-//       localStorage.setItem('id', userId); 
-//       localStorage.setItem('tokenExpiration', new Date().getTime() + 3600000);
+  //     localStorage.setItem('jwtToken', token);
+  //     localStorage.setItem('userRole', role);
+  //     localStorage.setItem('id', userId); 
+  //     localStorage.setItem('tokenExpiration', new Date().getTime() + 3600000);
 
-//       // Dispatch the login action
-//       dispatch(login({ userId, role ,token}));
-//       console.log("token :", token);
+  //     // Dispatch the login action
+  //     dispatch(login({ userId, role ,token}));
+  //     console.log("token :", token);
       
 
-//       setAuthenticated(true);
-//       setAlertMessage('Login successful!');
-//       setError(null);
-//       setShowAlert(true);
+  //     setAuthenticated(true);
+  //     setAlertMessage('Login successful!');
+  //     setError(null);
+  //     setShowAlert(true);
   
-//       setTimeout(() => {
-//         navigate(role === 'admin' ? '/admin-dashboard/home' : '/dashboard/home');
-//       }, 1500);
-//     } catch (err) {
-//       console.error('Login error:', err.response ? err.response.data : err.message);
-//       setError('Invalid email or password. Please try again.');
-//       setAlertMessage('');
-//       setShowAlert(true);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+  //     setTimeout(() => {
+  //       navigate(role === 'admin' ? '/admin-dashboard/home' : '/dashboard/home');
+  //     }, 1500);
+  //   } catch (err) {
+  //     console.error('Login error:', err.response ? err.response.data : err.message);
+  //     setError('Invalid email or password. Please try again.');
+  //     setAlertMessage('');
+  //     setShowAlert(true);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -116,7 +116,7 @@ import './i18n';
 export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
   const { t, i18n } = useTranslation();
   const [passwordVisible, setPasswordVisible] = useState(false); 
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ phone: '', password: '' });
   const [alertMessage, setAlertMessage] = useState('');
   const [emailError, setEmailError] = useState('');
   const [error, setError] = useState(null);
@@ -126,6 +126,8 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
 
   const navigate = useNavigate();
   const dispatch = useDispatch(); // Initialize dispatch
+  const [phoneNumError, setPhoneNumError] = useState('');
+
 
   useEffect(() => {
     const authToken = localStorage.getItem('jwtToken');
@@ -138,7 +140,9 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
     }
   }, [navigate]);
 
-  const isValid = formData.email.length > 0 && formData.password.length > 0 && agree;
+  const isValid = formData.phone.length > 0 && formData.password.length > 0 && agree;
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -147,6 +151,27 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
       [name]: value,
     }));
 
+    if (name === 'phone') {
+      if (value && value.length < 12) {
+        // Remove any non-digit characters (if entered) and make sure it starts with +91
+        let cleanedValue = value.replace(/\D/g, '');
+        if (cleanedValue.length > 10) cleanedValue = cleanedValue.slice(0, 10); // Limit to 10 digits
+        // If no +91 is entered, add it by default
+        if (cleanedValue.length === 10 && !value.startsWith('+91')) {
+          cleanedValue = '+91' + cleanedValue;
+        }
+        setFormData((prevData) => ({
+          ...prevData,
+          phone: cleanedValue,
+        }));
+
+        setPhoneNumError(validatePhoneNumber(cleanedValue) ? '' : 'Please enter a valid phone number.');
+      } else {
+        setPhoneNumError('Please enter a valid phone number.');
+      }
+    }
+
+  
     if (name === 'email') {
       setEmailError(validateEmail(value) ? '' : 'Please enter a valid email.');
     }
@@ -161,72 +186,92 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
     return emailRegex.test(email);
   };
 
+  const validatePhoneNumber = (phone) => {
+    // A regex for validating Indian phone numbers (starting with +91 and followed by 10 digits)
+    const phoneRegex = /^\+91\d{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setShowAlert(false); 
-    
+    setShowAlert(false);
+  
+    // Validate phone number
+    if (!formData.phone || !validatePhoneNumber(formData.phone)) {
+      setPhoneNumError('Please enter a valid phone number.');
+      setLoading(false);
+      return;
+    }
+  
+    // Ensure password exists and isn't empty
+    if (!formData.password || formData.password.length === 0) {
+      setError('Please enter both phone number and password.');
+      setShowAlert(true);
+      setLoading(false);
+      return;
+    }
+  
     try {
-      const emailDomain = formData.email.split('@')[1];
       let token, role, userId;
-
-      if (emailDomain === 'admin.com') {
-        const response = await loginAdmin(formData); // Admin login
+  
+      // Logic to check user type (admin, outlet, etc.)
+      if (formData.phone.includes('admin')) {
+        const response = await loginAdmin(formData); 
         token = response.token;
         role = 'admin';
         userId = response.id;
         setIsAdmin(true);
-      } else if (emailDomain === 'outlet.com') {
-        // Set role to 'outlet' if the email domain is outlet.com
-        const response = await loginUser(formData); // Use the same loginUser API for outlet
+      } else if (formData.phone.includes('outlet')) {
+        const response = await loginUser(formData); 
         token = response.token;
         role = 'outlet';
         userId = response.id;
-        setIsOutlet(true); // Set the outlet flag to true
+        setIsOutlet(true);
       } else {
-        // User login for regular users
-        const response = await loginUser(formData);
+        const response = await loginUser(formData); 
         token = response.token;
         role = 'user';
         userId = response.id;
         setIsAdmin(false);
-        setIsOutlet(false); // Ensure outlet flag is false for normal users
+        setIsOutlet(false);
       }
-
-      // Store the login information in localStorage
+  
+      // Store token and role in localStorage
       localStorage.setItem('jwtToken', token);
       localStorage.setItem('userRole', role);
       localStorage.setItem('id', userId); 
       localStorage.setItem('tokenExpiration', new Date().getTime() + 3600000); // 1 hour expiration
-
-      // Dispatch the login action to Redux
+  
+      // Dispatch login action to Redux store
       dispatch(login({ userId, role, token }));
-      console.log("token :", token);
-
+  
       setAuthenticated(true);
       setAlertMessage('Login successful!');
       setError(null);
       setShowAlert(true);
-
-      // Redirect the user to the appropriate dashboard based on their role
+  
+      // Redirect based on role
       setTimeout(() => {
         navigate(role === 'admin' ? '/admin-dashboard/home' : role === 'outlet' ? '/outlet-dashboard/home' : '/dashboard/home');
       }, 1500);
     } catch (err) {
       console.error('Login error:', err.response ? err.response.data : err.message);
-      setError('Invalid email or password. Please try again.');
+      setError('Invalid phone number or password. Please try again.');
       setAlertMessage('');
       setShowAlert(true);
     } finally {
       setLoading(false);
     }
   };
-
+  
+  
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
   return (
-    <section className="relative flex flex-col lg:flex-row items-center justify-center min-h-screen bg-gray-100">
+    <section className="relative flex min-h-screen flex-col lg:flex-row">
       {/* Language Switcher */}
       <div className="absolute top-4 right-4 flex space-x-2 z-20">
         <img
@@ -243,19 +288,35 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
         />
       </div>
 
-      <div className="lg:w-1/2 p-8 lg:p-16 bg-white bg-opacity-90 rounded-lg shadow-lg z-10">
-      <div className="flex justify-center mb-8">
-  <img src="/img/Scat-web-logo.svg" className="w-45 h-10" alt="Logo" />
-</div>
+     
+      
 
-        <div className="text-center mb-8">
+        {/* Left Side: Image covering left section */}
+      <div className="w-full lg:w-1/2 h-screen flex items-center justify-center overflow-hidden relative">
+        {/* Scat Logo on top of the image */}
+        <img 
+          src="/img/Scat-web-logo.svg"
+          alt="Scat Logo"
+          className="absolute top-4 left-4 w-45 h-10 z-10" // Position logo on top-left of the image
+        />
+        <img 
+          src="/img/3.png" 
+          alt="Image" 
+          className="w-full h-full object-cover" // Use object-cover to ensure it fills the space
+        />
+      </div>
+
+      {/* Right Side: SignIn Form */}
+      <div className="w-full lg:w-1/2 h-screen flex flex-col justify-center items-center px-6 lg:px-12 bg-white bg-opacity-90">
+        <div className="text-center mb-6">
           <Typography variant="h4" className="font-bold mb-2">{t('signIn')}</Typography>
           <Typography variant="paragraph" color="blue-gray" className="text-lg">
             {t('Enter your Email and password to Sign In.')}
           </Typography>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md">
-          <div>
+
+       
+          {/* <div>
             <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Email')}</Typography>
             <Input
               size="lg"
@@ -270,7 +331,25 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
               required
             />
             {emailError && <Typography variant="small" color="red" className="mt-1 text-sm">{emailError}</Typography>}
-          </div>
+          </div> */}
+
+<form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md">
+<div>
+    <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Phone Number')}</Typography>
+    <Input
+      size="lg"
+      placeholder="+91 XXXXXXXXXX"
+      className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+      labelProps={{
+        className: "before:content-none after:content-none",
+      }}
+      name="phone"
+      value={formData.phone}
+      onChange={handleChange}
+      required
+    />
+    {phoneNumError && <Typography variant="small" color="red" className="mt-1 text-sm">{phoneNumError}</Typography>}
+  </div>
           <div className="relative">
   <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Password')}</Typography>
   <Input
@@ -344,20 +423,6 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
             </Typography>
           </div>
         </form>
-      </div>
-      <div className="absolute inset-0 lg:hidden">
-        <img
-          src="/img/farmers1.jpg"
-          alt="Background"
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <div className="absolute inset-0 hidden lg:block">
-        <img
-          src="/img/farmers1.jpg"
-          alt="Background"
-          className="w-full h-full object-cover"
-        />
       </div>
     </section>
   );

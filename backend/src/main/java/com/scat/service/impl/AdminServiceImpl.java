@@ -63,7 +63,22 @@ public class AdminServiceImpl implements AdminService {
 //
 //	    return userRepository.save(user);
 //	}
-	
+	@Override
+	public boolean validateAdmin(Long userId, String password) {
+	    // Fetch the user by userId
+	    UserEntity adminUser = userRepository.findById(userId)
+	            .orElseThrow(() -> new RuntimeException("Admin user not found"));
+
+	    // Validate the password (assuming password is encrypted)
+	    return passwordEncoder.matches(password, adminUser.getEncryptedPassword());
+	}
+	  @Override
+	    public String getUserRole(Long phoneNumber) {
+	        UserEntity user = userRepository.findByPhoneNumber(phoneNumber)
+	                .orElseThrow(() -> new RuntimeException("User not found with phone number: " + phoneNumber));
+	        return user.getRole().getName();
+	    }
+
 	
 	@Override
 	public UserDTO createUserByAdmin(UserDetailsRequestModel userDto) {
