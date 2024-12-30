@@ -250,9 +250,17 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
 
         <div className="text-center mb-8">
           <Typography variant="h4" className="font-bold mb-2">{t('signIn')}</Typography>
-          <Typography variant="paragraph" color="blue-gray" className="text-lg">
+          {/* <Typography variant="paragraph" color="blue-gray" className="text-lg">
             {t('Enter your Email and password to Sign In.')}
-          </Typography>
+          </Typography> */}
+           <div className="text-center mt-2">
+            <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
+              {t('notRegistered')} 
+              <Link to="/auth/sign-up" className="bold text-blue-600 transition-colors hover:text-blue-800">
+                {t('createAccount')}
+              </Link>
+            </Typography>
+          </div>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md">
           <div>
@@ -272,6 +280,51 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
             {emailError && <Typography variant="small" color="red" className="mt-1 text-sm">{emailError}</Typography>}
           </div>
           <div className="relative">
+  <div className="mt-6 flex justify-between items-center ">
+    <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Password')}</Typography>
+    
+    {/* Forgot Password link aligned to the right */}
+    <Typography variant="paragraph" className="text-blue-gray-500 font-medium ml-4">
+      <Link to="/auth/forgot-password" className="bold text-blue-600 transition-colors hover:text-blue-800">
+        {t('forgotPassword')}
+      </Link>
+    </Typography>
+  </div>
+
+  <div className="relative mt-2">
+    <Input
+      type={passwordVisible ? 'text' : 'password'}
+      size="lg"
+      placeholder="********"
+      className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+      labelProps={{ className: "before:content-none after:content-none" }}
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+      required
+    />
+    
+    {/* Eye Icon */}
+    <button
+      type="button"
+      className="absolute right-3 top-1/2 transform -translate-y-1/2" // Keep the vertical centering
+      onClick={() => setPasswordVisible(!passwordVisible)}
+    >
+      {/* Font Awesome Eye Icon */}
+      <i className={`fas ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'} w-6 h-6`} aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+          {/* <div className="relative">
+          <div className="mt-6 flex justify-between items-center">
+          <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
+              
+              <Link to="/auth/forgot-password" className="bold text-blue-600 transition-colors hover:text-blue-800">
+                {t('forgotPassword')}
+              </Link>
+            </Typography>
+          </div>
   <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Password')}</Typography>
   <Input
     type={passwordVisible ? 'text' : 'password'}
@@ -284,15 +337,15 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
     onChange={handleChange}
     required
   />
-  <button
-    type="button"
-    className="absolute right-3 top-1/2 transform -translate-y-1/10" // Keep the vertical centering
-    onClick={() => setPasswordVisible(!passwordVisible)}
-  >
-    {/* Font Awesome Eye Icon */}
-    <i className={`fas ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'} w-6 h-6`} aria-hidden="true"></i>
-  </button>
-</div>
+    <button
+      type="button"
+      className="absolute right-3 top-1/2 transform -translate-y-1/2" // Adjust the vertical centering
+      onClick={() => setPasswordVisible(!passwordVisible)}
+    >
+      {/* Font Awesome Eye Icon */}
+      {/* <i className={`fas ${passwordVisible ? 'fa-eye-slash' : 'fa-eye'} w-6 h-6`} aria-hidden="true"></i>
+    </button>
+</div>  */}
           <Checkbox
             checked={agree}
             onChange={handleAgreeChange}
@@ -326,23 +379,8 @@ export function SignIn({ setAuthenticated, setIsAdmin, setIsOutlet }) {
             </div>
           )}
 
-          <div className="mt-6 text-center">
-            <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
-              {t('forgotPassword')}
-              <Link to="/auth/forgot-password" className="text-gray-900 ml-1 underline">
-                {t('resetPassword')}
-              </Link>
-            </Typography>
-          </div>
 
-          <div className="text-center mt-2">
-            <Typography variant="paragraph" className="text-blue-gray-500 font-medium">
-              {t('notRegistered')}
-              <Link to="/auth/sign-up" className="text-gray-900 ml-1 underline">
-                {t('createAccount')}
-              </Link>
-            </Typography>
-          </div>
+         
         </form>
       </div>
       <div className="absolute inset-0 lg:hidden">

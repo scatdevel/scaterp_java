@@ -91,7 +91,7 @@ const CropDetailsForm = () => {
       projectionTimelineValue: '',
       productionUnit: 'kg',
       categoryId: '',
-      weatherData: '', // New field for weather data
+      // weatherData: '', // New field for weather data
       soilType: '', // New field for soil type
       harvestDate: '' // New field for harvest date
     }]);
@@ -117,7 +117,7 @@ const CropDetailsForm = () => {
 
           formData.append('image', crop.image);
          // Adding the new fields
-      formData.append('weatherData', crop.weatherData);
+      // formData.append('weatherData', crop.weatherData);
       formData.append('soilType', crop.soilType);
       formData.append('harvestDate', crop.harvestDate);
 
@@ -267,8 +267,8 @@ const CropDetailsForm = () => {
                     </div>
                   </div>
 
-
-  {/* Weather Data */}
+{/* 
+  Weather Data
   <div className="flex flex-col space-y-2">
                     <label className="text-sm font-medium text-gray-700">{t('weatherData')}</label>
                     <select
@@ -282,7 +282,7 @@ const CropDetailsForm = () => {
                       <option value="Sunny">{t('sunny')}</option>
                       <option value="Cloudy">{t('cloudy')}</option>
                     </select>
-                  </div>
+                  </div> */}
 
                   {/* Soil Type */}
                   <div className="flex flex-col space-y-2">
@@ -315,7 +315,7 @@ const CropDetailsForm = () => {
                   </div>
                 
                   <div className="flex flex-col space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{t('landValueUnit')} & {t('cultivationLandValue')}</label>
+                    <label className="text-sm font-medium text-gray-700">  {t('LandValue')}</label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <input
                         type="number"
@@ -367,7 +367,7 @@ const CropDetailsForm = () => {
 </div>
 
                   <div className="flex flex-col space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{t('projectionTimeline')}</label>
+                    <label className="text-sm font-medium text-gray-700">{t('Timeline')}</label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <input
                         type="number"

@@ -32,6 +32,8 @@ const CropOverview = () => {
           }
         });
         setCrops(response.data);
+        console.log(response.data);
+        
       } catch (error) {
         console.error("Error fetching crop details:", error);
         if (error.response && error.response.status === 401) {
@@ -125,23 +127,23 @@ const CropOverview = () => {
           
 <div className="flex flex-col space-y-2 text-xs">
   <Typography variant="body2" className="text-gray-700">
-    <span className="font-semibold">{t('production')}:</span> 
+    <span className="font-semibold">{t('production')} : </span> 
     {crop.production} {crop.productionUnit || ''} {/* Corrected unit display */}
   </Typography>
 
   <Typography variant="body2" className="text-gray-700">
-    <span className="font-semibold">{t('cultivationLandValue')}:</span> 
+    <span className="font-semibold">{t('cultivationLandValue')} : </span> 
     {crop.cultivationLandValue} {crop.landValueUnit}
   </Typography>
 
   <Typography variant="body2" className="text-gray-700">
-    <span className="font-semibold">{t('cost')}:</span> {formatCurrency(crop.cost)} {/* Formatting as INR */}
+    <span className="font-semibold">{t('cost')} : </span> {formatCurrency(crop.projectCost)} {/* Formatting as INR */}
   </Typography>
 
   <Typography variant="body2" className="text-gray-700">
-    <span className="font-semibold">{t('projectionTimeline')}:</span> 
-    {crop.projectionTimelineValue} {crop.projectionTimelineType}
-  </Typography>
+    <span className="font-semibold">{t('projectionTimeline')} : </span> 
+    {crop.projectionTimelineValue}  {crop.projectionTimelineType}
+  </Typography> 
 </div>
 
                 </CardBody>

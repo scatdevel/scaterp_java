@@ -496,7 +496,7 @@ const handleCreateUser = async () => {
                     style={styles.actionButton}
                     onClick={() => openAddWalletDialog(user)}
                   >
-                    Add ₹
+                    ADD ₹
                   </button>
 
                   {/* Edit Role Button */}
@@ -507,7 +507,7 @@ const handleCreateUser = async () => {
                     }
                     disabled={!user.role} // Disable edit if no role
                   >
-                    Edit Role
+                    EDIT
                   </button>
 
                   {/* Delete Role Button */}
@@ -516,7 +516,7 @@ const handleCreateUser = async () => {
                     onClick={() => openDeleteRoleDialog(user.email, user.role?.id)}
                     disabled={!user.role?.id} // Disable the button if no role exists
                   >
-                    Delete
+                    DELETE
                   </button>
                 </div>
               </td>
