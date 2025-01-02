@@ -41,21 +41,21 @@ public class AdminController {
 		this.roleRepo = roleRepo;
 	}
 
-	@GetMapping("/get-user-by-email/{email}")
-	public ResponseEntity<UserEntity> getUser(@PathVariable String email) {
-		Optional<UserEntity> user = serviceImpl.getUserByEmail(email);
-
-		if (user.isPresent()) {
-			return ResponseEntity.ok(user.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
+//	@GetMapping("/get-user-by-email/{email}")
+//	public ResponseEntity<UserEntity> getUser(@PathVariable String email) {
+//		Optional<UserEntity> user = serviceImpl.getUserByEmail(email);
+//
+//		if (user.isPresent()) {
+//			return ResponseEntity.ok(user.get());
+//		} else {
+//			return ResponseEntity.notFound().build();
+//		}
+//	}
 	
-	   @GetMapping("/wallet/balance/{userId}")
-	    public double getBalance(@PathVariable Long userId) {
-	        return serviceImpl.getBalanceByUserId(userId);
-	    }
+//	   @GetMapping("/wallet/balance/{userId}")
+//	    public double getBalance(@PathVariable Long userId) {
+//	        return serviceImpl.getBalanceByUserId(userId);
+//	    }
 
 	@PostMapping("/createuser")
 	public ResponseEntity<UserDTO> createUser(@RequestBody UserDetailsRequestModel userDto) {

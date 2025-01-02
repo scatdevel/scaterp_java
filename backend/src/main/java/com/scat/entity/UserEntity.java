@@ -52,6 +52,13 @@ public class UserEntity implements Serializable {
 	@Column(name = "reset_token_expiration")
 	private Long resetTokenExpiration;
 	
+	//New
+	private Long aadharCardNumber;
+	
+	private String aadharImageUrl_1;
+	
+	private String aadharImageUrl_2;
+	
 	private String houseNumber;
 	
 	private String street;
@@ -94,6 +101,30 @@ public class UserEntity implements Serializable {
 		this.username = username;
 	}
 	
+	
+	public Long getAadharCardNumber() {
+		return aadharCardNumber;
+	}
+
+	public void setAadharCardNumber(Long aadharCardNumber) {
+		this.aadharCardNumber = aadharCardNumber;
+	}
+
+	public String getAadharImageUrl_1() {
+		return aadharImageUrl_1;
+	}
+
+	public void setAadharImageUrl_1(String aadharImageUrl_1) {
+		this.aadharImageUrl_1 = aadharImageUrl_1;
+	}
+
+	public String getAadharImageUrl_2() {
+		return aadharImageUrl_2;
+	}
+
+	public void setAadharImageUrl_2(String aadharImageUrl_2) {
+		this.aadharImageUrl_2 = aadharImageUrl_2;
+	}
 
 	public Wallet getWallet() {
 		return wallet;

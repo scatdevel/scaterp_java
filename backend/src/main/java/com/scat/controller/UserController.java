@@ -43,27 +43,86 @@ public class UserController {
 		this.userService = userService;
 	}
 
-	@PostMapping("/register")
-	public ResponseEntity<UserDTO> createUser(@RequestBody UserDetailsRequestModel userDetails) {
-		UserDTO userDto = new UserDTO();
-		userDto.setUsername(userDetails.getUsername());
-		userDto.setEmail(userDetails.getEmail());
-		userDto.setEncryptedPassword(userDetails.getPassword());
-		userDto.setFullName(userDetails.getFullName());
-		userDto.setPhoneNumber(userDetails.getPhoneNumber());
-		userDto.setDob(userDetails.getDob());
-
-		// If roleId is provided, set it in UserDTO
-		if (userDetails.getRoleId() != null) {
-			userDto.setRoleId(userDetails.getRoleId());
-		}
-		
-		
-		UserDTO createdUser = userService.createUser(userDto);
-
-		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-	}
+//	@PostMapping("/register")
+//	public ResponseEntity<UserDTO> createUser(@RequestBody UserDetailsRequestModel userDetails) {
+//		UserDTO userDto = new UserDTO();
+//		userDto.setUsername(userDetails.getUsername());
+//		userDto.setEmail(userDetails.getEmail());
+//		userDto.setEncryptedPassword(userDetails.getPassword());
+//		userDto.setFullName(userDetails.getFullName());
+//		userDto.setPhoneNumber(userDetails.getPhoneNumber());
+//		userDto.setDob(userDetails.getDob());
+//		userDto.setAadharCardNumber(userDetails.getAadharCardNumber());
+//		   userDto.setAadharImage_1(userDetails.getAadharImageUrl_1());
+//		    userDto.setAadharImage_2(userDetails.getAadharImageUrl_2());
+//		
+//
+//		// If roleId is provided, set it in UserDTO
+//		if (userDetails.getRoleId() != null) {
+//			userDto.setRoleId(userDetails.getRoleId());
+//		}
+//		
+//		
+//		UserDTO createdUser = userService.createUser(userDto);
+//
+//		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+//	}
 	
+	@PostMapping("/register")
+	public ResponseEntity<UserDTO> createUser(
+	    @RequestParam("username") String username,
+	    @RequestParam("email") String email,
+	    @RequestParam("password") String password,
+//	    @RequestParam("fullName") String fullName,
+	    @RequestParam("phoneNumber") Long phoneNumber,
+//	    @RequestParam("dob") Date dob,
+	    @RequestParam("aadharCardNumber") Long aadharCardNumber,
+	    @RequestParam("roleId") Long roleId,
+	    @RequestParam("aadharImageUrl_1") MultipartFile aadharImageUrl_1,
+	    @RequestParam("aadharImageUrl_2") MultipartFile aadharImageUrl_2) {
+
+	    // Create a new UserDTO and map data from the request parameters
+	    UserDTO userDto = new UserDTO();
+	    userDto.setUsername(username);
+	    userDto.setEmail(email);
+	    userDto.setEncryptedPassword(password);  // Encrypt password before saving
+//	    userDto.setFullName(fullName);
+	    userDto.setPhoneNumber(phoneNumber);
+//	    userDto.setDob(dob);
+	    userDto.setAadharCardNumber(aadharCardNumber);
+
+	    // Handle image files (you can upload to a server or cloud storage, here we use placeholders)
+	    try {
+	        String imageUrl1 = saveImage(aadharImageUrl_1);  // Implement your own image saving logic
+	        String imageUrl2 = saveImage(aadharImageUrl_2);  // Implement your own image saving logic
+
+	        userDto.setAadharImageUrl_1(imageUrl1);
+	        userDto.setAadharImageUrl_2(imageUrl2);
+	    } catch (IOException e) {
+	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Handle file upload errors
+	    }
+
+	    // If roleId is provided, set it in UserDTO
+	    userDto.setRoleId(roleId);
+
+	    // Call the service layer to create the user
+	    UserDTO createdUser = userService.createUser(userDto);
+
+	    // Return the created user in the response with HTTP 201 status
+	    return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+	}
+
+	// Utility method to save the image (you can modify this to upload to cloud storage)
+	private String saveImage(MultipartFile image) throws IOException {
+	    // Example saving to a local folder
+	    String uploadDir = "uploads/"; // Define your upload directory
+	    String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+	    Path path = Paths.get(uploadDir + fileName);
+	    Files.createDirectories(path.getParent());  // Ensure the directory exists
+	    Files.write(path, image.getBytes());  // Save the file
+	    return  fileName; // Return the image URL (you can adjust this based on your server config)
+	}
+
 	
 	
 	@PutMapping("/{username}")
