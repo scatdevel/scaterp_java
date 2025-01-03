@@ -73,31 +73,39 @@ public class UserController {
 	    @RequestParam("username") String username,
 	    @RequestParam("email") String email,
 	    @RequestParam("password") String password,
-//	    @RequestParam("fullName") String fullName,
 	    @RequestParam("phoneNumber") Long phoneNumber,
 //	    @RequestParam("dob") Date dob,
+//	    @RequestParam("fullName") String fullName,
 	    @RequestParam("aadharCardNumber") Long aadharCardNumber,
+	    @RequestParam("farmerCardNumber") Long farmerCardNumber,
 	    @RequestParam("roleId") Long roleId,
 	    @RequestParam("aadharImageUrl_1") MultipartFile aadharImageUrl_1,
-	    @RequestParam("aadharImageUrl_2") MultipartFile aadharImageUrl_2) {
+	    @RequestParam("aadharImageUrl_2") MultipartFile aadharImageUrl_2,
+	    @RequestParam("farmerCardImage") MultipartFile farmerCardImage) {
+
 
 	    // Create a new UserDTO and map data from the request parameters
 	    UserDTO userDto = new UserDTO();
 	    userDto.setUsername(username);
 	    userDto.setEmail(email);
 	    userDto.setEncryptedPassword(password);  // Encrypt password before saving
-//	    userDto.setFullName(fullName);
 	    userDto.setPhoneNumber(phoneNumber);
 //	    userDto.setDob(dob);
+//	    userDto.setFullName(fullName);
 	    userDto.setAadharCardNumber(aadharCardNumber);
+	    userDto.setFarmerCardNumber(farmerCardNumber);
+
 
 	    // Handle image files (you can upload to a server or cloud storage, here we use placeholders)
 	    try {
 	        String imageUrl1 = saveImage(aadharImageUrl_1);  // Implement your own image saving logic
 	        String imageUrl2 = saveImage(aadharImageUrl_2);  // Implement your own image saving logic
+	        String imageUrl3 = saveImage(farmerCardImage);  // Implement your own image saving logic
 
 	        userDto.setAadharImageUrl_1(imageUrl1);
 	        userDto.setAadharImageUrl_2(imageUrl2);
+	        userDto.setFarmerCardImage(imageUrl3);
+
 	    } catch (IOException e) {
 	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Handle file upload errors
 	    }

@@ -593,6 +593,8 @@ export function SignUp() {
     aadharCardNumber:'',//aadharCard Number
     aadharImageUrl_1: '', // Added Aadhaar front card
     aadharImageUrl_2: '', // Added Aadhaar back card
+    farmerCardNumber:'',
+    farmerCardImage:'',
     roleId: ''
   });
   
@@ -609,10 +611,21 @@ const [backAadharFile, setBackAadharFile] = useState(null);
 const [frontAadharPreview, setFrontAadharPreview] = useState(null);
 const [backAadharPreview, setBackAadharPreview] = useState(null);
 const [showDialog, setShowDialog] = useState(false);
+const [showFcDialog, setShowFcDialog] = useState(false);
+const [farmerCardPreview, setFarmerCardPreview] = useState(null);
+
+
 const [showFullImage, setShowFullImage] = useState(null);
 
 
   const navigate = useNavigate();
+
+  const handleUploadFc = () => {
+    // You can implement your upload functionality here.
+    // For now, we'll close the dialog after selecting the files
+    setShowFcDialog(false);
+    setSuccess("Files uploaded successfully.");
+  };
 
   const handleUpload = () => {
     // You can implement your upload functionality here.
@@ -638,6 +651,13 @@ const handleFileChange = (e, side) => {
       aadharImageUrl_2: file // Save the file object in the formData state
     }));
   }
+  else if (side === "farmerCard") {
+    setFarmerCardPreview(URL.createObjectURL(file));
+    setFormData(prevState => ({
+      ...prevState,
+      farmerCardImage: file // Save the file object in the formData state
+    }));
+  }
 };
 
 
@@ -649,6 +669,14 @@ const handleFileChange = (e, side) => {
     }
   };
 
+  const handleDeleteFc = (type) => {
+    if (type === 'farmerCard') {
+      setFarmerCardPreview(null);
+    } else {
+      setFarmerCardPreview(null);
+    }
+  };
+
   const handleShowFullImage = (type) => {
     if (type === 'front') {
       setShowFullImage(frontAadharPreview);
@@ -656,6 +684,15 @@ const handleFileChange = (e, side) => {
       setShowFullImage(backAadharPreview);
     }
   };
+  const handleShowFullImageFc = (type) => {
+    if (type === 'farmerCard') {
+      setShowFullImage(farmerCardPreview);
+    } else {
+      setShowFullImage(backAadharPreview);
+    }
+  };
+  
+
 
   useEffect(() => {
     async function loadRoles() {
@@ -753,6 +790,8 @@ const handleFileChange = (e, side) => {
     formDataToSend.append('phoneNumber', formData.phoneNumber);
     formDataToSend.append('aadharCardNumber', formData.aadharCardNumber);
     formDataToSend.append('roleId', formData.roleId);
+    formDataToSend.append('farmerCardNumber', formData.farmerCardNumber);
+
   
     // Append image files (Aadhar Card images)
     if (formData.aadharImageUrl_1) {
@@ -760,6 +799,9 @@ const handleFileChange = (e, side) => {
     }
     if (formData.aadharImageUrl_2) {
       formDataToSend.append('aadharImageUrl_2', formData.aadharImageUrl_2);
+    }
+    if (formData.farmerCardImage) {
+      formDataToSend.append('farmerCardImage', formData.farmerCardImage);
     }
   
     // Send the request with FormData
@@ -833,7 +875,9 @@ const handleFileChange = (e, side) => {
             {t('enterDetails')}
           </Typography>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md">
+        {/* <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md"> */}
+        <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md overflow-y-auto max-h-[500px] scroll-smooth">
+
           <div>
             <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Username')}</Typography>
             <Input
@@ -924,6 +968,7 @@ const handleFileChange = (e, side) => {
           </div>
 
           
+          
   {/* Aadhar Card Details with image */}
   <div>
       <Button
@@ -960,7 +1005,7 @@ const handleFileChange = (e, side) => {
               <img
                 src={frontAadharPreview}
                 alt="Front Aadhar Preview"
-                className="w-40 h-40 object-cover rounded-md"
+                className="w-50 h-40 object-cover rounded-md"
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-gray-500 bg-opacity-50 transition-opacity">
                 <Button
@@ -983,7 +1028,7 @@ const handleFileChange = (e, side) => {
               <img
                 src={backAadharPreview}
                 alt="Back Aadhar Preview"
-                className="w-40 h-40 object-cover rounded-md"
+                className="w-50 h-40 object-cover rounded-md"
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-gray-500 bg-opacity-50 transition-opacity">
                 <Button
@@ -1025,6 +1070,7 @@ const handleFileChange = (e, side) => {
     </div>
 
 
+
   {/* Dialog to upload aadhar Card image */}
           {showDialog && (
   <Dialog open={showDialog} handler={() => setShowDialog(false)}>
@@ -1064,6 +1110,101 @@ const handleFileChange = (e, side) => {
         variant="outlined"
         color="red"
         onClick={() => setShowDialog(false)}
+      >
+        {t('cancel')}
+      </Button>
+    </DialogFooter>
+  </Dialog>
+)}
+
+
+          {/* FarmerCard Number input */}
+          <div>
+            <Typography variant="small" color="blue-gray" className="font-medium mb-1">{t('Farmer Card Number')}</Typography>
+            <Input
+              size="lg"
+              placeholder=""
+              className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+              // labelProps={{
+              //   className: "before:content-none after:content-none",
+              // }}
+              name="farmerCardNumber"
+              value={formData.farmerCardNumber}
+              // type='number'
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <Button
+        type="button"
+        className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md"
+        onClick={() => setShowFcDialog(true)}
+      >
+        {t('upload Farmer Card')}
+      </Button>
+      <div className="mt-4">
+        {/* FarmerCard Card */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => handleFileChange(e, 'front')}
+          style={{ display: 'none' }}
+          id="farmerCard-upload"
+        />
+            {farmerCardPreview && (
+            <div className="relative group">
+              <img
+                src={farmerCardPreview}
+                alt="FarmerCard Preview"
+                className="w-50 h-40 object-cover rounded-md"
+              />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-gray-500 bg-opacity-50 transition-opacity">
+                <Button
+                  onClick={() => handleDeleteFc('farmerCard')}
+                  className="mr-2 bg-red-500 text-white p-2 rounded-full"
+                >
+                  Delete
+                </Button>
+                <Button
+                  onClick={() => handleShowFullImageFc('farmerCard')}
+                  className="bg-blue-500 text-white p-2 rounded-full"
+                >
+                  Full Image
+                </Button>
+              </div>
+            </div>
+          )}
+          </div>
+
+          {/* Dialog to upload Farmer Card image */}
+ {showFcDialog && (
+  <Dialog open={showFcDialog} handler={() => setShowFcDialog(false)}>
+    <DialogBody>
+        <div>
+          <Typography variant="small" color="blue-gray" className="font-medium mb-1">
+            {t('uploadFarmerCard')}
+          </Typography>
+          <Input
+            type="file"
+            onChange={(e) => handleFileChange(e, 'farmerCard')}
+            className="!border-t-blue-gray-200 focus:!border-t-gray-900"
+          />
+        </div>
+      
+    </DialogBody>
+    <DialogFooter>
+      <Button
+        variant="gradient"
+        color="green"
+        onClick={handleUploadFc}
+      >
+        {t('upload')}
+      </Button>
+      <Button
+        variant="outlined"
+        color="red"
+        onClick={() => setShowFcDialog(false)}
       >
         {t('cancel')}
       </Button>

@@ -23,6 +23,9 @@ public class UserDTO {
     private String aadharImageUrl_1;
     private String aadharImageUrl_2;
     
+    private Long farmerCardNumber;
+    private String farmerCardImage;
+    
     private String houseNumber;
     private String street;
     private String landmark;
@@ -34,9 +37,7 @@ public class UserDTO {
 
     // Add wallet as part of the response DTO
     private WalletDTO wallet;  // A new class that maps wallet data
-
-    
-    
+ 
 	public long getId() {
 		return id;
 	}
@@ -55,6 +56,22 @@ public class UserDTO {
 
 	public String getAadharImageUrl_1() {
 		return aadharImageUrl_1;
+	}
+	
+	public Long getFarmerCardNumber() {
+		return farmerCardNumber;
+	}
+
+	public void setFarmerCardNumber(Long farmerCardNumber) {
+		this.farmerCardNumber = farmerCardNumber;
+	}
+
+	public String getFarmerCardImage() {
+		return farmerCardImage;
+	}
+
+	public void setFarmerCardImage(String farmerCardImage) {
+		this.farmerCardImage = farmerCardImage;
 	}
 
 	public void setAadharImageUrl_1(String aadharImageUrl_1) {
@@ -252,6 +269,7 @@ public class UserDTO {
 	public void setWallet(WalletDTO wallet) {
 		this.wallet = wallet;
 	}
+
     
     // Getters and Setters for these fields
     

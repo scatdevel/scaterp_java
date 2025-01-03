@@ -74,6 +74,10 @@ public class UserServiceImpl implements UserService {
 	    if(userDTO.getAadharImageUrl_2() != null) {
 	    	userEntity.setAadharImageUrl_2(userDTO.getAadharImageUrl_2());
 	    }
+	    if(userDTO.getFarmerCardImage() != null) {
+	    	userEntity.setFarmerCardImage(userDTO.getFarmerCardImage());
+	    }
+	    userEntity.setFarmerCardNumber(userDTO.getFarmerCardNumber());
 	    
 	    UserEntity storedUserDetails = userRepository.save(userEntity);
 

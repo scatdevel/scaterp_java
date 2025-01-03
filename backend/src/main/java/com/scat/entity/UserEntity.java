@@ -59,6 +59,10 @@ public class UserEntity implements Serializable {
 	
 	private String aadharImageUrl_2;
 	
+	private Long farmerCardNumber;
+	
+	private String farmerCardImage;
+	
 	private String houseNumber;
 	
 	private String street;
@@ -124,6 +128,23 @@ public class UserEntity implements Serializable {
 
 	public void setAadharImageUrl_2(String aadharImageUrl_2) {
 		this.aadharImageUrl_2 = aadharImageUrl_2;
+	}
+	
+
+	public Long getFarmerCardNumber() {
+		return farmerCardNumber;
+	}
+
+	public void setFarmerCardNumber(Long farmerCardNumber) {
+		this.farmerCardNumber = farmerCardNumber;
+	}
+
+	public String getFarmerCardImage() {
+		return farmerCardImage;
+	}
+
+	public void setFarmerCardImage(String farmerCardImage) {
+		this.farmerCardImage = farmerCardImage;
 	}
 
 	public Wallet getWallet() {
