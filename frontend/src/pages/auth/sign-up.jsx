@@ -577,6 +577,9 @@ import React, { useState, useEffect } from 'react';
 import { registerUser, fetchRoles } from '../../components/api'; 
 import { Input, Dialog, DialogBody, DialogFooter, Checkbox, Button, Typography } from "@material-tailwind/react";
 // import { Dialog, DialogBody, DialogFooter, Button, Input } from "@material-tailwind/react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+
 
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
@@ -876,6 +879,8 @@ const handleFileChange = (e, side) => {
           </Typography>
         </div>
         {/* <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md"> */}
+        <div className="overflow-y-auto max-h-[80vh] w-full scrollbar-hidden">
+
         <form onSubmit={handleSubmit} className="space-y-6 mx-auto max-w-md overflow-y-auto max-h-[500px] scroll-smooth">
 
           <div>
@@ -971,14 +976,15 @@ const handleFileChange = (e, side) => {
           
   {/* Aadhar Card Details with image */}
   <div>
-      <Button
-        type="button"
-        className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md"
-        onClick={() => setShowDialog(true)}
-      >
-        {t('upload Aadhar Card')}
-      </Button>
-
+  <Button
+  type="button"
+  className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md flex items-center justify-center gap-2"
+  onClick={() => setShowDialog(true)}
+>
+  {/* Add the FontAwesome Icon */}
+  <FontAwesomeIcon icon={faCloudArrowUp} className="w-5 h-5" />
+  {t('upload Aadhar Card')}
+</Button>
       <div className="mt-4">
         {/* Front Aadhar Card */}
         <input
@@ -1138,9 +1144,10 @@ const handleFileChange = (e, side) => {
 
           <Button
         type="button"
-        className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md"
+        className="w-full mt-4 bg-gradient-to-r from-blue-500 to-green-500 hover:bg-gradient-to-l text-white rounded-lg shadow-md flex items-center justify-center gap-2"
         onClick={() => setShowFcDialog(true)}
       >
+        <FontAwesomeIcon icon={faCloudArrowUp} className="w-5 h-5 " />
         {t('upload Farmer Card')}
       </Button>
       <div className="mt-4">
@@ -1285,9 +1292,11 @@ const handleFileChange = (e, side) => {
             </Link>
           </Typography>
         </form>
+        </div>
       </div>
     </section>
   );
 }
+
 
 export default SignUp; //-------------------------------------------------------------------------
