@@ -1,11 +1,12 @@
 package com.scat.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +24,9 @@ public class WalletController {
 	private WalletServiceImpl walletService;
 	
 
-	@GetMapping("/{userId}")
-	public Wallet getWallet(@PathVariable Long userId) {
-		return walletService.getWallet(userId);
+	@GetMapping("/balance/{userId}")
+	public Double getWallet(@PathVariable Long userId) {
+		return walletService.getBalanceByUserId(userId);
 
 	}
 
@@ -33,6 +34,11 @@ public class WalletController {
 	public Wallet createWallet(@PathVariable Long userId) {
 		
 		return walletService.createWallet(userId);
+	}
+	
+	@GetMapping("/all")
+	public List<Wallet> getAllWallet() {
+		return walletService.getAllWallet();
 	}
 	 
 

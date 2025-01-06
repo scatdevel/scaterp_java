@@ -3,29 +3,25 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/users'; // Define your API_URL
 
-export const loginUser = async (credentials) => {
+export const loginUser = async (formData) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, credentials, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true,
+    const response = await axios.post('http://localhost:8080/users/login', {
+      phoneNumber: formData.phone,
+      password: formData.password
     });
 
-    if (response.data && response.data.token) {
-      return {
-        token: response.data.token,
-        id:response.data.id,
-        role: response.data.role || 'user', // Assume role is provided or default to 'user'
-      };
-    } else {
-      throw new Error('Token not found in the response');
-    }
+    return response.data; // Assuming the API returns token and user info
   } catch (error) {
-    console.error(`Login error: ${error.response?.status} - ${error.response?.data?.message || error.message}`);
-    throw error;
+    if (error.response) {
+      console.error('API Error:', error.response.data);
+      throw new Error(error.response.data.error || 'An error occurred');
+    } else {
+      console.error('Network Error:', error.message);
+      throw new Error('Network Error');
+    }
   }
 };
+
 
 export const loginAdmin = async (credentials) => {
   try {
@@ -101,10 +97,12 @@ export const getAllUsers = async () => {
 };
 
 export const registerUser = async (userData) => {
+  
   try {
     const response = await axios.post(`${API_URL}/register`, userData, {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
+        
       },
       withCredentials: true, // If you need to send cookies
     });

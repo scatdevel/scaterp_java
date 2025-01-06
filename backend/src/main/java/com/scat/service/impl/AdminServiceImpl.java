@@ -31,14 +31,15 @@ public class AdminServiceImpl implements AdminService {
 
 	@Autowired
 	public AdminServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper mapper,
-			BCryptPasswordEncoder passwordEncoder,WalletServiceImpl walletService, WalletRepository walletRepo, UserServiceImpl userService) {
+			BCryptPasswordEncoder passwordEncoder, WalletServiceImpl walletService, WalletRepository walletRepo,
+			UserServiceImpl userService) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.walletService = walletService;
-		this. walletRepo =  walletRepo;
+		this.walletRepo = walletRepo;
 		this.userService = userService;
-		
+
 		initializeDefaultRoles();
 	}
 	
@@ -82,87 +83,89 @@ public class AdminServiceImpl implements AdminService {
 	
 	@Override
 	public UserDTO createUserByAdmin(UserDetailsRequestModel userDto) {
-	    // Step 1: Find role by name
-	    Optional<RoleEntity> roleOpt = roleRepository.findByName(userDto.getRoleName());
-	    if (!roleOpt.isPresent()) {
-	        throw new RuntimeException("Role not found");
-	    }
+		// Step 1: Find role by name
+		Optional<RoleEntity> roleOpt = roleRepository.findByName(userDto.getRoleName());
+		if (!roleOpt.isPresent()) {
+			throw new RuntimeException("Role not found");
+		}
 
-	    RoleEntity role = roleOpt.get();
+		RoleEntity role = roleOpt.get();
 
-	    // Step 2: Hash the password before saving it
-	    String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+		// Step 2: Hash the password before saving it
+		String encodedPassword = passwordEncoder.encode(userDto.getPassword());
 
-	    // Step 3: Create UserEntity
-	    UserEntity user = new UserEntity();
-	    user.setUsername(userDto.getUsername());
-	    user.setEmail(userDto.getEmail());
-	    user.setEncryptedPassword(encodedPassword);
-	    user.setRole(role);
+		// Step 3: Create UserEntity
+		UserEntity user = new UserEntity();
+		user.setUsername(userDto.getUsername());
+		user.setEmail(userDto.getEmail());
+		user.setEncryptedPassword(encodedPassword);
+		user.setRole(role);
 
-	    // Step 4: Save the user (this will persist the user in the database)
-	    UserEntity savedUser = userRepository.save(user);
+		// Step 4: Save the user (this will persist the user in the database)
+		UserEntity savedUser = userRepository.save(user);
 
-	    // Step 5: Create a wallet if the user doesn't have one
-	    if (savedUser.getWallet() == null) {
-	        walletService.createWallet(savedUser.getId());  // Create the wallet for the user
-	    }
+		// Step 5: Create a wallet if the user doesn't have one
+		if (savedUser.getWallet() == null) {
+			walletService.createWallet(savedUser.getId()); // Create the wallet for the user
+		}
 
-	    // Step 6: Map the saved user to UserDTO for the response
-	    UserDTO userResponse = new UserDTO();
-	    userResponse.setUsername(savedUser.getUsername());
-	    userResponse.setEmail(savedUser.getEmail());
-	    userResponse.setRole(savedUser.getRole().getName());
+		// Step 6: Map the saved user to UserDTO for the response
+		UserDTO userResponse = new UserDTO();
+		userResponse.setUsername(savedUser.getUsername());
+		userResponse.setEmail(savedUser.getEmail());
+		userResponse.setRole(savedUser.getRole().getName());
 
-	    // Step 7: If the wallet exists, include it in the response DTO
-	    if (savedUser.getWallet() != null) {
-	        WalletDTO walletDTO = new WalletDTO();
-	        walletDTO.setId(savedUser.getWallet().getId());
-	        walletDTO.setBalance(savedUser.getWallet().getBalance());
+		// Step 7: If the wallet exists, include it in the response DTO
+		if (savedUser.getWallet() != null) {
+			WalletDTO walletDTO = new WalletDTO();
+			walletDTO.setId(savedUser.getWallet().getId());
+			walletDTO.setBalance(savedUser.getWallet().getBalance());
 //	        walletDTO.setCurrency(savedUser.getWallet().getCurrency());
-	        userResponse.setWallet(walletDTO); // Add wallet info to the response DTO
-	    }
+			userResponse.setWallet(walletDTO); // Add wallet info to the response DTO
+		}
 
-	    return userResponse;
+		return userResponse;
 	}
 
-	  public double setBalanceByAdmin(Long userId, double balance) {
-		    try {
-		        // Retrieve the user based on the token
-		        UserEntity user = userRepository.findById(userId)
-		        		.orElseThrow(()-> new RuntimeException("User Not Found "));
-		        
-		        // Ensure user exists
-		        if (user == null) {
-		            throw new RuntimeException("User not found.");
-		        }
+	public double setBalanceByAdmin(Long userId, double balance) {
+		try {
+			// Retrieve the user based on the token
+			UserEntity user = userRepository.findById(userId)
+					.orElseThrow(() -> new RuntimeException("User Not Found "));
 
-		        // Find the wallet associated with the user
-		        Wallet wallet =  walletRepo.findByUserId(user.getId());
+			// Ensure user exists
+			if (user == null) {
+				throw new RuntimeException("User not found.");
+			}
 
-		        // Check if wallet exists
-		        if (wallet == null) {
-		            // Optionally, create a new wallet if none exists
-		            wallet = new Wallet();
-		            wallet.setUser(user); // Assuming setUser() is defined to associate the user with the wallet
-		        }
+			// Find the wallet associated with the user
+			Wallet wallet = walletRepo.findByUserId(user.getId());
 
-		        // Set the balance provided by the admin
-		        wallet.setBalance(balance);
+			// Check if wallet exists
+			if (wallet == null) {
+				// Optionally, create a new wallet if none exists
+				wallet = new Wallet();
+				wallet.setCurrency("INR");
+				wallet.setUser(user); // Assuming setUser() is defined to associate the user with the wallet
+			}
 
-		        // Save the wallet back to the repository
-		        walletRepo.save(wallet);
+			// Set the balance provided by the admin
+			wallet.setBalance(balance);
 
-		        // Return the updated balance
-		        return wallet.getBalance();
+			// Save the wallet back to the repository
+			walletRepo.save(wallet);
 
-		    } catch (Exception e) {
-		        // Log the exception for debugging purposes
-		        e.printStackTrace();
-		        throw new RuntimeException("An error occurred while setting the balance.");
-		    }
+			// Return the updated balance
+			return wallet.getBalance();
+
+		} catch (Exception e) {
+			// Log the exception for debugging purposes
+			e.printStackTrace();
+			throw new RuntimeException("An error occurred while setting the balance.");
 		}
-	
+	}
+
+
 	@Override
 	public boolean validateAdmin(String email, String password) {
 		UserEntity adminUser = userRepository.findByEmail(email)
@@ -198,7 +201,6 @@ public class AdminServiceImpl implements AdminService {
 		userRepository.save(adminUser);
 	}
 
-	
 	@Override
 	public UserEntity getAdminByEmail(String email) {
 		return userRepository.findByEmail(email).orElse(null);
@@ -217,7 +219,7 @@ public class AdminServiceImpl implements AdminService {
 	public RoleEntity getRoleByName(String roleName) {
 		return roleRepository.findByName(roleName).orElse(null);
 	}
-	
+
 	@Override
 	public RoleEntity getRoleById(Long id) {
 		return roleRepository.findById(id).orElse(null);
@@ -319,7 +321,5 @@ public class AdminServiceImpl implements AdminService {
 			throw new RuntimeException("User not found with email: " + email);
 		}
 	}
-
-
 
 }

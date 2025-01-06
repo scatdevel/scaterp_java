@@ -19,6 +19,13 @@ public class UserDTO {
     private String resetToken;
     private Long resetTokenExpiration;
     
+    private Long aadharCardNumber;
+    private String aadharImageUrl_1;
+    private String aadharImageUrl_2;
+    
+    private Long farmerCardNumber;
+    private String farmerCardImage;
+    
     private String houseNumber;
     private String street;
     private String landmark;
@@ -30,13 +37,53 @@ public class UserDTO {
 
     // Add wallet as part of the response DTO
     private WalletDTO wallet;  // A new class that maps wallet data
-
+ 
 	public long getId() {
 		return id;
 	}
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public Long getAadharCardNumber() {
+		return aadharCardNumber;
+	}
+
+	public void setAadharCardNumber(Long aadharCardNumber) {
+		this.aadharCardNumber = aadharCardNumber;
+	}
+
+	public String getAadharImageUrl_1() {
+		return aadharImageUrl_1;
+	}
+	
+	public Long getFarmerCardNumber() {
+		return farmerCardNumber;
+	}
+
+	public void setFarmerCardNumber(Long farmerCardNumber) {
+		this.farmerCardNumber = farmerCardNumber;
+	}
+
+	public String getFarmerCardImage() {
+		return farmerCardImage;
+	}
+
+	public void setFarmerCardImage(String farmerCardImage) {
+		this.farmerCardImage = farmerCardImage;
+	}
+
+	public void setAadharImageUrl_1(String aadharImageUrl_1) {
+		this.aadharImageUrl_1 = aadharImageUrl_1;
+	}
+
+	public String getAadharImageUrl_2() {
+		return aadharImageUrl_2;
+	}
+
+	public void setAadharImageUrl_2(String aadharImageUrl_2) {
+		this.aadharImageUrl_2 = aadharImageUrl_2;
 	}
 
 	public String getEmail() {
@@ -222,6 +269,7 @@ public class UserDTO {
 	public void setWallet(WalletDTO wallet) {
 		this.wallet = wallet;
 	}
+
     
     // Getters and Setters for these fields
     

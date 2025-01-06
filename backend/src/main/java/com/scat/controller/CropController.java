@@ -39,30 +39,30 @@ public class CropController {
     @PostMapping("/save")
     public Crop saveCrop(@RequestHeader("Authorization") String jwt,
     		@RequestParam("cropName") String cropName,
-                         @RequestParam("Production") double Production,
+                         @RequestParam("production") double production,
                          @RequestParam Long  categoryId,
-                         @RequestParam("description") String description,
+//                         @RequestParam("description") String description,
                          @RequestParam("cultivationLandValue") double cultivationLandValue,
                          @RequestParam("landValueUnit") String landValueUnit,
-                         @RequestParam("price") double price,
-                         @RequestParam("stock") int stock,
-                         @RequestParam("ProductionUnit") String ProductionUnit,
-                         @RequestParam("projectCost") double projectCost,
+                         @RequestParam("cost") double cost,
+//                         @RequestParam("stock") int stock,
+                         @RequestParam("productionUnit") String productionUnit,
+//                         @RequestParam("projectCost") double projectCost,
                          @RequestParam("projectionTimelineType") String projectionTimelineType,
                          @RequestParam("projectionTimelineValue") int projectionTimelineValue,
                          @RequestParam("image") MultipartFile image) throws IOException {
         Crop crop = new Crop();
         crop.setCropName(cropName);
-        crop.setProduction(Production);
+        crop.setProduction(production);
         crop.setCultivationLandValue(cultivationLandValue);
         crop.setLandValueUnit(landValueUnit);
-        crop.setPrice(price);
-        crop.setStock(stock);
-        crop.setDescription(description);
-        crop.setProjectCost(projectCost);
+        crop.setPrice(cost);
+//        crop.setStock(stock);
+//        crop.setDescription(description);
+//        crop.setProjectCost(projectCost);
         crop.setProjectionTimelineType(projectionTimelineType);
         crop.setProjectionTimelineValue(projectionTimelineValue);
-        crop.setProductionUnit(ProductionUnit);
+        crop.setProductionUnit(productionUnit);
         crop.setImage(image.getBytes());  
         
         UserEntity user = service.getUserByJwtToken(jwt);

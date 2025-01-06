@@ -9,6 +9,11 @@ public class UserDetailsRequestModel {
     private String password;
 	private String fullName;
     private Long phoneNumber;
+    
+    private Long aadharCardNumber;
+    private String aadharImageUrl_1;
+    private String aadharImageUrl_2;
+    
     private String bio;
     private Date dob;
     private String roleName;
@@ -23,6 +28,30 @@ public class UserDetailsRequestModel {
 
 	public Date getDob() {
 		return dob;
+	}
+
+	public Long getAadharCardNumber() {
+		return aadharCardNumber;
+	}
+
+	public void setAadharCardNumber(Long aadharCardNumber) {
+		this.aadharCardNumber = aadharCardNumber;
+	}
+
+	public String getAadharImageUrl_1() {
+		return aadharImageUrl_1;
+	}
+
+	public void setAadharImageUrl_1(String aadharImageUrl_1) {
+		this.aadharImageUrl_1 = aadharImageUrl_1;
+	}
+
+	public String getAadharImageUrl_2() {
+		return aadharImageUrl_2;
+	}
+
+	public void setAadharImageUrl_2(String aadharImageUrl_2) {
+		this.aadharImageUrl_2 = aadharImageUrl_2;
 	}
 
 	public void setDob(Date dob) {
