@@ -239,6 +239,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 
+
 	@Override
 	public UserDTO updateProfilePicture(String emailOrUsername, String profilePictureUrl) {
 		UserEntity userEntity = userRepository.findByUsername(emailOrUsername);
